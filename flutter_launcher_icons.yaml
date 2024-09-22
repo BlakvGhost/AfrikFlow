@@ -1,0 +1,11 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/images/3.png"
+  min_sdk_android: 21
+  ios: true
+  background_color: "#eeeeee"
+  image_path_android: "assets/images/3.png"
+
+  android: "launcher_icon"
+
+  remove_alpha_channel_ios: true

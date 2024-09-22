@@ -24,18 +24,11 @@ flutter:
   assets:
     - assets/images/
 
-flutter_launcher_icons:
-  image_path: "assets/images/symbol-afrikflow.png"
-  min_sdk_android: 21
-  ios: true
-  background_color: "#FFFFFF"
-  android: "launcher_icon"
-
 flutter_native_splash:
-  color: "#FFFFFF"
-  image: "assets/images/logo.png"
+  color: "#eeeeee"
+  image: "assets/images/1.png"
   android_12:
-    image: "assets/images/logo.png"
+    image: "assets/images/1.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
