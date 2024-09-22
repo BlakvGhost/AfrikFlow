@@ -2,6 +2,7 @@ import 'package:afrik_flow/widgets/ui/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:afrik_flow/providers/theme_notifier.dart';
+import 'package:go_router/go_router.dart';
 
 class BaseScreen extends ConsumerWidget {
   final Widget child;
@@ -55,26 +56,42 @@ class BaseScreen extends ConsumerWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        appBar: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
-        body: child,
-        floatingActionButton: floatingActionButton,
-        drawer: const CustomDrawer(
-          name: 'Kabirou ALASSANE',
-          email: 'email@example.com',
-          avatarUrl: 'https://avatars.githubusercontent.com/u/86885681?v=4',
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: currentIndex!,
-          onTap: onTabTapped,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
-            BottomNavigationBarItem(icon: Icon(Icons.send), label: 'Envoyer'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.payment), label: 'Transactions'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle), label: 'Profil')
-          ],
-        ));
+      appBar: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
+      body: child,
+      floatingActionButton: floatingActionButton,
+      drawer: const CustomDrawer(
+        name: 'Kabirou ALASSANE',
+        email: 'email@example.com',
+        avatarUrl: 'https://avatars.githubusercontent.com/u/86885681?v=4',
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex!,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              context.go('/');
+              break;
+            case 1:
+              context.go('/send');
+              break;
+            case 2:
+              context.go('/transactions');
+              break;
+            case 3:
+              context.go('/profile');
+              break;
+          }
+        },
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+          BottomNavigationBarItem(icon: Icon(Icons.send), label: 'Envoyer'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.payment), label: 'Transactions'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle), label: 'Profil'),
+        ],
+      ),
+    );
   }
 }
