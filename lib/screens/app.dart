@@ -12,7 +12,10 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const BaseScreen(child: Text("Welcome")),
+      home: const BaseScreen(
+          child: Center(
+        child: Text("Welcome"),
+      )),
       debugShowCheckedModeBanner: false,
     );
   }
