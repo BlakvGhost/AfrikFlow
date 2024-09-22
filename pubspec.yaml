@@ -5,7 +5,6 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.5.3
-
 dependencies:
   flutter:
     sdk: flutter
@@ -19,6 +18,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
 flutter:
+
   uses-material-design: true
 
   assets:
@@ -36,7 +36,6 @@ flutter_native_splash:
   image: "assets/images/logo.png"
   android_12:
     image: "assets/images/logo.png"
-
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

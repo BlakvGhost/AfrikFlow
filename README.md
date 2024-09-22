@@ -1,6 +1,6 @@
 # afrik_flow
 
-A new Flutter project.
+AfrikFlow est une application web et mobile révolutionnaire conçue pour faciliter les transactions financières en Afrique de l'Ouest.
 
 ## Getting Started
 
