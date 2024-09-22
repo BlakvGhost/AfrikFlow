@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:afrik_flow/providers/theme_notifier.dart';
 
-class BaseScreen extends StatelessWidget {
+class BaseScreen extends ConsumerWidget {
   final Widget child;
   final String? title;
   final bool showAppBar;
@@ -8,7 +10,11 @@ class BaseScreen extends StatelessWidget {
   final int? currentIndex;
   final Function(int)? onTabTapped;
 
-  AppBar getHomePageAppBar(double width, double height) {
+  AppBar getHomePageAppBar(double width, BuildContext context, WidgetRef ref,
+      bool showAppBar, String? title) {
+    final themeMode = ref.watch(themeNotifierProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
+
     return showAppBar
         ? AppBar(
             title: Image.asset(
@@ -18,6 +24,14 @@ class BaseScreen extends StatelessWidget {
             ),
             centerTitle: true,
             elevation: 18,
+            actions: [
+              IconButton(
+                icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+                onPressed: () {
+                  ref.read(themeNotifierProvider.notifier).toggleTheme();
+                },
+              ),
+            ],
           )
         : AppBar(
             title: Text(title ?? 'AfrikFlow'),
@@ -36,12 +50,11 @@ class BaseScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: getHomePageAppBar(screenWidth, screenHeight),
+      appBar: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
       body: child,
       floatingActionButton: floatingActionButton,
       drawer: Drawer(
