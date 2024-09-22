@@ -1,4 +1,4 @@
-import 'package:afrik_flow/widgets/base_screen.dart';
+import 'package:afrik_flow/widgets/auth_base_screen.dart';
 import 'package:flutter/material.dart';
 
 class Splash1 extends StatelessWidget {
@@ -6,6 +6,6 @@ class Splash1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BaseScreen(child: Text("Hello world"));
+    return AuthBaseScreen(child: Image.asset('assets/splash/splash_1.png'));
   }
 }
