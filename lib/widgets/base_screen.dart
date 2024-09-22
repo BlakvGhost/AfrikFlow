@@ -24,6 +24,7 @@ class BaseScreen extends StatelessWidget {
       appBar: showAppBar
           ? AppBar(
               title: Text(title ?? 'AfrikFlow'),
+              elevation: 18,
             )
           : null,
       body: child,
