@@ -31,7 +31,7 @@ class BaseScreen extends StatelessWidget {
     this.title,
     this.showAppBar = true,
     this.floatingActionButton,
-    this.currentIndex,
+    this.currentIndex = 0,
     this.onTabTapped,
   });
 
