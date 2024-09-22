@@ -6,6 +6,6 @@ flutter_launcher_icons:
   background_color: "#eeeeee"
   image_path_android: "assets/images/3.png"
 
-  android: "launcher_icon"
+  android: true
 
   remove_alpha_channel_ios: true
