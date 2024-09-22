@@ -8,6 +8,23 @@ class BaseScreen extends StatelessWidget {
   final int? currentIndex;
   final Function(int)? onTabTapped;
 
+  AppBar getHomePageAppBar(double width, double height) {
+    return showAppBar
+        ? AppBar(
+            title: Image.asset(
+              'assets/images/logo.png',
+              height: 80,
+              width: width * 0.4,
+            ),
+            centerTitle: true,
+            elevation: 18,
+          )
+        : AppBar(
+            title: Text(title ?? 'AfrikFlow'),
+            elevation: 18,
+          );
+  }
+
   const BaseScreen({
     super.key,
     required this.child,
@@ -20,13 +37,11 @@ class BaseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      appBar: showAppBar
-          ? AppBar(
-              title: Text(title ?? 'AfrikFlow'),
-              elevation: 18,
-            )
-          : null,
+      appBar: getHomePageAppBar(screenWidth, screenHeight),
       body: child,
       floatingActionButton: floatingActionButton,
       drawer: Drawer(
