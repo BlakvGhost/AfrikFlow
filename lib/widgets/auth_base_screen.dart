@@ -1,9 +1,8 @@
-import 'package:afrik_flow/widgets/ui/custom_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:afrik_flow/providers/theme_notifier.dart';
 
-class BaseScreen extends ConsumerWidget {
+class AuthBaseScreen extends ConsumerWidget {
   final Widget child;
   final String? title;
   final bool showAppBar;
@@ -40,7 +39,7 @@ class BaseScreen extends ConsumerWidget {
           );
   }
 
-  const BaseScreen({
+  const AuthBaseScreen({
     super.key,
     required this.child,
     this.title,
@@ -58,15 +57,18 @@ class BaseScreen extends ConsumerWidget {
         appBar: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
         body: child,
         floatingActionButton: floatingActionButton,
-        drawer: const CustomDrawer(
-          name: 'Kabirou ALASSANE',
-          email: 'email@example.com',
-          avatarUrl: 'https://avatars.githubusercontent.com/u/86885681?v=4',
+        drawer: Drawer(
+          child: ListView(
+            children: [
+              const DrawerHeader(child: Text('Menu')),
+              ListTile(title: const Text('Accueil'), onTap: () {}),
+              ListTile(title: const Text('Transactions'), onTap: () {}),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: currentIndex!,
           onTap: onTabTapped,
-          type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
             BottomNavigationBarItem(icon: Icon(Icons.send), label: 'Envoyer'),
