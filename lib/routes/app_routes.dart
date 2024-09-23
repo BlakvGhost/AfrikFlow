@@ -1,3 +1,5 @@
+import 'package:afrik_flow/screens/splashs/splash_screen.dart';
+import 'package:afrik_flow/widgets/auth_base_screen.dart';
 import 'package:afrik_flow/widgets/base_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/screens/home_screen.dart';
@@ -10,6 +12,12 @@ class AppRoutes {
     routes: [
       GoRoute(
         path: '/',
+        builder: (context, state) => const AuthBaseScreen(
+          child: SplashScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/home',
         builder: (context, state) => const BaseScreen(
           currentIndex: 0,
           child: HomeScreen(),
