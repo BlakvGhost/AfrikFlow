@@ -7,10 +7,10 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
   int _currentIndex = 0;
 
   List<Stack> _splashImages(double screenHeight) {
@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    context.go('/home');
+                    context.push('/home');
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -107,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Se connecter',
+                  child: const Text('S\'inscrire',
                       style: TextStyle(color: Colors.white)),
                 ),
               ),
@@ -125,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      context.go('/home');
+                      context.push('/login');
                     },
                     child: const Text(
                       'Se connecter',
@@ -180,7 +180,7 @@ class _SplashScreenState extends State<SplashScreen> {
               height: MediaQuery.of(context).size.height,
               viewportFraction: 1.0,
               enableInfiniteScroll: false,
-              autoPlay: true,
+              autoPlay: false,
               autoPlayInterval: const Duration(seconds: 8),
               onPageChanged: (index, reason) {
                 setState(() {
