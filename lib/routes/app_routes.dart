@@ -1,4 +1,5 @@
 import 'package:afrik_flow/screens/auth/login_screen.dart';
+import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
 import 'package:afrik_flow/widgets/auth_base_screen.dart';
 import 'package:afrik_flow/widgets/base_screen.dart';
@@ -49,6 +50,12 @@ class AppRoutes {
         path: '/login',
         builder: (context, state) => const AuthBaseScreen(
           child: LoginScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const AuthBaseScreen(
+          child: RegisterScreen(),
         ),
       ),
     ],

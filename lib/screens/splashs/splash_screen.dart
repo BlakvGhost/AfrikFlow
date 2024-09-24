@@ -96,7 +96,7 @@ class SplashScreenState extends State<SplashScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    context.push('/home');
+                    context.push('/register');
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(

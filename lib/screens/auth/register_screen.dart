@@ -4,14 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class RegisterScreenState extends State<RegisterScreen> {
+  String? selectedCountry;
+
+  final List<Map<String, String>> countries = [
+    {'code': '+224', 'name': 'Mali', 'flag': '🇲🇱'},
+    {'code': '+225', 'name': 'Côte d’Ivoire', 'flag': '🇨🇮'},
+    {'code': '+231', 'name': 'Sénégal', 'flag': '🇸🇳'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,11 +28,11 @@ class LoginScreenState extends State<LoginScreen> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 120),
+              padding: const EdgeInsets.only(top: 50),
               children: [
                 const Center(
                   child: Text(
-                    'Connectez-vous!',
+                    'Inscrivez-vous!',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -38,7 +46,7 @@ class LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'Vous n\'avez pas de compte?',
+                      'Déjà inscrit?',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppTheme.whiteColor,
@@ -47,10 +55,10 @@ class LoginScreenState extends State<LoginScreen> {
                     const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        context.push('/register');
+                        context.push('/login');
                       },
                       child: const Text(
-                        'Inscrivez-vous',
+                        'Connectez-vous',
                         style: TextStyle(
                           fontSize: 14,
                           color: AppTheme.whiteColor,
@@ -61,9 +69,56 @@ class LoginScreenState extends State<LoginScreen> {
                   ],
                 )),
                 const SizedBox(height: 30),
+                DropdownButtonFormField<String>(
+                  value: selectedCountry,
+                  decoration: const InputDecoration(
+                    labelText: 'Sélectionnez le pays',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: countries.map((country) {
+                    return DropdownMenuItem<String>(
+                      value: country['code'],
+                      child: Row(
+                        children: [
+                          Text(country['flag']!),
+                          const SizedBox(width: 8),
+                          Text('${country['name']} (${country['code']})'),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCountry = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                const TextField(
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: 'Numéro de téléphone',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 const TextField(
                   decoration: InputDecoration(
-                    labelText: 'E-mail/ Numéro de téléphone',
+                    labelText: 'Nom',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Prénom',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const TextField(
+                  decoration: InputDecoration(
+                    labelText: 'E-mail',
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -76,14 +131,16 @@ class LoginScreenState extends State<LoginScreen> {
                     suffixIcon: PhIcon(child: PhosphorIconsDuotone.eye),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text('Mot de passe oublié?'),
+                const SizedBox(height: 20),
+                const TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Confirmer mot de passe',
+                    border: OutlineInputBorder(),
+                    suffixIcon: PhIcon(child: PhosphorIconsDuotone.eye),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
                     context.go('/home');
@@ -96,7 +153,7 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   child: const Text(
-                    'Se connecter',
+                    'S\'inscrire',
                     style: TextStyle(
                         fontSize: 16, color: AppTheme.backgroundColor),
                   ),
@@ -107,7 +164,7 @@ class LoginScreenState extends State<LoginScreen> {
                     Expanded(child: Divider()),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('Ou se connecter avec'),
+                      child: Text('Ou s\'inscrire avec'),
                     ),
                     Expanded(child: Divider()),
                   ],
