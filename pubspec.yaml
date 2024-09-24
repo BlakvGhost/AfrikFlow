@@ -15,6 +15,7 @@ dependencies:
   go_router: ^14.2.7
   flutter_riverpod: ^2.5.1
   carousel_slider: ^5.0.0
+  phosphor_flutter: ^2.1.0
 
 dev_dependencies:
   flutter_test:
