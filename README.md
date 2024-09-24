@@ -1,4 +1,4 @@
-k# afrik_flow
+# afrik_flow
 
 AfrikFlow est une application web et mobile révolutionnaire conçue pour faciliter les transactions financières en Afrique de l'Ouest.
 
