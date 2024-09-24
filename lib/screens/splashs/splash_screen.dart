@@ -13,39 +13,98 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> splashImages = [
-    Image.asset('assets/splash/splash_1.png',
-        fit: BoxFit.cover, width: double.infinity),
-    Stack(children: [
-      Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/splash/splash_2.png'),
+  List<Stack> _splashImages(double screenHeight) {
+    return [
+      Stack(
+        children: [
+          Image.asset(
+            'assets/onboard/onboard1.jpg',
             fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+          Container(
+            color: Colors.black.withOpacity(0.4),
+            width: double.infinity,
+            height: double.infinity,
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: screenHeight * 0.3,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.transparent, AppTheme.secondaryColor],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
+          ),
+          const Positioned(
+            bottom: 30,
+            left: 20,
+            right: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Transferts d\'argent',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  'à travers l’Afrique de l’Ouest',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      Stack(children: [
+        Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/onboard/onboard2.png'),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-      ),
-      Container(
-        color: Colors.black.withOpacity(0.5), // Fond semi-transparent
-        width: double.infinity,
-        height: double.infinity,
-      ),
-      const Center(
-        child: Text(
-          'Welcome to AfrikFlow',
-          style: TextStyle(
-            fontSize: 32,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+        Container(
+          color: Colors.black.withOpacity(0.5),
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        const Center(
+          child: Text(
+            'Welcome to AfrikFlow',
+            style: TextStyle(
+              fontSize: 32,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-    ])
-  ];
+      ])
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final splashImages = _splashImages(screenHeight);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -62,6 +121,28 @@ class _SplashScreenState extends State<SplashScreen> {
                   _currentIndex = index;
                 });
               },
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(splashImages.length, (index) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                  width: _currentIndex == index ? 12.0 : 8.0,
+                  height: 8.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentIndex == index
+                        ? AppTheme.primaryColor
+                        : Colors.grey.withOpacity(0.5),
+                  ),
+                );
+              }),
             ),
           ),
           if (_currentIndex == 1)
@@ -83,8 +164,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         textStyle: const TextStyle(fontSize: 18),
                         backgroundColor: AppTheme.primaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              12), // Réduit la rondeur des coins
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: const Text('Se connecter',
