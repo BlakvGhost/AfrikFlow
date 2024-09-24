@@ -30,12 +30,25 @@ class BaseScreen extends ConsumerWidget {
             elevation: 18,
             actions: [
               IconButton(
-                icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+                icon: !isDarkMode
+                    ? const PhIcon(
+                        child: PhosphorIconsDuotone.sun, isWhite: true)
+                    : const PhIcon(
+                        child: PhosphorIconsDuotone.moon, isWhite: true),
                 onPressed: () {
                   ref.read(themeNotifierProvider.notifier).toggleTheme();
                 },
               ),
             ],
+            leading: Builder(
+              builder: (context) => IconButton(
+                icon: const PhIcon(
+                    child: PhosphorIconsDuotone.list, isWhite: true),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
+            ),
           )
         : AppBar(
             title: Text(title ?? 'AfrikFlow'),
