@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           const Positioned(
-            bottom: 30,
+            bottom: 40,
             left: 20,
             right: 20,
             child: Column(
@@ -86,16 +86,82 @@ class _SplashScreenState extends State<SplashScreen> {
           width: double.infinity,
           height: double.infinity,
         ),
-        const Center(
-          child: Text(
-            'Welcome to AfrikFlow',
-            style: TextStyle(
-              fontSize: 32,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+        Positioned(
+          bottom: 40,
+          left: 0,
+          right: 0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.go('/home');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 110, vertical: 15),
+                    textStyle: const TextStyle(fontSize: 18),
+                    backgroundColor: AppTheme.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Se connecter',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Déjà inscrit?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.go('/home');
+                    },
+                    child: const Text(
+                      'Se connecter',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
+        const Positioned(
+            bottom: 200,
+            left: 20,
+            right: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Let’s go!!!',
+                  style: TextStyle(
+                    fontSize: 42,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  'L\'afrique plus proche de vous',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white54,
+                  ),
+                ),
+              ],
+            ))
       ])
     ];
   }
@@ -145,55 +211,6 @@ class _SplashScreenState extends State<SplashScreen> {
               }),
             ),
           ),
-          if (_currentIndex == 1)
-            Positioned(
-              bottom: 40,
-              left: 0,
-              right: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context.go('/home');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 100, vertical: 15),
-                        textStyle: const TextStyle(fontSize: 18),
-                        backgroundColor: AppTheme.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Se connecter',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Déjà inscrit?',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                      const SizedBox(width: 5),
-                      TextButton(
-                        onPressed: () {
-                          context.go('/home');
-                        },
-                        child: const Text(
-                          'Se connecter',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
     );
