@@ -1,8 +1,10 @@
 import 'package:afrik_flow/widgets/ui/custom_drawer.dart';
+import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:afrik_flow/providers/theme_notifier.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class BaseScreen extends ConsumerWidget {
   final Widget child;
@@ -72,24 +74,30 @@ class BaseScreen extends ConsumerWidget {
               context.go('/home');
               break;
             case 1:
-              context.go('/send');
+              context.push('/send');
               break;
             case 2:
-              context.go('/transactions');
+              context.push('/transactions');
               break;
             case 3:
-              context.go('/profile');
+              context.push('/profile');
               break;
           }
         },
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
-          BottomNavigationBarItem(icon: Icon(Icons.send), label: 'Envoyer'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.payment), label: 'Transactions'),
+              icon: PhIcon(child: PhosphorIconsDuotone.house),
+              label: 'Accueil'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'Profil'),
+              icon: PhIcon(child: PhosphorIconsDuotone.paperPlaneTilt),
+              label: 'Envoyer'),
+          BottomNavigationBarItem(
+              icon: PhIcon(child: PhosphorIconsDuotone.cardholder),
+              label: 'Transactions'),
+          BottomNavigationBarItem(
+              icon: PhIcon(child: PhosphorIconsDuotone.userCircleGear),
+              label: 'Profil'),
         ],
       ),
     );
