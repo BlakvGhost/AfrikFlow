@@ -1,3 +1,4 @@
+import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
@@ -56,6 +57,14 @@ class AppRoutes {
         path: '/register',
         builder: (context, state) => const AuthBaseScreen(
           child: RegisterScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/email-verification',
+        builder: (context, state) => AuthBaseScreen(
+          child: EmailVerificationScreen(
+            email: state.extra as String,
+          ),
         ),
       ),
     ],

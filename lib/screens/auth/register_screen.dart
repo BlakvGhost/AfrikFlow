@@ -22,6 +22,8 @@ class RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String email = "";
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -116,11 +118,14 @@ class RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  decoration: const InputDecoration(
                     labelText: 'E-mail',
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (String value) {
+                    email = value;
+                  },
                 ),
                 const SizedBox(height: 20),
                 const TextField(
@@ -143,7 +148,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
-                    context.go('/home');
+                    context.go('/email-verification', extra: email);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryColor,
