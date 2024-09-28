@@ -38,6 +38,9 @@ jobs:
     - name: Build APK
       run: flutter build apk --release
 
+    - name: List APK files
+      run: ls -al build/app/outputs/flutter-apk/
+
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v3
       with:
@@ -61,8 +64,10 @@ jobs:
 
     - name: Create Tag
       run: |
-        git tag $TAG_NAME
-        git push origin $TAG_NAME
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git tag ${{ env.TAG_NAME }}
+        git push origin ${{ env.TAG_NAME }}
 
     - name: Create Release
       id: create_release
