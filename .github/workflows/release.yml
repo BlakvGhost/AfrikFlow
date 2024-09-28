@@ -53,6 +53,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Generate Tag
+      id: generate_tag
+      run: echo "::set-output name=tag::v1.0.$(date +%s)"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -60,7 +64,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.sha }}
-        release_name: "Release ${{ github.sha }}"
+        release_name: "Release ${{ steps.generate_tag.outputs.tag }}"
         draft: false
         prerelease: false
 
