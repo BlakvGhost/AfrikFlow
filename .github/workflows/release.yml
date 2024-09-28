@@ -55,7 +55,14 @@ jobs:
 
     - name: Generate Tag
       id: generate_tag
-      run: echo "::set-output name=tag::v1.0.$(date +%s)"
+      run: |
+        TAG_NAME=v1.0.$(date +%Y%m%d%H%M%S)
+        echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+
+    - name: Create Tag
+      run: |
+        git tag $TAG_NAME
+        git push origin $TAG_NAME
 
     - name: Create Release
       id: create_release
@@ -63,8 +70,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.sha }}
-        release_name: "Release ${{ steps.generate_tag.outputs.tag }}"
+        tag_name: ${{ env.TAG_NAME }}
+        release_name: "Release ${{ env.TAG_NAME }}"
         draft: false
         prerelease: false
 
