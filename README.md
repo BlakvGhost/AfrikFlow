@@ -1,5 +1,7 @@
 # afrik_flow
 
+[![Build and Release APK](https://github.com/BlakvGhost/AfrikFlow/actions/workflows/release.yml/badge.svg)](https://github.com/BlakvGhost/AfrikFlow/actions/workflows/release.yml)
+
 AfrikFlow est une application web et mobile révolutionnaire conçue pour faciliter les transactions financières en Afrique de l'Ouest.
 
 ## Getting Started
