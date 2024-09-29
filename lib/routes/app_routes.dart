@@ -33,6 +33,8 @@ class AppRoutes {
         path: '/send',
         builder: (context, state) => const BaseScreen(
           currentIndex: 2,
+          showAppBar: false,
+          title: "Envoyer de l'argent",
           child: SendScreen(),
         ),
       ),

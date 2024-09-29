@@ -20,48 +20,45 @@ class BaseScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
-    return showAppBar
-        ? AppBar(
-            title: Image.asset(
+    return AppBar(
+      title: showAppBar
+          ? Image.asset(
               'assets/images/logo.png',
               height: 80,
               width: width * 0.4,
-            ),
-            centerTitle: true,
-            elevation: 18,
-            actions: [
-              IconButton(
-                icon: !isDarkMode
-                    ? const PhIcon(
-                        child: PhosphorIconsDuotone.sun,
-                        isWhite: true,
-                        smartColor: true,
-                      )
-                    : const PhIcon(
-                        child: PhosphorIconsDuotone.moon,
-                        isWhite: true,
-                        smartColor: true),
-                onPressed: () {
-                  ref.read(themeNotifierProvider.notifier).toggleTheme();
-                },
-              ),
-            ],
-            leading: Builder(
-              builder: (context) => IconButton(
-                icon: const PhIcon(
-                    child: PhosphorIconsDuotone.list,
-                    isWhite: true,
-                    smartColor: true),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-            ),
-          )
-        : AppBar(
-            title: Text(title ?? 'AfrikFlow'),
-            elevation: 18,
-          );
+            )
+          : Text(title ?? 'AfrikFlow'),
+      centerTitle: true,
+      elevation: 18,
+      actions: [
+        IconButton(
+          icon: !isDarkMode
+              ? const PhIcon(
+                  child: PhosphorIconsDuotone.sun,
+                  isWhite: true,
+                  smartColor: true,
+                )
+              : const PhIcon(
+                  child: PhosphorIconsDuotone.moon,
+                  isWhite: true,
+                  smartColor: true),
+          onPressed: () {
+            ref.read(themeNotifierProvider.notifier).toggleTheme();
+          },
+        ),
+      ],
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: const PhIcon(
+              child: PhosphorIconsDuotone.list,
+              isWhite: true,
+              smartColor: true),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+      ),
+    );
   }
 
   const BaseScreen({
