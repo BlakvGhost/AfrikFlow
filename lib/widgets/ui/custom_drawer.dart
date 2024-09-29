@@ -1,5 +1,6 @@
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -39,13 +40,17 @@ class CustomDrawer extends StatelessWidget {
             leading: const PhIcon(
                 child: PhosphorIconsDuotone.userCircleGear, isWhite: true),
             title: const Text('Profil'),
-            onTap: () {},
+            onTap: () {
+              context.push('/profile');
+            },
           ),
           ListTile(
             leading:
                 const PhIcon(child: PhosphorIconsDuotone.gear, isWhite: true),
             title: const Text('Paramètres'),
-            onTap: () {},
+            onTap: () {
+              context.push('/settings');
+            },
           ),
           ListTile(
             leading: const PhIcon(
@@ -70,7 +75,9 @@ class CustomDrawer extends StatelessWidget {
             leading: const PhIcon(
                 child: PhosphorIconsDuotone.userSwitch, isWhite: true),
             title: const Text('Se déconnecter'),
-            onTap: () {},
+            onTap: () {
+              context.go('/login');
+            },
           ),
         ],
       ),
