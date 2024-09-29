@@ -1,4 +1,5 @@
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
@@ -85,22 +86,12 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                ElevatedButton(
+                CustomElevatedButton(
+                  label: 'Se connecter',
                   onPressed: () {
                     context.go('/home');
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Se connecter',
-                    style: TextStyle(
-                        fontSize: 16, color: AppTheme.backgroundColor),
-                  ),
+                  textColor: AppTheme.backgroundColor,
                 ),
                 const SizedBox(height: 20),
                 const Row(

@@ -1,4 +1,7 @@
+import 'dart:async'; // Pour le Timer
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/utils/format_utils.dart';
+import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,49 @@ class EmailVerificationScreen extends StatefulWidget {
 
 class EmailVerificationScreenState extends State<EmailVerificationScreen> {
   TextEditingController pinController = TextEditingController();
+  FocusNode pinFocusNode = FocusNode();
+  Timer? countdownTimer;
+  int remainingSeconds = 100; // Exemple de 100 secondes pour le décompte
+
+  @override
+  void initState() {
+    super.initState();
+    startCountdown();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(pinFocusNode);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    pinController.dispose();
+    pinFocusNode.dispose();
+    countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  void startCountdown() {
+    setState(() {
+      remainingSeconds = 100; // Réinitialiser le temps
+    });
+
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (remainingSeconds > 0) {
+        setState(() {
+          remainingSeconds--;
+        });
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  void resendCode() {
+    startCountdown();
+    // Logique pour renvoyer le code ici
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +94,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   appContext: context,
                   length: 6,
                   obscureText: false,
+                  focusNode: pinFocusNode,
                   animationType: AnimationType.fade,
                   pinTheme: PinTheme(
                     shape: PinCodeFieldShape.box,
@@ -63,30 +110,52 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   enableActiveFill: true,
                   controller: pinController,
                   onChanged: (value) {},
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'S’inscrire',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppTheme.backgroundColor,
-                    ),
+                  textStyle: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
                 ),
-                const SizedBox(height: 30),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Row(
+                      children: [
+                        const Center(
+                          child: Text(
+                            "Vous n'avez pas reçu le code ?",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextButton(
+                          onPressed: remainingSeconds > 0 ? null : resendCode,
+                          child: Text(
+                            "Renvoyer (${formatDuration(remainingSeconds)})",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        ),
+                        //
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                CustomElevatedButton(
+                  label: 'Vérifier votre email',
+                  onPressed: () {
+                    if (mounted) {
+                      FocusScope.of(context).requestFocus(pinFocusNode);
+                    }
+                  },
+                  textColor: AppTheme.backgroundColor,
+                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
-          const AuthScreenBottomCgu()
+          const AuthScreenBottomCgu(),
         ],
       ),
     );
