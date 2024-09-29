@@ -38,7 +38,7 @@ class PhIcon extends ConsumerWidget {
     return Icon(
       child,
       color: iconColor,
-      size: 26.0,
+      size: 29.0,
     );
   }
 }

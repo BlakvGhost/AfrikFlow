@@ -99,6 +99,7 @@ class BaseScreen extends ConsumerWidget {
         avatarUrl: 'https://avatars.githubusercontent.com/u/86885681?v=4',
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 28,
         currentIndex: currentIndex!,
         onTap: (index) {
           switch (index) {
