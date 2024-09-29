@@ -1,6 +1,7 @@
 import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
+import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
 import 'package:afrik_flow/widgets/auth_base_screen.dart';
 import 'package:afrik_flow/widgets/base_screen.dart';
@@ -64,6 +65,14 @@ class AppRoutes {
         path: '/email-verification',
         builder: (context, state) => AuthBaseScreen(
           child: EmailVerificationScreen(
+            email: state.extra as String,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/two-factor-verification',
+        builder: (context, state) => AuthBaseScreen(
+          child: TwoFactorScreen(
             email: state.extra as String,
           ),
         ),
