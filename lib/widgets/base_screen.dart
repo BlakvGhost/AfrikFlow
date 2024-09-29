@@ -1,3 +1,4 @@
+import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/ui/custom_drawer.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,18 @@ class BaseScreen extends ConsumerWidget {
     return Scaffold(
       appBar: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
       body: child,
-      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.push('/send');
+        },
+        backgroundColor: AppTheme.primaryColor,
+        child: const PhIcon(
+          child: PhosphorIconsDuotone.paperPlaneTilt,
+          isWhite: true,
+        ),
+      ),
       drawer: const CustomDrawer(
         name: 'Kabirou ALASSANE',
         email: 'email@example.com',
@@ -87,13 +99,16 @@ class BaseScreen extends ConsumerWidget {
               context.go('/home');
               break;
             case 1:
-              context.push('/send');
+              context.push('/transactions');
               break;
             case 2:
-              context.push('/transactions');
+              context.push('/send');
               break;
             case 3:
               context.push('/profile');
+              break;
+            case 4:
+              context.push('/settings');
               break;
           }
         },
@@ -103,14 +118,15 @@ class BaseScreen extends ConsumerWidget {
               icon: PhIcon(child: PhosphorIconsDuotone.house),
               label: 'Accueil'),
           BottomNavigationBarItem(
-              icon: PhIcon(child: PhosphorIconsDuotone.paperPlaneTilt),
-              label: 'Envoyer'),
-          BottomNavigationBarItem(
               icon: PhIcon(child: PhosphorIconsDuotone.cardholder),
               label: 'Transactions'),
+          BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
           BottomNavigationBarItem(
               icon: PhIcon(child: PhosphorIconsDuotone.userCircleGear),
               label: 'Profil'),
+          BottomNavigationBarItem(
+              icon: PhIcon(child: PhosphorIconsDuotone.gearSix),
+              label: 'Paramètres'),
         ],
       ),
     );

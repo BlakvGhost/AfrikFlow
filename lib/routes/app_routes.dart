@@ -2,6 +2,7 @@ import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
+import 'package:afrik_flow/screens/settings_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
 import 'package:afrik_flow/widgets/auth_base_screen.dart';
 import 'package:afrik_flow/widgets/base_screen.dart';
@@ -31,14 +32,14 @@ class AppRoutes {
       GoRoute(
         path: '/send',
         builder: (context, state) => const BaseScreen(
-          currentIndex: 1,
+          currentIndex: 2,
           child: SendScreen(),
         ),
       ),
       GoRoute(
         path: '/transactions',
         builder: (context, state) => const BaseScreen(
-          currentIndex: 2,
+          currentIndex: 1,
           child: TransactionsScreen(),
         ),
       ),
@@ -47,6 +48,13 @@ class AppRoutes {
         builder: (context, state) => const BaseScreen(
           currentIndex: 3,
           child: ProfileScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const BaseScreen(
+          currentIndex: 4,
+          child: SettingsScreen(),
         ),
       ),
       GoRoute(

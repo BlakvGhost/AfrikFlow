@@ -40,13 +40,17 @@ class CustomDrawer extends StatelessWidget {
             leading: const PhIcon(
                 child: PhosphorIconsDuotone.userCircleGear, isWhite: true),
             title: const Text('Profil'),
-            onTap: () {},
+            onTap: () {
+              context.push('/profile');
+            },
           ),
           ListTile(
             leading:
                 const PhIcon(child: PhosphorIconsDuotone.gear, isWhite: true),
             title: const Text('Paramètres'),
-            onTap: () {},
+            onTap: () {
+              context.push('/settings');
+            },
           ),
           ListTile(
             leading: const PhIcon(
