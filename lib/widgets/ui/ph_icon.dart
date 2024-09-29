@@ -13,7 +13,7 @@ class PhIcon extends StatelessWidget {
     return Icon(
       child,
       color: isWhite ? AppTheme.backgroundColor : AppTheme.primaryColor,
-      size: 25.0,
+      size: 26.0,
     );
   }
 }
