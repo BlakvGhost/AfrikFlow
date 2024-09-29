@@ -1,6 +1,6 @@
 import 'package:afrik_flow/widgets/card/stat_card.dart';
+import 'package:afrik_flow/widgets/carousel_with_dots.dart';
 import 'package:afrik_flow/widgets/transaction_overview_chart.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -28,29 +28,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CarouselSlider(
-            items: [
-              Image.asset(
-                'assets/onboard/onboard1.jpg',
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 200,
-              ),
-              Image.asset(
-                'assets/onboard/onboard2.jpg',
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: 200,
-              ),
-            ],
-            options: CarouselOptions(
-              height: 200,
-              viewportFraction: 1.0,
-              enableInfiniteScroll: false,
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 8),
-            ),
-          ),
+          const CarouselWithDots(),
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
