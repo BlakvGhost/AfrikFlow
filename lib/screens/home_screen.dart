@@ -1,7 +1,7 @@
 import 'package:afrik_flow/widgets/card/stat_card.dart';
+import 'package:afrik_flow/widgets/transaction_overview_chart.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,6 +9,21 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<double> transactionsPerMonth = [
+      5000,
+      7000,
+      3000,
+      10000,
+      15000,
+      4000,
+      6000,
+      8000,
+      5000,
+      12000,
+      9000,
+      7000
+    ];
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,8 +56,8 @@ class HomeScreen extends StatelessWidget {
             child: Text(
               'Récapitulatif du compte',
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -81,70 +96,26 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 10),
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
               'Aperçu des Transactions',
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: SizedBox(
-              height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: true),
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 22,
-                        getTitlesWidget: (value, meta) {
-                          switch (value.toInt()) {
-                            case 1:
-                              return const Text('Jan');
-                            case 2:
-                              return const Text('Fév');
-                            case 3:
-                              return const Text('Mar');
-                            case 4:
-                              return const Text('Avr');
-                            case 5:
-                              return const Text('Mai');
-                            case 6:
-                              return const Text('Juin');
-                            default:
-                              return const Text('');
-                          }
-                        },
-                      ),
-                    ),
-                    leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: const [
-                        FlSpot(1, 1500),
-                        FlSpot(2, 2000),
-                        FlSpot(3, 3000),
-                        FlSpot(4, 2500),
-                        FlSpot(5, 3500),
-                        FlSpot(6, 4000),
-                      ],
-                      isCurved: true,
-                      barWidth: 3,
-                      belowBarData: BarAreaData(
-                        show: true,
-                      ),
-                    ),
-                  ],
+              height: 400,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: TransactionOverviewChart(
+                  transactionsPerMonth: transactionsPerMonth,
                 ),
               ),
             ),

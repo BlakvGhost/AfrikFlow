@@ -33,9 +33,14 @@ class BaseScreen extends ConsumerWidget {
               IconButton(
                 icon: !isDarkMode
                     ? const PhIcon(
-                        child: PhosphorIconsDuotone.sun, isWhite: true)
+                        child: PhosphorIconsDuotone.sun,
+                        isWhite: true,
+                        smartColor: true,
+                      )
                     : const PhIcon(
-                        child: PhosphorIconsDuotone.moon, isWhite: true),
+                        child: PhosphorIconsDuotone.moon,
+                        isWhite: true,
+                        smartColor: true),
                 onPressed: () {
                   ref.read(themeNotifierProvider.notifier).toggleTheme();
                 },
@@ -44,7 +49,9 @@ class BaseScreen extends ConsumerWidget {
             leading: Builder(
               builder: (context) => IconButton(
                 icon: const PhIcon(
-                    child: PhosphorIconsDuotone.list, isWhite: true),
+                    child: PhosphorIconsDuotone.list,
+                    isWhite: true,
+                    smartColor: true),
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 },
@@ -83,7 +90,7 @@ class BaseScreen extends ConsumerWidget {
         backgroundColor: AppTheme.primaryColor,
         child: const PhIcon(
           child: PhosphorIconsDuotone.paperPlaneTilt,
-          isWhite: true,
+          canMode: true,
         ),
       ),
       drawer: const CustomDrawer(
