@@ -4,6 +4,7 @@ import 'package:afrik_flow/utils/format_utils.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
 
@@ -148,6 +149,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     if (mounted) {
                       FocusScope.of(context).requestFocus(pinFocusNode);
                     }
+                    context.go('/home');
                   },
                   textColor: AppTheme.backgroundColor,
                 ),
