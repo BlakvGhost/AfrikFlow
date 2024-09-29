@@ -39,8 +39,9 @@ flutter_native_splash:
 
 flutter_launcher_icons:
   android: true
-  ios: true
   image_path: "assets/images/3.png"
+  adaptive_icon_background: "assets/images/3.png"
+  adaptive_icon_foreground: "assets/images/3.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
