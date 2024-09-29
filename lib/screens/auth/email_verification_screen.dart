@@ -36,9 +36,17 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   @override
   void dispose() {
-    pinController.dispose();
-    pinFocusNode.dispose();
     countdownTimer?.cancel();
+
+    if (pinFocusNode.hasFocus) {
+      pinFocusNode.unfocus();
+    }
+
+    if (mounted) {
+      // pinController.dispose();
+    }
+    // pinFocusNode.dispose();
+
     super.dispose();
   }
 

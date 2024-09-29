@@ -36,9 +36,17 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
 
   @override
   void dispose() {
-    pinController.dispose();
-    pinFocusNode.dispose();
     countdownTimer?.cancel();
+
+    if (pinFocusNode.hasFocus) {
+      pinFocusNode.unfocus();
+    }
+
+    if (mounted) {
+      // pinController.dispose();
+    }
+    // pinFocusNode.dispose();
+
     super.dispose();
   }
 
@@ -150,8 +158,8 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
                   onPressed: () {
                     if (mounted) {
                       FocusScope.of(context).requestFocus(pinFocusNode);
+                      context.go('/home');
                     }
-                    context.go('/home');
                   },
                   textColor: AppTheme.backgroundColor,
                 ),
