@@ -1,4 +1,5 @@
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -189,27 +190,7 @@ class RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 20.0, top: 20),
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: 'En vous inscrivant vous acceptez notre '),
-                  TextSpan(
-                    text: 'politique de confidentialité',
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ),
-                  TextSpan(text: ' & '),
-                  TextSpan(
-                    text: 'Nos termes et conditions.',
-                    style: TextStyle(decoration: TextDecoration.underline),
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
+          const AuthScreenBottomCgu()
         ],
       ),
     );
