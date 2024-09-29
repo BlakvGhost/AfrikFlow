@@ -16,6 +16,7 @@ class AppRoutes {
       GoRoute(
         path: '/',
         builder: (context, state) => const AuthBaseScreen(
+          isFullScreen: true,
           child: SplashScreen(),
         ),
       ),
