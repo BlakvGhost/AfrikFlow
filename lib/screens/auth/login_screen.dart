@@ -16,6 +16,8 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
+    String email = "";
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -63,11 +65,14 @@ class LoginScreenState extends State<LoginScreen> {
                   ],
                 )),
                 const SizedBox(height: 30),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  decoration: const InputDecoration(
                     labelText: 'E-mail/ Numéro de téléphone',
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (String value) {
+                    email = value;
+                  },
                 ),
                 const SizedBox(height: 20),
                 const TextField(
@@ -89,7 +94,7 @@ class LoginScreenState extends State<LoginScreen> {
                 CustomElevatedButton(
                   label: 'Se connecter',
                   onPressed: () {
-                    context.go('/home');
+                    context.push('/two-factor-verification', extra: email);
                   },
                   textColor: AppTheme.backgroundColor,
                 ),

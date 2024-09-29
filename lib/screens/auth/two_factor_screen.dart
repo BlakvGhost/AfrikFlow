@@ -8,20 +8,20 @@ import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
 
-class EmailVerificationScreen extends StatefulWidget {
-  const EmailVerificationScreen({super.key, required this.email});
+class TwoFactorScreen extends StatefulWidget {
+  const TwoFactorScreen({super.key, required this.email});
 
   final String email;
 
   @override
-  EmailVerificationScreenState createState() => EmailVerificationScreenState();
+  TwoFactorScreenState createState() => TwoFactorScreenState();
 }
 
-class EmailVerificationScreenState extends State<EmailVerificationScreen> {
+class TwoFactorScreenState extends State<TwoFactorScreen> {
   TextEditingController pinController = TextEditingController();
   FocusNode pinFocusNode = FocusNode();
   Timer? countdownTimer;
-  int remainingSeconds = emailVerificationRemainingSeconds;
+  int remainingSeconds = twoFactorEmailVerificationRemainingSeconds;
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   void startCountdown() {
     setState(() {
-      remainingSeconds = emailVerificationRemainingSeconds;
+      remainingSeconds = twoFactorEmailVerificationRemainingSeconds;
     });
 
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -67,6 +67,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: ListView(
@@ -74,7 +75,8 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
               children: [
                 const Center(
                   child: Text(
-                    'Vérification de l’email',
+                    'Authentification à double facteurs',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -144,7 +146,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 ),
                 const SizedBox(height: 10),
                 CustomElevatedButton(
-                  label: 'Vérifier votre email',
+                  label: 'Confirmer',
                   onPressed: () {
                     if (mounted) {
                       FocusScope.of(context).requestFocus(pinFocusNode);
