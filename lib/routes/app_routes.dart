@@ -40,8 +40,9 @@ class AppRoutes {
       ),
       GoRoute(
         path: '/transactions',
-        builder: (context, state) => const BaseScreen(
+        builder: (context, state) => BaseScreen(
           currentIndex: 1,
+          showAppBar: false,
           child: TransactionsScreen(),
         ),
       ),
