@@ -144,6 +144,7 @@ class LoginScreenState extends State<LoginScreen> {
                   label: isLoading ? 'Connexion en cours...' : 'Se connecter',
                   onPressed: isLoading ? null : _login,
                   textColor: AppTheme.backgroundColor,
+                  isLoading: isLoading,
                 ),
                 const SizedBox(height: 20),
                 const Row(

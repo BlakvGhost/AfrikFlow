@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 class CustomElevatedButton extends StatefulWidget {
   final String label;
-  final Function()? onPressed;
+  final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? hoverColor;
   final Color? focusColor;
   final Color? activeColor;
   final Color? textColor;
+  final bool isLoading;
 
   const CustomElevatedButton({
     super.key,
@@ -19,6 +20,7 @@ class CustomElevatedButton extends StatefulWidget {
     this.focusColor,
     this.activeColor,
     this.textColor,
+    this.isLoading = false,
   });
 
   @override
@@ -41,7 +43,7 @@ class CustomElevatedButtonState extends State<CustomElevatedButton> {
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
         child: ElevatedButton(
-          onPressed: widget.onPressed,
+          onPressed: widget.isLoading ? null : widget.onPressed,
           style: ElevatedButton.styleFrom(
             backgroundColor: _isHovered
                 ? (widget.hoverColor ?? AppTheme.secondaryColor)
@@ -55,13 +57,17 @@ class CustomElevatedButtonState extends State<CustomElevatedButton> {
             ),
             elevation: _isHovered ? 6 : 2,
           ),
-          child: Text(
-            widget.label,
-            style: TextStyle(
-              color: widget.textColor ?? Colors.white,
-              fontSize: 16,
-            ),
-          ),
+          child: widget.isLoading
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+              : Text(
+                  widget.label,
+                  style: TextStyle(
+                    color: widget.textColor ?? Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
         ),
       ),
     );
