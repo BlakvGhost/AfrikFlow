@@ -51,23 +51,32 @@ class CustomElevatedButtonState extends State<CustomElevatedButton> {
                     ? (widget.focusColor ??
                         AppTheme.primaryColor.withOpacity(0.8))
                     : (widget.backgroundColor ?? AppTheme.primaryColor)),
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             elevation: _isHovered ? 6 : 2,
           ),
-          child: widget.isLoading
-              ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                )
-              : Text(
-                  widget.label,
-                  style: TextStyle(
-                    color: widget.textColor ?? Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
+          child: SizedBox(
+            height: 50,
+            child: Center(
+              child: widget.isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      widget.label,
+                      style: TextStyle(
+                        color: widget.textColor ?? Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );

@@ -18,6 +18,7 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
+  bool _isObscure = true;
   final AuthService _authService = AuthService();
 
   void _showToast(String message) {
@@ -125,11 +126,22 @@ class LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: _isObscure,
+                  decoration: InputDecoration(
                     labelText: 'Mot de passe',
-                    border: OutlineInputBorder(),
-                    suffixIcon: PhIcon(child: PhosphorIconsDuotone.eye),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isObscure
+                            ? PhosphorIconsDuotone.eye
+                            : PhosphorIconsDuotone.eyeSlash,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isObscure = !_isObscure;
+                        });
+                      },
+                    ),
                   ),
                 ),
                 Align(
