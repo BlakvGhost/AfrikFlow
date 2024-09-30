@@ -19,6 +19,7 @@ dependencies:
   pin_code_fields: ^8.0.1
   fl_chart: ^0.69.0
   google_fonts: ^6.2.1
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

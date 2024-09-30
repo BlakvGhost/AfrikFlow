@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/format_utils.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:go_router/go_router.dart';
@@ -9,9 +11,12 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
 
 class TwoFactorScreen extends StatefulWidget {
-  const TwoFactorScreen({super.key, required this.email});
+  const TwoFactorScreen(
+      {super.key, required this.email, required this.password});
 
   final String email;
+
+  final String password;
 
   @override
   TwoFactorScreenState createState() => TwoFactorScreenState();
@@ -22,6 +27,35 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
   FocusNode pinFocusNode = FocusNode();
   Timer? countdownTimer;
   int remainingSeconds = twoFactorEmailVerificationRemainingSeconds;
+  bool isLoading = false;
+
+  final AuthService _authService = AuthService();
+
+  Future<void> _handleAPI() async {
+    if (pinController.text.isEmpty || pinController.text.length < 6) {
+      showToast(context, "Veuillez bien saisir le code");
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final result = await _authService.login(
+        widget.email, widget.password, pinController.text);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (result['success']) {
+      context.go(
+        '/home',
+      );
+    } else {
+      showToast(context, result['message']);
+    }
+  }
 
   @override
   void initState() {
@@ -41,12 +75,6 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
     if (pinFocusNode.hasFocus) {
       pinFocusNode.unfocus();
     }
-
-    if (mounted) {
-      // pinController.dispose();
-    }
-    // pinFocusNode.dispose();
-
     super.dispose();
   }
 
@@ -66,7 +94,8 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
     });
   }
 
-  void resendCode() {
+  Future<void> resendCode() async {
+    await _authService.login(widget.email, widget.password, null);
     startCountdown();
   }
 
@@ -151,13 +180,9 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
                 const SizedBox(height: 10),
                 CustomElevatedButton(
                   label: 'Confirmer',
-                  onPressed: () {
-                    if (mounted) {
-                      FocusScope.of(context).requestFocus(pinFocusNode);
-                      context.go('/home');
-                    }
-                  },
+                  onPressed: _handleAPI,
                   textColor: AppTheme.backgroundColor,
+                  isLoading: isLoading,
                 ),
                 const SizedBox(height: 20),
               ],

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 class CustomElevatedButton extends StatefulWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color? backgroundColor;
   final Color? hoverColor;
   final Color? focusColor;
   final Color? activeColor;
   final Color? textColor;
+  final bool isLoading;
 
   const CustomElevatedButton({
     super.key,
@@ -19,6 +20,7 @@ class CustomElevatedButton extends StatefulWidget {
     this.focusColor,
     this.activeColor,
     this.textColor,
+    this.isLoading = false,
   });
 
   @override
@@ -41,7 +43,7 @@ class CustomElevatedButtonState extends State<CustomElevatedButton> {
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
         child: ElevatedButton(
-          onPressed: widget.onPressed,
+          onPressed: widget.isLoading ? null : widget.onPressed,
           style: ElevatedButton.styleFrom(
             backgroundColor: _isHovered
                 ? (widget.hoverColor ?? AppTheme.secondaryColor)
@@ -49,17 +51,30 @@ class CustomElevatedButtonState extends State<CustomElevatedButton> {
                     ? (widget.focusColor ??
                         AppTheme.primaryColor.withOpacity(0.8))
                     : (widget.backgroundColor ?? AppTheme.primaryColor)),
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             elevation: _isHovered ? 6 : 2,
           ),
-          child: Text(
-            widget.label,
-            style: TextStyle(
-              color: widget.textColor ?? Colors.white,
-              fontSize: 16,
+          child: SizedBox(
+            height: 50,
+            child: Center(
+              child: widget.isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      widget.label,
+                      style: TextStyle(
+                        color: widget.textColor ?? Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
             ),
           ),
         ),

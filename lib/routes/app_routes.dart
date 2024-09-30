@@ -82,11 +82,18 @@ class AppRoutes {
       ),
       GoRoute(
         path: '/two-factor-verification',
-        builder: (context, state) => AuthBaseScreen(
-          child: TwoFactorScreen(
-            email: state.extra as String,
-          ),
-        ),
+        builder: (context, state) {
+          final extraData = state.extra as Map<String, dynamic>;
+          final email = extraData['email'] as String;
+          final password = extraData['password'] as String;
+
+          return AuthBaseScreen(
+            child: TwoFactorScreen(
+              email: email,
+              password: password,
+            ),
+          );
+        },
       ),
     ],
   );
