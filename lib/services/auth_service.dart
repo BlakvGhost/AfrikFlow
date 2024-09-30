@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final url = Uri.parse('$apiBaseUrl/login');
+    final url = Uri.parse('$apiBaseUrl/auth/login');
 
     final response = await http.post(
       url,
