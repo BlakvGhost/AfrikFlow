@@ -41,7 +41,10 @@ class LoginScreenState extends State<LoginScreen> {
 
     if (result['success']) {
       // ignore: use_build_context_synchronously
-      context.push('/two-factor-verification', extra: _emailController.text);
+      context.push('/two-factor-verification', extra: {
+        'email': _emailController.text,
+        'password': _passwordController.text
+      });
     } else {
       // ignore: use_build_context_synchronously
       showToast(context, result['message']);

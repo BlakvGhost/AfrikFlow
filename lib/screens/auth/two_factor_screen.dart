@@ -11,9 +11,12 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
 
 class TwoFactorScreen extends StatefulWidget {
-  const TwoFactorScreen({super.key, required this.email});
+  const TwoFactorScreen(
+      {super.key, required this.email, required this.password});
 
   final String email;
+
+  final String password;
 
   @override
   TwoFactorScreenState createState() => TwoFactorScreenState();
@@ -38,8 +41,8 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
       isLoading = true;
     });
 
-    final result =
-        await _authService.login(widget.email, "passme", pinController.text);
+    final result = await _authService.login(
+        widget.email, widget.password, pinController.text);
 
     setState(() {
       isLoading = false;
