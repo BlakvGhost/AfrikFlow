@@ -15,50 +15,52 @@ class BaseScreen extends ConsumerWidget {
   final int? currentIndex;
   final Function(int)? onTabTapped;
 
-  AppBar getHomePageAppBar(double width, BuildContext context, WidgetRef ref,
+  AppBar? getHomePageAppBar(double width, BuildContext context, WidgetRef ref,
       bool showAppBar, String? title) {
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
-    return AppBar(
-      title: showAppBar
-          ? Image.asset(
-              'assets/images/logo.png',
-              height: 80,
-              width: width * 0.4,
-            )
-          : Text(title ?? 'AfrikFlow'),
-      centerTitle: true,
-      elevation: 18,
-      actions: [
-        IconButton(
-          icon: !isDarkMode
-              ? const PhIcon(
-                  child: PhosphorIconsDuotone.sun,
-                  isWhite: true,
-                  smartColor: true,
-                )
-              : const PhIcon(
-                  child: PhosphorIconsDuotone.moon,
-                  isWhite: true,
-                  smartColor: true),
-          onPressed: () {
-            ref.read(themeNotifierProvider.notifier).toggleTheme();
-          },
-        ),
-      ],
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: const PhIcon(
-              child: PhosphorIconsDuotone.list,
-              isWhite: true,
-              smartColor: true),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-      ),
-    );
+    return showAppBar
+        ? AppBar(
+            title: showAppBar
+                ? Image.asset(
+                    'assets/images/logo.png',
+                    height: 80,
+                    width: width * 0.4,
+                  )
+                : Text(title ?? 'AfrikFlow'),
+            centerTitle: true,
+            elevation: 18,
+            actions: [
+              IconButton(
+                icon: !isDarkMode
+                    ? const PhIcon(
+                        child: PhosphorIconsDuotone.sun,
+                        isWhite: true,
+                        smartColor: true,
+                      )
+                    : const PhIcon(
+                        child: PhosphorIconsDuotone.moon,
+                        isWhite: true,
+                        smartColor: true),
+                onPressed: () {
+                  ref.read(themeNotifierProvider.notifier).toggleTheme();
+                },
+              ),
+            ],
+            leading: Builder(
+              builder: (context) => IconButton(
+                icon: const PhIcon(
+                    child: PhosphorIconsDuotone.list,
+                    isWhite: true,
+                    smartColor: true),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
+            ),
+          )
+        : null;
   }
 
   const BaseScreen({
