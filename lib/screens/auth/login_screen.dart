@@ -1,3 +1,4 @@
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
@@ -21,21 +22,9 @@ class LoginScreenState extends State<LoginScreen> {
   bool _isObscure = true;
   final AuthService _authService = AuthService();
 
-  void _showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(color: AppTheme.whiteColor),
-        ),
-        backgroundColor: const Color.fromARGB(255, 114, 29, 22),
-      ),
-    );
-  }
-
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showToast("Veuillez remplir tous les champs.");
+      showToast(context, "Veuillez remplir tous les champs.");
       return;
     }
 
@@ -44,18 +33,18 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     final result = await _authService.login(
-      _emailController.text,
-      _passwordController.text,
-    );
+        _emailController.text, _passwordController.text, null);
 
     setState(() {
       isLoading = false;
     });
 
     if (result['success']) {
+      // ignore: use_build_context_synchronously
       context.push('/two-factor-verification', extra: _emailController.text);
     } else {
-      _showToast(result['message']);
+      // ignore: use_build_context_synchronously
+      showToast(context, result['message']);
     }
   }
 
