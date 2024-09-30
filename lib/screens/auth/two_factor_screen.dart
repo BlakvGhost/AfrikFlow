@@ -94,7 +94,8 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
     });
   }
 
-  void resendCode() {
+  Future<void> resendCode() async {
+    await _authService.login(widget.email, widget.password, null);
     startCountdown();
   }
 
