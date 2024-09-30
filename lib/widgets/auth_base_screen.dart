@@ -32,7 +32,7 @@ class AuthBaseScreen extends ConsumerWidget {
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );

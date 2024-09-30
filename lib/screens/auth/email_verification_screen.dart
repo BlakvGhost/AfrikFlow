@@ -73,12 +73,12 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(13.0),
       child: Column(
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 120),
+              padding: const EdgeInsets.only(top: 80),
               children: [
                 const Center(
                   child: Text(
@@ -124,31 +124,27 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     fontSize: 20,
                   ),
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Row(
-                      children: [
-                        const Center(
-                          child: Text(
-                            "Vous n'avez pas reçu le code ?",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextButton(
-                          onPressed: remainingSeconds > 0 ? null : resendCode,
-                          child: Text(
-                            "Renvoyer (${formatDuration(remainingSeconds)})",
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: AppTheme.primaryColor,
-                            ),
-                          ),
-                        ),
-                        //
-                      ],
+                Row(
+                  children: [
+                    const Center(
+                      child: Text(
+                        "Vous n'avez pas reçu le code ?",
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: remainingSeconds > 0 ? null : resendCode,
+                      child: Text(
+                        "Renvoyer (${formatDuration(remainingSeconds)})",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.primaryColor,
+                        ),
+                      ),
+                    ),
+                    //
+                  ],
                 ),
                 const SizedBox(height: 10),
                 CustomElevatedButton(
