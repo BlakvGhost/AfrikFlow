@@ -69,14 +69,20 @@ class SendScreenState extends State<SendScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSection("De :"),
             const SizedBox(height: 16),
             _buildCountryOperatorDropdown(),
             const SizedBox(height: 16),
             _buildPhoneNumberField('90 90 25 25'),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
+            _buildAmountField(),
+            const SizedBox(height: 16),
+            _buildAgreeSupportFees(),
+            const SizedBox(height: 16),
             _buildSection("Vers :"),
+            const SizedBox(height: 16),
+            _buildCountryOperatorDropdown(),
             const SizedBox(height: 16),
             _buildAmountField(),
             const SizedBox(height: 16),
@@ -115,84 +121,47 @@ class SendScreenState extends State<SendScreen>
   Widget _buildCountryOperatorDropdown() {
     return Row(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.yellow[700],
-          ),
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.account_balance_wallet,
-              color: Colors.white,
-              size: 40,
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DropdownButtonFormField<String>(
-                value: selectedCountry,
-                hint: const Text('Choisir un pays'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCountry = value;
-                    operators = List<String>.from(
-                        countriesAndOperators[value]!['operators']);
-                    selectedOperator = null;
-                  });
-                },
-                items: countriesAndOperators.keys
-                    .map((country) => DropdownMenuItem(
-                          value: country,
-                          child: Row(
-                            children: [
-                              Image.network(
-                                "https://flagsapi.com/${countriesAndOperators[country]!['code']}/flat/64.png",
-                                width: 24,
-                                height: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(country),
-                            ],
-                          ),
-                        ))
-                    .toList(),
-                decoration: InputDecoration(
-                  labelText: 'Pays',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+          child: DropdownButtonFormField<String>(
+            value: selectedCountry != null && selectedOperator != null
+                ? '$selectedCountry - $selectedOperator'
+                : null,
+            hint: const Text('Choisir un pays et un opérateur'),
+            onChanged: (value) {
+              if (value != null) {
+                final parts = value.split(' - ');
+                setState(() {
+                  selectedCountry = parts[0];
+                  selectedOperator = parts[1];
+                });
+              }
+            },
+            items: countriesAndOperators.keys.expand((country) {
+              final operators =
+                  countriesAndOperators[country]!['operators'] as List<String>;
+              return operators.map((operator) {
+                return DropdownMenuItem<String>(
+                  value: '$country - $operator',
+                  child: Row(
+                    children: [
+                      Image.network(
+                        "https://flagsapi.com/${countriesAndOperators[country]!['code']}/flat/64.png",
+                        width: 24,
+                        height: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text('$country - $operator'),
+                    ],
                   ),
-                ),
+                );
+              });
+            }).toList(),
+            decoration: InputDecoration(
+              labelText: 'Pays et opérateur',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedOperator,
-                hint: const Text('Choisir un opérateur'),
-                onChanged: selectedCountry != null
-                    ? (value) {
-                        setState(() {
-                          selectedOperator = value;
-                        });
-                      }
-                    : null,
-                items: operators
-                    .map((operator) => DropdownMenuItem(
-                          value: operator,
-                          child: Text(operator),
-                        ))
-                    .toList(),
-                decoration: InputDecoration(
-                  labelText: 'Opérateur',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ],
@@ -220,6 +189,34 @@ class SendScreenState extends State<SendScreen>
           borderRadius: BorderRadius.circular(8),
         ),
       ),
+    );
+  }
+
+  Widget _buildAgreeSupportFees() {
+    bool supportFees = false;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          "Je supporte les frais d'envoi",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primaryColor,
+          ),
+        ),
+        Switch(
+          value: supportFees,
+          onChanged: (bool value) {
+            setState(() {
+              supportFees = value;
+            });
+          },
+          activeColor: AppTheme.primaryColor,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ],
     );
   }
 
