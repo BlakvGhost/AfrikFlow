@@ -12,7 +12,10 @@ class SendScreenState extends State<SendScreen>
     with SingleTickerProviderStateMixin {
   String? selectedCountry;
   String? selectedOperator;
+  String? selectedCardType;
   List<String> operators = [];
+
+  bool supportFees = false;
 
   final Map<String, Map<String, dynamic>> countriesAndOperators = {
     'Bénin': {
@@ -88,8 +91,6 @@ class SendScreenState extends State<SendScreen>
             const SizedBox(height: 16),
             _buildPhoneNumberField('96 96 96 96'),
             const SizedBox(height: 32),
-            _buildFeesAndTotal(),
-            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -97,11 +98,111 @@ class SendScreenState extends State<SendScreen>
   }
 
   Widget _buildCreditCardTransfer() {
-    return const Center(
-      child: Text(
-        'Formulaire de transfert par carte de crédit',
-        style: TextStyle(fontSize: 16, color: AppTheme.whiteColor),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            _buildReasonDropdown(),
+            const SizedBox(height: 16),
+            _buildAmountField(),
+            const SizedBox(height: 16),
+            _buildCardTypeSelection(),
+            const SizedBox(height: 16),
+            _buildAgreeSupportFees(),
+            const SizedBox(height: 24),
+            _buildSection("Vers :"),
+            const SizedBox(height: 16),
+            _buildCountryOperatorDropdown(),
+            const SizedBox(height: 16),
+            _buildPhoneNumberField('96 96 96 96'),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildReasonDropdown() {
+    List<String> reasons = [
+      "Aide familiale",
+      "Paiement de facture",
+      "Cadeau",
+      "Autre",
+    ];
+
+    String? selectedReason;
+
+    return DropdownButtonFormField<String>(
+      value: selectedReason,
+      hint: const Text('Sélectionnez une raison'),
+      decoration: InputDecoration(
+        labelText: 'Raison d\'envoi',
+        labelStyle: const TextStyle(color: AppTheme.primaryColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          selectedReason = value;
+        });
+      },
+      items: reasons.map((reason) {
+        return DropdownMenuItem<String>(
+          value: reason,
+          child: Text(reason),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCardTypeSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Type de carte',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primaryColor,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Flexible(
+              child: RadioListTile<String>(
+                title: const Text("Visa"),
+                value: 'Visa',
+                groupValue: selectedCardType,
+                onChanged: (value) {
+                  setState(() {
+                    selectedCardType = value;
+                  });
+                },
+                activeColor: AppTheme.primaryColor,
+              ),
+            ),
+            Flexible(
+              child: RadioListTile<String>(
+                title: const Text("Mastercard"),
+                value: 'Mastercard',
+                groupValue: selectedCardType,
+                onChanged: (value) {
+                  setState(() {
+                    selectedCardType = value;
+                  });
+                },
+                activeColor: AppTheme.primaryColor,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -170,6 +271,7 @@ class SendScreenState extends State<SendScreen>
 
   Widget _buildAmountField() {
     return TextFormField(
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: 'Montant',
         border: OutlineInputBorder(
@@ -193,8 +295,6 @@ class SendScreenState extends State<SendScreen>
   }
 
   Widget _buildAgreeSupportFees() {
-    bool supportFees = false;
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -216,56 +316,6 @@ class SendScreenState extends State<SendScreen>
           activeColor: AppTheme.primaryColor,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
-      ],
-    );
-  }
-
-  Widget _buildFeesAndTotal() {
-    return const Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'FRAIS A PRELEVER',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primaryColor,
-              ),
-            ),
-            Text(
-              '1 000 FCFA',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primaryColor,
-              ),
-            ),
-          ],
-        ),
-        // SizedBox(height: 8),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Text(
-        //       'MONTANT TOTAL',
-        //       style: TextStyle(
-        //         fontSize: 16,
-        //         fontWeight: FontWeight.bold,
-        //         color: Colors.black,
-        //       ),
-        //     ),
-        //     Text(
-        //       '10 000 000 FCFA',
-        //       style: TextStyle(
-        //         fontSize: 16,
-        //         fontWeight: FontWeight.bold,
-        //         color: Colors.teal,
-        //       ),
-        //     ),
-        //   ],
-        // ),
       ],
     );
   }
