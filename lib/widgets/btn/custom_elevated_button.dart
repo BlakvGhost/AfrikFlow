@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomElevatedButton extends StatefulWidget {
   final String label;
-  final VoidCallback onPressed;
+  final Function()? onPressed;
   final Color? backgroundColor;
   final Color? hoverColor;
   final Color? focusColor;
