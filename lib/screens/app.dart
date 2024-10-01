@@ -1,7 +1,6 @@
 import 'package:afrik_flow/routes/app_routes.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:afrik_flow/providers/theme_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyApp extends ConsumerWidget {
@@ -9,13 +8,13 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeNotifierProvider);
+    // final themeMode = ref.watch(themeNotifierProvider);
 
     return MaterialApp.router(
       title: 'AfrikFlow',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
+      themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
       routerConfig: AppRoutes.router,
     );

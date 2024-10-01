@@ -44,11 +44,12 @@ class SendScreenState extends State<SendScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.primaryColor,
-        title: const Text('Envoyer de l\'argent'),
+        elevation: 18,
+        toolbarHeight: 2,
+        automaticallyImplyLeading: false,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color.fromARGB(255, 8, 50, 128),
+          labelColor: AppTheme.primaryColor,
           tabs: const [
             Tab(text: 'Transfert local'),
             Tab(text: 'Transfert par carte de crédit'),

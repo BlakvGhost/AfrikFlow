@@ -2,6 +2,7 @@ import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
+import 'package:afrik_flow/screens/notifications_screen.dart';
 import 'package:afrik_flow/screens/settings_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
 import 'package:afrik_flow/widgets/auth_base_screen.dart';
@@ -30,6 +31,12 @@ class AppRoutes {
         ),
       ),
       GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const BaseScreen(
+          child: NotificationsScreen(),
+        ),
+      ),
+      GoRoute(
         path: '/send',
         builder: (context, state) => const BaseScreen(
           currentIndex: 2,
@@ -43,6 +50,7 @@ class AppRoutes {
         builder: (context, state) => BaseScreen(
           currentIndex: 1,
           showAppBar: false,
+          title: "Historiques",
           child: TransactionsScreen(),
         ),
       ),
@@ -50,6 +58,8 @@ class AppRoutes {
         path: '/profile',
         builder: (context, state) => const BaseScreen(
           currentIndex: 3,
+          showAppBar: false,
+          title: "Mon Profile",
           child: ProfileScreen(),
         ),
       ),
@@ -57,6 +67,8 @@ class AppRoutes {
         path: '/settings',
         builder: (context, state) => const BaseScreen(
           currentIndex: 4,
+          showAppBar: false,
+          title: "Reglage",
           child: SettingsScreen(),
         ),
       ),

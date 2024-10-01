@@ -1,9 +1,7 @@
 import 'package:afrik_flow/themes/app_theme.dart';
-import 'package:afrik_flow/widgets/ui/custom_drawer.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:afrik_flow/providers/theme_notifier.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -17,50 +15,40 @@ class BaseScreen extends ConsumerWidget {
 
   AppBar? getHomePageAppBar(double width, BuildContext context, WidgetRef ref,
       bool showAppBar, String? title) {
-    final themeMode = ref.watch(themeNotifierProvider);
-    final isDarkMode = themeMode == ThemeMode.dark;
-
-    return showAppBar
-        ? AppBar(
-            title: showAppBar
-                ? Image.asset(
-                    'assets/images/logo.png',
-                    height: 80,
-                    width: width * 0.4,
-                  )
-                : Text(title ?? 'AfrikFlow'),
-            centerTitle: true,
-            elevation: 18,
-            actions: [
-              IconButton(
-                icon: !isDarkMode
-                    ? const PhIcon(
-                        child: PhosphorIconsDuotone.sun,
-                        isWhite: true,
-                        smartColor: true,
-                      )
-                    : const PhIcon(
-                        child: PhosphorIconsDuotone.moon,
-                        isWhite: true,
-                        smartColor: true),
-                onPressed: () {
-                  ref.read(themeNotifierProvider.notifier).toggleTheme();
-                },
-              ),
-            ],
-            leading: Builder(
-              builder: (context) => IconButton(
-                icon: const PhIcon(
-                    child: PhosphorIconsDuotone.list,
-                    isWhite: true,
-                    smartColor: true),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-            ),
-          )
-        : null;
+    return AppBar(
+      automaticallyImplyLeading: showAppBar,
+      title: showAppBar
+          ? Image.asset(
+              'assets/images/logo.png',
+              height: 80,
+              width: width * 0.4,
+            )
+          : Text(title ?? 'AfrikFlow'),
+      elevation: 18,
+      actions: [
+        IconButton(
+          icon: const PhIcon(
+            child: PhosphorIconsDuotone.bell,
+            isWhite: true,
+            smartColor: true,
+          ),
+          onPressed: () {
+            context.push('/notifications');
+          },
+        ),
+        IconButton(
+          icon: const CircleAvatar(
+            radius: 18,
+            backgroundImage: NetworkImage(
+                "https://avatars.githubusercontent.com/u/86885681?v=4"),
+          ),
+          onPressed: () {
+            context.push('/profile');
+            // ref.read(themeNotifierProvider.notifier).toggleTheme();
+          },
+        ),
+      ],
+    );
   }
 
   const BaseScreen({
@@ -91,11 +79,6 @@ class BaseScreen extends ConsumerWidget {
           child: PhosphorIconsDuotone.paperPlaneTilt,
           canMode: true,
         ),
-      ),
-      drawer: const CustomDrawer(
-        name: 'Kabirou ALASSANE',
-        email: 'email@example.com',
-        avatarUrl: 'https://avatars.githubusercontent.com/u/86885681?v=4',
       ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 28,

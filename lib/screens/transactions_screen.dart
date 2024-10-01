@@ -1,4 +1,3 @@
-import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -43,10 +42,6 @@ class TransactionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme.primaryColor,
-        title: const Text('Historiques'),
-      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(16.0),
         itemCount: transactions.length,
