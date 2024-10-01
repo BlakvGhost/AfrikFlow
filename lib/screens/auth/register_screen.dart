@@ -1,3 +1,4 @@
+import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
@@ -15,6 +16,8 @@ class RegisterScreen extends StatefulWidget {
 
 class RegisterScreenState extends State<RegisterScreen> {
   String? selectedCountry;
+  late Future<List<dynamic>> _countriesFuture;
+  final ApiService _apiService = ApiService();
 
   final List<Map<String, String>> countries = [
     {'code': '+224', 'name': 'Mali', 'flag': '🇲🇱'},

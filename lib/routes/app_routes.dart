@@ -33,6 +33,8 @@ class AppRoutes {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const BaseScreen(
+          showAppBar: false,
+          title: "Notifications",
           child: NotificationsScreen(),
         ),
       ),
