@@ -13,10 +13,10 @@ class Country {
 
   factory Country.fromJson(Map<String, dynamic> json) {
     return Country(
-      code: json['code'],
-      slug: json['slug'],
-      countryCode: json['country_code'],
-      id: json['id'],
+      code: json['code'] as String,
+      id: json['id'].toString(),
+      slug: json['slug'] as String,
+      countryCode: json['country_code'] as String,
     );
   }
 
@@ -24,12 +24,29 @@ class Country {
     return {
       'code': code,
       'slug': slug,
-      'countryCode': countryCode,
+      'country_code': countryCode,
       'id': id,
     };
   }
 }
 
 class CountriesResponse {
-  
+  final List<Country> countries;
+  final Country currentCountry;
+
+  CountriesResponse({
+    required this.countries,
+    required this.currentCountry,
+  });
+
+  factory CountriesResponse.fromJson(Map<String, dynamic> json) {
+    var countriesList = (json['countries'] as List)
+        .map((countryJson) => Country.fromJson(countryJson))
+        .toList();
+
+    return CountriesResponse(
+      countries: countriesList,
+      currentCountry: Country.fromJson(json['currentCountry']),
+    );
+  }
 }

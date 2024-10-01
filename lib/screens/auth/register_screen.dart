@@ -19,8 +19,8 @@ class RegisterScreen extends StatefulWidget {
 
 class RegisterScreenState extends State<RegisterScreen> {
   String? selectedCountry;
-  late Future<List<Country>> _countriesFuture;
-  bool isLoading = false;
+  CountriesResponse? countries;
+  bool isLoading = true;
 
   final ApiService _apiService = ApiService();
   final TextEditingController _emailController = TextEditingController();
@@ -31,16 +31,25 @@ class RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
 
-  final List<Map<String, String>> countries = [
-    {'code': '+224', 'name': 'Mali', 'flag': '🇲🇱'},
-    {'code': '+225', 'name': 'Côte d’Ivoire', 'flag': '🇨🇮'},
-    {'code': '+231', 'name': 'Sénégal', 'flag': '🇸🇳'},
-  ];
-
   @override
   void initState() {
     super.initState();
-    _countriesFuture = _apiService.fetchCountries();
+    _loadCountries();
+  }
+
+  Future<void> _loadCountries() async {
+    try {
+      CountriesResponse fetchedCountries = await _apiService.fetchCountries();
+      setState(() {
+        countries = fetchedCountries;
+        isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      showToast(context, "Erreur lors du chargement des pays ");
+    }
   }
 
   Future<void> _register() async {
@@ -76,6 +85,10 @@ class RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -96,32 +109,33 @@ class RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 10),
                 Center(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Déjà inscrit?',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppTheme.whiteColor,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () {
-                        context.push('/login');
-                      },
-                      child: const Text(
-                        'Connectez-vous',
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Déjà inscrit?',
                         style: TextStyle(
                           fontSize: 14,
                           color: AppTheme.whiteColor,
-                          decoration: TextDecoration.underline,
                         ),
                       ),
-                    ),
-                  ],
-                )),
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () {
+                          context.push('/login');
+                        },
+                        child: const Text(
+                          'Connectez-vous',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.whiteColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 30),
                 DropdownButtonFormField<String>(
                   value: selectedCountry,
@@ -129,18 +143,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                     labelText: 'Sélectionnez le pays',
                     border: OutlineInputBorder(),
                   ),
-                  items: countries.map((country) {
-                    return DropdownMenuItem<String>(
-                      value: country['code'],
-                      child: Row(
-                        children: [
-                          Text(country['flag']!),
-                          const SizedBox(width: 8),
-                          Text('${country['name']} (${country['code']})'),
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                  items: countries?.countries.map((country) {
+                        return DropdownMenuItem<String>(
+                          value: country.id,
+                          child: Row(
+                            children: [
+                              Text(country.code),
+                              const SizedBox(width: 8),
+                              Text('${country.slug} (${country.code})'),
+                            ],
+                          ),
+                        );
+                      }).toList() ??
+                      [],
                   onChanged: (value) {
                     setState(() {
                       selectedCountry = value;
@@ -219,7 +234,7 @@ class RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
           ),
-          const AuthScreenBottomCgu()
+          const AuthScreenBottomCgu(),
         ],
       ),
     );

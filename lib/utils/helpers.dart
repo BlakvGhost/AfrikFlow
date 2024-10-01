@@ -8,7 +8,12 @@ void showToast(BuildContext context, String message) {
     SnackBar(
       content: Row(
         children: [
-          const PhIcon(child: PhosphorIconsDuotone.info),
+          const PhIcon(
+            child: PhosphorIconsDuotone.info,
+            isWhite: true,
+            smartColor: true,
+          ),
+          const SizedBox(width: 8),
           Text(
             message,
             style: const TextStyle(color: AppTheme.whiteColor),

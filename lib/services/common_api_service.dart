@@ -4,13 +4,20 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
-  Future<List<Country>> fetchCountries() async {
+  Future<CountriesResponse> fetchCountries() async {
     final url = Uri.parse('$apiBaseUrl/countries');
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
 
     if (response.statusCode == 200) {
-      List<dynamic> jsonList = jsonDecode(response.body)['data'];
-      return jsonList.map((json) => Country.fromJson(json)).toList();
+
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      final countriesData = jsonResponse['data'];
+
+      return CountriesResponse.fromJson(countriesData);
     } else {
       throw Exception('Failed to load countries');
     }
