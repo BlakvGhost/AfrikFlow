@@ -90,4 +90,48 @@ class AuthService {
       return {'success': false, 'message': errorMessage};
     }
   }
+
+  Future<Map<String, dynamic>> verifyEmail(String email, String otpCode) async {
+    final url = Uri.parse('$apiBaseUrl/auth/verify-email');
+
+    final registerData = {
+      'email': email,
+      'token': otpCode,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(registerData),
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> resendEmailCode(String email) async {
+    final url = Uri.parse('$apiBaseUrl/auth/resend-email-token');
+
+    final registerData = {
+      'email': email,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(registerData),
+    );
+
+    print(jsonDecode(response.body));
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
 }

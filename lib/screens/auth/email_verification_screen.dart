@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/format_utils.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +24,35 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
   FocusNode pinFocusNode = FocusNode();
   Timer? countdownTimer;
   int remainingSeconds = emailVerificationRemainingSeconds;
+  bool isLoading = false;
+
+  final AuthService _authService = AuthService();
+
+  Future<void> _handleAPI() async {
+    if (pinController.text.isEmpty || pinController.text.length < 6) {
+      showToast(context, "Veuillez bien saisir le code");
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    final result =
+        await _authService.verifyEmail(widget.email, pinController.text);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (result['success']) {
+      context.go(
+        '/home',
+      );
+    } else {
+      showToast(context, result['message']);
+    }
+  }
 
   @override
   void initState() {
@@ -41,12 +72,6 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
     if (pinFocusNode.hasFocus) {
       pinFocusNode.unfocus();
     }
-
-    if (mounted) {
-      // pinController.dispose();
-    }
-    // pinFocusNode.dispose();
-
     super.dispose();
   }
 
@@ -66,7 +91,8 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
   }
 
-  void resendCode() {
+  Future<void> resendCode() async {
+    await _authService.resendEmailCode(widget.email);
     startCountdown();
   }
 
@@ -75,6 +101,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
     return Padding(
       padding: const EdgeInsets.all(13.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: ListView(
@@ -83,6 +110,7 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 const Center(
                   child: Text(
                     'Vérification de l’email',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -148,14 +176,10 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 ),
                 const SizedBox(height: 10),
                 CustomElevatedButton(
-                  label: 'Vérifier votre email',
-                  onPressed: () {
-                    if (mounted) {
-                      FocusScope.of(context).requestFocus(pinFocusNode);
-                    }
-                    context.go('/home');
-                  },
+                  label: 'Confirmer',
+                  onPressed: _handleAPI,
                   textColor: AppTheme.backgroundColor,
+                  isLoading: isLoading,
                 ),
                 const SizedBox(height: 20),
               ],
