@@ -126,7 +126,6 @@ class AuthService {
       body: jsonEncode(registerData),
     );
 
-    print(jsonDecode(response.body));
     if (response.statusCode == 200) {
       return {'success': true, 'data': jsonDecode(response.body)};
     } else {
