@@ -84,7 +84,6 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
       return {'success': true, 'data': jsonDecode(response.body)};
     } else {
       final errorMessage = jsonDecode(response.body)['data'];

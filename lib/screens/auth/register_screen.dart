@@ -95,9 +95,7 @@ class RegisterScreenState extends State<RegisterScreen> {
 
     if (res['success']) {
       // ignore: use_build_context_synchronously
-      context.push('/email-verification', extra: {
-        'email': _emailController.text,
-      });
+      context.push('/email-verification', extra: _emailController.text);
     } else {
       // ignore: use_build_context_synchronously
       showToast(context, res['message'], isList: true);
