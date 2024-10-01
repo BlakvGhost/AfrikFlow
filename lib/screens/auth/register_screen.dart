@@ -1,6 +1,9 @@
+import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
+import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +19,17 @@ class RegisterScreen extends StatefulWidget {
 
 class RegisterScreenState extends State<RegisterScreen> {
   String? selectedCountry;
-  late Future<List<dynamic>> _countriesFuture;
+  late Future<List<Country>> _countriesFuture;
+  bool isLoading = false;
+
   final ApiService _apiService = ApiService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
 
   final List<Map<String, String>> countries = [
     {'code': '+224', 'name': 'Mali', 'flag': '🇲🇱'},
@@ -28,13 +40,42 @@ class RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    // _countriesFuture = _apiService.fetchCountries();
+    _countriesFuture = _apiService.fetchCountries();
+  }
+
+  Future<void> _register() async {
+    if (_emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
+        selectedCountry == null) {
+      showToast(context, "Veuillez remplir tous les champs.");
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      showToast(context, "Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    if (!isValidEmail(_emailController.text)) {
+      showToast(context, "Veuillez entrer un email valide.");
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    setState(() {
+      isLoading = false;
+    });
+
+    context.push('/email-verification', extra: _emailController.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    String email = "";
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -107,61 +148,49 @@ class RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const TextField(
+                TextField(
+                  controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Numéro de téléphone',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: _firstNameController,
+                  decoration: const InputDecoration(
                     labelText: 'Nom',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
                     labelText: 'Prénom',
                     border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
+                  controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'E-mail',
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: (String value) {
-                    email = value;
-                  },
                 ),
                 const SizedBox(height: 20),
-                const TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    border: OutlineInputBorder(),
-                    suffixIcon: PhIcon(child: PhosphorIconsDuotone.eye),
-                  ),
-                ),
+                PasswordInputField(passwordController: _passwordController),
                 const SizedBox(height: 20),
-                const TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Confirmer mot de passe',
-                    border: OutlineInputBorder(),
-                    suffixIcon: PhIcon(child: PhosphorIconsDuotone.eye),
-                  ),
+                PasswordInputField(
+                  passwordController: _confirmPasswordController,
+                  label: "Confirmer mot de passe",
                 ),
                 const SizedBox(height: 30),
                 CustomElevatedButton(
                   label: 'S\'inscrire',
-                  onPressed: () {
-                    context.push('/email-verification', extra: email);
-                  },
+                  onPressed: isLoading ? null : _register,
                   textColor: AppTheme.backgroundColor,
                 ),
                 const SizedBox(height: 20),

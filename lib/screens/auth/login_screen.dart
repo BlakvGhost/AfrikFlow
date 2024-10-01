@@ -1,4 +1,5 @@
 import 'package:afrik_flow/utils/helpers.dart';
+import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
@@ -19,7 +20,7 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
-  bool _isObscure = true;
+
   final AuthService _authService = AuthService();
 
   Future<void> _login() async {
@@ -116,26 +117,7 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _isObscure,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure
-                            ? PhosphorIconsDuotone.eye
-                            : PhosphorIconsDuotone.eyeSlash,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
-                    ),
-                  ),
-                ),
+                PasswordInputField(passwordController: _passwordController),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -145,7 +127,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 CustomElevatedButton(
-                  label: isLoading ? 'Connexion en cours...' : 'Se connecter',
+                  label: 'Se connecter',
                   onPressed: isLoading ? null : _login,
                   textColor: AppTheme.backgroundColor,
                   isLoading: isLoading,
