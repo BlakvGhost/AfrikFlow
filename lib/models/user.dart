@@ -1,6 +1,11 @@
+import 'package:afrik_flow/models/country.dart';
+
 class User {
   final String id;
-  final String name;
+  final String firstName;
+  final String lastName;
+  final String phoneNumber;
+  final Country country;
   final String email;
 
   User({required this.id, required this.name, required this.email});
@@ -8,7 +13,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      name: json['name'],
+      firstName: json['first_name'],
       email: json['email'],
     );
   }

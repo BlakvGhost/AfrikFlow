@@ -1,4 +1,5 @@
 import 'package:afrik_flow/models/country.dart';
+import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/helpers.dart';
@@ -21,8 +22,10 @@ class RegisterScreenState extends State<RegisterScreen> {
   String? selectedCountry;
   CountriesResponse? countries;
   bool isLoading = true;
+  bool isLoadingBtn = false;
 
   final ApiService _apiService = ApiService();
+  final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -42,6 +45,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       CountriesResponse fetchedCountries = await _apiService.fetchCountries();
       setState(() {
         countries = fetchedCountries;
+        selectedCountry = fetchedCountries.currentCountry.id;
         isLoading = false;
       });
     } catch (error) {
@@ -73,14 +77,35 @@ class RegisterScreenState extends State<RegisterScreen> {
     }
 
     setState(() {
-      isLoading = true;
+      isLoadingBtn = true;
     });
+
+    final selectedCountryData = countries?.countries
+        .firstWhere((country) => country.id == selectedCountry);
+
+    final res = await _authService.register(
+      _firstNameController.text,
+      _lastNameController.text,
+      _emailController.text,
+      _phoneController.text,
+      _passwordController.text,
+      _confirmPasswordController.text,
+      selectedCountryData,
+    );
+
+    if (res['success']) {
+      // ignore: use_build_context_synchronously
+      context.push('/email-verification', extra: {
+        'email': _emailController.text,
+      });
+    } else {
+      // ignore: use_build_context_synchronously
+      showToast(context, res['message'], isList: true);
+    }
 
     setState(() {
-      isLoading = false;
+      isLoadingBtn = false;
     });
-
-    context.push('/email-verification', extra: _emailController.text);
   }
 
   @override
@@ -148,9 +173,13 @@ class RegisterScreenState extends State<RegisterScreen> {
                           value: country.id,
                           child: Row(
                             children: [
-                              Text(country.code),
+                              Image.network(
+                                "https://flagsapi.com/${country.code}/flat/64.png",
+                                width: 24,
+                                height: 24,
+                              ),
                               const SizedBox(width: 8),
-                              Text('${country.slug} (${country.code})'),
+                              Text('${country.slug} (${country.countryCode})'),
                             ],
                           ),
                         );
@@ -205,8 +234,9 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 30),
                 CustomElevatedButton(
                   label: 'S\'inscrire',
-                  onPressed: isLoading ? null : _register,
+                  onPressed: isLoadingBtn ? null : _register,
                   textColor: AppTheme.backgroundColor,
+                  isLoading: isLoadingBtn,
                 ),
                 const SizedBox(height: 20),
                 const Row(

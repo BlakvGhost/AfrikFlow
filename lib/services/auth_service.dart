@@ -1,3 +1,4 @@
+import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -51,6 +52,42 @@ class AuthService {
       return {'success': true, 'data': jsonDecode(response.body)};
     } else {
       final errorMessage = jsonDecode(response.body)['data']['error'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> register(
+      String firstName,
+      String lastName,
+      String email,
+      String phone,
+      String password,
+      String passwordConfirmation,
+      Country? country) async {
+    final url = Uri.parse('$apiBaseUrl/auth/register');
+
+    final registerData = {
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'password': password,
+      'confirm_password': passwordConfirmation,
+      'country_id': country?.id,
+      'phone_num': "${country?.countryCode}$phone",
+      'plateform': 'web'
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(registerData),
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['data'];
       return {'success': false, 'message': errorMessage};
     }
   }
