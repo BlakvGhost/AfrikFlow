@@ -11,6 +11,7 @@ class User {
   final bool isVerified;
   final String token;
   final String? avatar;
+  final String? legalDoc;
   final Country country;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -26,6 +27,7 @@ class User {
     required this.isVerified,
     required this.token,
     this.avatar,
+    this.legalDoc,
     required this.country,
     required this.createdAt,
     required this.updatedAt,
@@ -43,6 +45,7 @@ class User {
       isVerified: json['is_verified'] == 1,
       token: json['token'],
       avatar: json['avatar'],
+      legalDoc: json['legal_doc'],
       country: Country.fromJson(json['country']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
@@ -61,6 +64,7 @@ class User {
       'is_verified': isVerified ? 1 : 0,
       'token': token,
       'avatar': avatar,
+      'legal_doc': legalDoc,
       'country': country.toJson(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),

@@ -6,11 +6,13 @@ import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:afrik_flow/providers/auth_notifier.dart';
 
-class TwoFactorScreen extends StatefulWidget {
+class TwoFactorScreen extends ConsumerStatefulWidget {
   const TwoFactorScreen(
       {super.key, required this.email, required this.password});
 
@@ -22,7 +24,7 @@ class TwoFactorScreen extends StatefulWidget {
   TwoFactorScreenState createState() => TwoFactorScreenState();
 }
 
-class TwoFactorScreenState extends State<TwoFactorScreen> {
+class TwoFactorScreenState extends ConsumerState<TwoFactorScreen> {
   TextEditingController pinController = TextEditingController();
   FocusNode pinFocusNode = FocusNode();
   Timer? countdownTimer;
@@ -37,22 +39,15 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
-    final result = await _authService.login(
-        widget.email, widget.password, pinController.text);
-
-    setState(() {
-      isLoading = false;
-    });
+    final result = await ref
+        .read(authProvider.notifier)
+        .login(widget.email, widget.password, pinController.text);
 
     if (result['success']) {
-      context.go(
-        '/home',
-      );
+      // ignore: use_build_context_synchronously
+      context.go('/home');
     } else {
+      // ignore: use_build_context_synchronously
       showToast(context, result['message']);
     }
   }
@@ -101,6 +96,8 @@ class TwoFactorScreenState extends State<TwoFactorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authProvider);
+
     return Padding(
       padding: const EdgeInsets.all(13.0),
       child: Column(
