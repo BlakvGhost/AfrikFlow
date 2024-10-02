@@ -1,27 +1,25 @@
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:afrik_flow/services/auth_service.dart';
+import 'package:afrik_flow/providers/auth_notifier.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
   LoginScreenState createState() => LoginScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool isLoading = false;
-
-  final AuthService _authService = AuthService();
 
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -29,16 +27,11 @@ class LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
-
-    final result = await _authService.login(
-        _emailController.text, _passwordController.text, null);
-
-    setState(() {
-      isLoading = false;
-    });
+    final result = await ref.read(authProvider.notifier).login(
+          _emailController.text,
+          _passwordController.text,
+          null,
+        );
 
     if (result['success']) {
       // ignore: use_build_context_synchronously
@@ -61,6 +54,8 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authProvider);
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
