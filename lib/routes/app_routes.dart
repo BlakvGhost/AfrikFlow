@@ -14,101 +14,99 @@ import 'package:afrik_flow/screens/transactions_screen.dart';
 import 'package:afrik_flow/screens/profile_screen.dart';
 
 class AppRoutes {
-  static GoRouter router = GoRouter(
-    routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const AuthBaseScreen(
-          isFullScreen: true,
-          child: SplashScreen(),
+  static final routes = [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const AuthBaseScreen(
+        isFullScreen: true,
+        child: SplashScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const BaseScreen(
+        currentIndex: 0,
+        child: HomeScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "Notifications",
+        child: NotificationsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/send',
+      builder: (context, state) => const BaseScreen(
+        currentIndex: 2,
+        showAppBar: false,
+        title: "Envoyer de l'argent",
+        child: SendScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/transactions',
+      builder: (context, state) => BaseScreen(
+        currentIndex: 1,
+        showAppBar: false,
+        title: "Historiques",
+        child: TransactionsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const BaseScreen(
+        currentIndex: 3,
+        showAppBar: false,
+        title: "Mon Profile",
+        child: ProfileScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const BaseScreen(
+        currentIndex: 4,
+        showAppBar: false,
+        title: "Reglage",
+        child: SettingsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const AuthBaseScreen(
+        child: LoginScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const AuthBaseScreen(
+        child: RegisterScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/email-verification',
+      builder: (context, state) => AuthBaseScreen(
+        child: EmailVerificationScreen(
+          email: state.extra as String,
         ),
       ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const BaseScreen(
-          currentIndex: 0,
-          child: HomeScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const BaseScreen(
-          showAppBar: false,
-          title: "Notifications",
-          child: NotificationsScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/send',
-        builder: (context, state) => const BaseScreen(
-          currentIndex: 2,
-          showAppBar: false,
-          title: "Envoyer de l'argent",
-          child: SendScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/transactions',
-        builder: (context, state) => BaseScreen(
-          currentIndex: 1,
-          showAppBar: false,
-          title: "Historiques",
-          child: TransactionsScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/profile',
-        builder: (context, state) => const BaseScreen(
-          currentIndex: 3,
-          showAppBar: false,
-          title: "Mon Profile",
-          child: ProfileScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const BaseScreen(
-          currentIndex: 4,
-          showAppBar: false,
-          title: "Reglage",
-          child: SettingsScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const AuthBaseScreen(
-          child: LoginScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const AuthBaseScreen(
-          child: RegisterScreen(),
-        ),
-      ),
-      GoRoute(
-        path: '/email-verification',
-        builder: (context, state) => AuthBaseScreen(
-          child: EmailVerificationScreen(
-            email: state.extra as String,
-          ),
-        ),
-      ),
-      GoRoute(
-        path: '/two-factor-verification',
-        builder: (context, state) {
-          final extraData = state.extra as Map<String, dynamic>;
-          final email = extraData['email'] as String;
-          final password = extraData['password'] as String;
+    ),
+    GoRoute(
+      path: '/two-factor-verification',
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, dynamic>;
+        final email = extraData['email'] as String;
+        final password = extraData['password'] as String;
 
-          return AuthBaseScreen(
-            child: TwoFactorScreen(
-              email: email,
-              password: password,
-            ),
-          );
-        },
-      ),
-    ],
-  );
+        return AuthBaseScreen(
+          child: TwoFactorScreen(
+            email: email,
+            password: password,
+          ),
+        );
+      },
+    ),
+  ];
 }

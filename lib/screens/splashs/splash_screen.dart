@@ -2,6 +2,7 @@ import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,6 +13,11 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   int _currentIndex = 0;
+
+  Future<bool> _saveSplashState() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setBool('has_seen_splash', true);
+  }
 
   List<Stack> _splashImages(double screenHeight) {
     return [
@@ -95,7 +101,8 @@ class SplashScreenState extends State<SplashScreen> {
             children: [
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    _saveSplashState();
                     context.push('/register');
                   },
                   style: ElevatedButton.styleFrom(
@@ -124,7 +131,8 @@ class SplashScreenState extends State<SplashScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      _saveSplashState();
                       context.push('/login');
                     },
                     child: const Text(
