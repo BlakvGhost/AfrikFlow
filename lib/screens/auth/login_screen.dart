@@ -32,7 +32,7 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = true;
     });
-
+  
     final result = await _authService.login(
         _emailController.text, _passwordController.text, null);
 

@@ -1,4 +1,5 @@
 import 'package:afrik_flow/models/country.dart';
+import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -126,9 +127,31 @@ class AuthService {
       body: jsonEncode(registerData),
     );
 
-    print(jsonDecode(response.body));
     if (response.statusCode == 200) {
       return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> getSelfData() async {
+    final url = Uri.parse('$apiBaseUrl/user/me');
+
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse.containsKey('data')) {
+        final user = User.fromJson(jsonResponse['data']);
+        return {'success': true, 'user': user};
+      } else {
+        return {'success': false, 'message': 'Données utilisateur manquantes.'};
+      }
     } else {
       final errorMessage = jsonDecode(response.body)['message'];
       return {'success': false, 'message': errorMessage};
