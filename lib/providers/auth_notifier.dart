@@ -22,7 +22,7 @@ class AuthNotifier extends StateNotifier<bool> {
 
     state = false;
 
-    if (result['success']) {
+    if (result['success'] == true) {
       final user = User.fromJson(result['data']['data']);
       _ref.read(userProvider.notifier).setUser(user);
     }

@@ -12,7 +12,7 @@ class AppTheme {
       scaffoldBackgroundColor: backgroundColor,
       brightness: Brightness.light,
       appBarTheme: const AppBarTheme(
-        backgroundColor: primaryColor,
+        backgroundColor: secondaryColor,
         iconTheme: IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
       ),
