@@ -29,6 +29,22 @@ class AuthNotifier extends StateNotifier<bool> {
 
     return result;
   }
+
+  Future<Map<String, dynamic>> signInWithGoogle() async {
+    state = true;
+
+    final authService = _ref.read(authServiceProvider);
+    final result = await authService.signInWithGoogle();
+
+    state = false;
+
+    if (result['success'] == true) {
+      final user = User.fromJson(result['data']['user']);
+      _ref.read(userProvider.notifier).setUser(user);
+    }
+
+    return result;
+  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, bool>((ref) {

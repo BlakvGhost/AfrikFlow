@@ -8,15 +8,17 @@ import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:afrik_flow/services/auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:afrik_flow/providers/auth_notifier.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
   LoginScreenState createState() => LoginScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
@@ -32,7 +34,7 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = true;
     });
-  
+
     final result = await _authService.login(
         _emailController.text, _passwordController.text, null);
 
@@ -48,6 +50,24 @@ class LoginScreenState extends State<LoginScreen> {
       });
     } else {
       // ignore: use_build_context_synchronously
+      showToast(context, result['message']);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final result = await ref.read(authProvider.notifier).signInWithGoogle();
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (result['success']) {
+      context.go('/home'); // Ou toute autre route après la connexion réussie
+    } else {
       showToast(context, result['message']);
     }
   }
@@ -145,7 +165,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: isLoading ? null : _signInWithGoogle,
                   icon: const PhIcon(child: PhosphorIconsDuotone.googleLogo),
                   label: const Text('Google'),
                   style: ElevatedButton.styleFrom(

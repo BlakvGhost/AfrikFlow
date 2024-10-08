@@ -3,8 +3,11 @@ import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:afrik_flow/services/firebase_service.dart';
 
 class AuthService {
+  final FirebaseService _firebaseService = FirebaseService();
+
   Future<Map<String, dynamic>> login(
     String identifier,
     String password,
@@ -156,6 +159,26 @@ class AuthService {
     } else {
       final errorMessage = jsonDecode(response.body)['message'];
       return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> signInWithGoogle() async {
+    final userCredential = await _firebaseService.signInWithGoogle();
+    if (userCredential != null) {
+      // Ici, vous devriez probablement créer ou mettre à jour l'utilisateur dans votre backend
+      // et retourner les données de l'utilisateur dans le même format que votre méthode de connexion normale
+      return {
+        'success': true,
+        'data': {
+          'user': {
+            'email': userCredential.user?.email,
+            'displayName': userCredential.user?.displayName,
+            // Ajoutez d'autres champs nécessaires
+          }
+        }
+      };
+    } else {
+      return {'success': false, 'message': 'Échec de la connexion Google'};
     }
   }
 }
