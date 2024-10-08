@@ -43,14 +43,15 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     if (result['success']) {
-      // ignore: use_build_context_synchronously
+      if (!mounted) return;
       context.push('/two-factor-verification', extra: {
         'email': _emailController.text,
         'password': _passwordController.text
       });
     } else {
-      // ignore: use_build_context_synchronously
-      showToast(context, result['message']);
+      if (mounted) {
+        showToast(context, result['message']);
+      }
     }
   }
 
@@ -66,7 +67,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     if (result['success']) {
-      context.go('/home'); // Ou toute autre route après la connexion réussie
+      context.go('/home');
     } else {
       showToast(context, result['message']);
     }
