@@ -3,8 +3,11 @@ import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:afrik_flow/services/firebase_service.dart';
 
 class AuthService {
+  final FirebaseService _firebaseService = FirebaseService();
+
   Future<Map<String, dynamic>> login(
     String identifier,
     String password,
@@ -53,7 +56,9 @@ class AuthService {
       return {'success': true, 'data': jsonDecode(response.body)};
     } else {
       final responseBody = jsonDecode(response.body);
-      final errorMessage = responseBody['data']?['error'] ?? responseBody['message'] ?? 'Une erreur est survenue';
+      final errorMessage = responseBody['data']?['error'] ??
+          responseBody['message'] ??
+          'Une erreur est survenue';
       return {'success': false, 'message': errorMessage};
     }
   }
@@ -157,5 +162,38 @@ class AuthService {
       final errorMessage = jsonDecode(response.body)['message'];
       return {'success': false, 'message': errorMessage};
     }
+  }
+
+  Future<Map<String, dynamic>> signInWithGoogle() async {
+    final userCredential = await _firebaseService.signInWithGoogle();
+    if (userCredential != null) {
+      final url = Uri.parse('$apiBaseUrl/auth/login-with-google');
+
+      final googleUser = userCredential.user;
+      if (googleUser != null) {
+        final userData = {
+          'email': googleUser.email,
+          'first_name': googleUser.displayName?.split(' ').first ?? '',
+          'last_name': googleUser.displayName?.split(' ').last ?? '',
+          'googleId': googleUser.uid,
+          'avatar': googleUser.photoURL,
+        };
+
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(userData),
+        );
+
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+          return {'success': true, 'data': responseData};
+        } else {
+          final errorMessage = jsonDecode(response.body)['message'];
+          return {'success': false, 'message': errorMessage};
+        }
+      }
+    }
+    return {'success': false, 'message': 'Échec de la connexion Google'};
   }
 }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "880367245285",
+    "project_id": "afrikflow-12043",
+    "storage_bucket": "afrikflow-12043.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880367245285:android:dabb4ed69429752e66410c",
+        "android_client_info": {
+          "package_name": "com.futuravision.afrik_flow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "880367245285-jtuidojv369omt05aj6lk5a2olaap9nl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyBbXD6b2dtn9CLnXk-eKetH6jSkJThLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "880367245285-jtuidojv369omt05aj6lk5a2olaap9nl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
