@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "880367245285-d5mh951hvcu8bjfg9v2mor4c9i1jft82.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.futuravision.afrik_flow",
+            "certificate_hash": "0ff03f5391fd8ea4beb2678b055dc70c7aeaf843"
+          }
+        },
+        {
           "client_id": "880367245285-jtuidojv369omt05aj6lk5a2olaap9nl.apps.googleusercontent.com",
           "client_type": 3
         }
