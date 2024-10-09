@@ -22,7 +22,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
             child: CarouselSlider(
               items: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(18.0)),
+                  borderRadius: BorderRadius.circular(18.0),
                   child: Image.asset(
                     'assets/images/carousel2.jpg',
                     fit: BoxFit.cover,
@@ -31,10 +31,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
                   ),
                 ),
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(18.0),
-                    bottomRight: Radius.circular(18.0),
-                  ),
+                  borderRadius: BorderRadius.circular(18.0),
                   child: Image.asset(
                     'assets/onboard/onboard2.jpg',
                     fit: BoxFit.cover,
@@ -43,10 +40,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
                   ),
                 ),
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(18.0),
-                    bottomRight: Radius.circular(18.0),
-                  ),
+                  borderRadius: BorderRadius.circular(18.0),
                   child: Image.asset(
                     'assets/images/carousel1.jpg',
                     fit: BoxFit.cover,
