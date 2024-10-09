@@ -1,5 +1,4 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
-import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +11,6 @@ class BaseScreen extends ConsumerWidget {
   final String? title;
   final bool showAppBar;
   final Widget? floatingActionButton;
-  final int? currentIndex;
   final Function(int)? onTabTapped;
 
   Future<AppBar?> getHomePageAppBar(double width, BuildContext context,
@@ -21,7 +19,7 @@ class BaseScreen extends ConsumerWidget {
 
     return AppBar(
       toolbarHeight: 80,
-      automaticallyImplyLeading: showAppBar,
+      automaticallyImplyLeading: true,
       title: !showAppBar
           ? Text(
               title ?? 'AfrikFlow',
@@ -77,7 +75,6 @@ class BaseScreen extends ConsumerWidget {
     this.title,
     this.showAppBar = true,
     this.floatingActionButton,
-    this.currentIndex = 0,
     this.onTabTapped,
   });
 
@@ -101,59 +98,6 @@ class BaseScreen extends ConsumerWidget {
         return Scaffold(
           appBar: snapshot.data,
           body: child,
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButtonAnimator:
-              FloatingActionButtonAnimator.noAnimation,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              context.push('/send');
-            },
-            backgroundColor: AppTheme.primaryColor,
-            child: const PhIcon(
-              child: PhosphorIconsDuotone.paperPlaneTilt,
-              canMode: true,
-            ),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            elevation: 22,
-            currentIndex: currentIndex!,
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  context.go('/home');
-                  break;
-                case 1:
-                  context.push('/transactions');
-                  break;
-                case 2:
-                  context.push('/send');
-                  break;
-                case 3:
-                  context.push('/profile');
-                  break;
-                case 4:
-                  context.push('/settings');
-                  break;
-              }
-            },
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: PhIcon(child: PhosphorIconsDuotone.house),
-                  label: 'Accueil'),
-              BottomNavigationBarItem(
-                  icon: PhIcon(child: PhosphorIconsDuotone.cardholder),
-                  label: 'Transactions'),
-              BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
-              BottomNavigationBarItem(
-                  icon: PhIcon(child: PhosphorIconsDuotone.userCircleGear),
-                  label: 'Profil'),
-              BottomNavigationBarItem(
-                  icon: PhIcon(child: PhosphorIconsDuotone.gearSix),
-                  label: 'Paramètres'),
-            ],
-          ),
         );
       },
     );

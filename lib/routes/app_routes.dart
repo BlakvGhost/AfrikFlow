@@ -1,7 +1,10 @@
+import 'package:afrik_flow/screens/all_service_screen.dart';
+import 'package:afrik_flow/screens/assistance_screen.dart';
 import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
+import 'package:afrik_flow/screens/invoice_screen.dart';
 import 'package:afrik_flow/screens/notifications_screen.dart';
 import 'package:afrik_flow/screens/settings_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
@@ -25,7 +28,6 @@ class AppRoutes {
     GoRoute(
       path: '/home',
       builder: (context, state) => const BaseScreen(
-        currentIndex: 0,
         child: HomeScreen(),
       ),
     ),
@@ -40,7 +42,6 @@ class AppRoutes {
     GoRoute(
       path: '/send',
       builder: (context, state) => const BaseScreen(
-        currentIndex: 2,
         showAppBar: false,
         title: "Envoyer de l'argent",
         child: SendScreen(),
@@ -49,7 +50,6 @@ class AppRoutes {
     GoRoute(
       path: '/transactions',
       builder: (context, state) => BaseScreen(
-        currentIndex: 1,
         showAppBar: false,
         title: "Historiques",
         child: TransactionsScreen(),
@@ -58,16 +58,38 @@ class AppRoutes {
     GoRoute(
       path: '/profile',
       builder: (context, state) => const BaseScreen(
-        currentIndex: 3,
         showAppBar: false,
         title: "Mon Profile",
         child: ProfileScreen(),
       ),
     ),
     GoRoute(
+      path: '/invoices',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "Vos Factures",
+        child: InvoiceScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/assistance',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "Assistance",
+        child: AssistanceScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/all-services',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "Nos Services",
+        child: AllServiceScreen(),
+      ),
+    ),
+    GoRoute(
       path: '/settings',
       builder: (context, state) => const BaseScreen(
-        currentIndex: 4,
         showAppBar: false,
         title: "Reglage",
         child: SettingsScreen(),
