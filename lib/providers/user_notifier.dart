@@ -18,7 +18,7 @@ class UserNotifier extends StateNotifier<User?> {
 
   Future<void> refreshUserData() async {
     final result = await _authService.getSelfData();
-
+    print(result);
     if (result['success']) {
       final User newUserData = result['user'];
       setUser(newUserData);

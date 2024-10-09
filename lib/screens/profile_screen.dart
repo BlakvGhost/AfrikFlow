@@ -5,94 +5,107 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ProfileScreenState createState() => ProfileScreenState();
+}
+
+class ProfileScreenState extends ConsumerState<ProfileScreen> {
+  bool isRefresh = false;
+
+  Future<void> _refresh() async {
+    setState(() {
+      isRefresh = true;
+    });
+    await ref.read(userProvider.notifier).refreshUserData();
+    setState(() {
+      isRefresh = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
 
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: user?.avatar != null
-                    ? NetworkImage("${user?.avatar}")
-                    : const AssetImage('assets/images/man.png'),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: IconButton(
-                  icon: const Icon(PhosphorIconsDuotone.camera,
-                      color: AppTheme.primaryColor),
-                  onPressed: () {},
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: isRefresh
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundImage: user?.avatar != null
+                              ? NetworkImage("${user?.avatar}")
+                              : const AssetImage('assets/images/man.png'),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: IconButton(
+                            icon: const Icon(PhosphorIconsDuotone.camera,
+                                color: AppTheme.primaryColor),
+                            onPressed: () {},
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ListTile(
+                      leading: const Icon(PhosphorIconsDuotone.userCircle),
+                      title: Text("${user?.firstName} ${user?.lastName}"),
+                      trailing: IconButton(
+                        icon: const Icon(PhosphorIconsDuotone.pencilSimple),
+                        onPressed: () {},
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(PhosphorIconsDuotone.envelope),
+                      title: Text(user!.email),
+                      trailing: IconButton(
+                        icon: const Icon(PhosphorIconsDuotone.pencilSimple),
+                        onPressed: () {},
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(PhosphorIconsDuotone.phone),
+                      title: Text(user.phoneNumber),
+                      trailing: IconButton(
+                        icon: const Icon(PhosphorIconsDuotone.pencilSimple),
+                        onPressed: () {},
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _showLogoutConfirmation(context, ref);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: const Text(
+                            "Se déconnecter",
+                            style: TextStyle(color: AppTheme.whiteColor),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          ListTile(
-            leading: const Icon(PhosphorIconsDuotone.userCircle),
-            title: Text("${user?.firstName} ${user?.lastName}"),
-            trailing: IconButton(
-              icon: const Icon(PhosphorIconsDuotone.pencilSimple),
-              onPressed: () {},
             ),
-          ),
-          ListTile(
-            leading: const Icon(PhosphorIconsDuotone.envelope),
-            title: Text(user!.email),
-            trailing: IconButton(
-              icon: const Icon(PhosphorIconsDuotone.pencilSimple),
-              onPressed: () {},
-            ),
-          ),
-          ListTile(
-            leading: const Icon(PhosphorIconsDuotone.phone),
-            title: Text(user.phoneNumber),
-            trailing: IconButton(
-              icon: const Icon(PhosphorIconsDuotone.pencilSimple),
-              onPressed: () {},
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: 5,
-          //     itemBuilder: (context, index) {
-          //       return ListTile(
-          //         leading: const Icon(Icons.login),
-          //         title: Text(
-          //             "Connexion du ${DateTime.now().subtract(Duration(days: index)).toString()}"),
-          //       );
-          //     },
-          //   ),
-          // ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  _showLogoutConfirmation(context, ref);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                child: const Text(
-                  "Se déconnecter",
-                  style: TextStyle(color: AppTheme.whiteColor),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
