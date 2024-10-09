@@ -12,6 +12,7 @@ class User {
   final String? token;
   final String? avatar;
   final String? legalDoc;
+  final bool isTwoFactorEnabled;
   final Country country;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -28,6 +29,7 @@ class User {
     required this.token,
     this.avatar,
     this.legalDoc,
+    required this.isTwoFactorEnabled,
     required this.country,
     required this.createdAt,
     required this.updatedAt,
@@ -64,6 +66,7 @@ class User {
       country: country ?? this.country,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isTwoFactorEnabled: isTwoFactorEnabled,
     );
   }
 
@@ -80,6 +83,7 @@ class User {
       token: json['token'],
       avatar: json['avatar'],
       legalDoc: json['legal_doc'],
+      isTwoFactorEnabled: json['is_2fa_active'] == 1,
       country: Country.fromJson(json['country']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
@@ -99,6 +103,7 @@ class User {
       'token': token,
       'avatar': avatar,
       'legal_doc': legalDoc,
+      'is_2fa_active': isTwoFactorEnabled,
       'country': country.toJson(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
