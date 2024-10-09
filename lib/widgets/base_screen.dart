@@ -20,15 +20,30 @@ class BaseScreen extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return AppBar(
+      toolbarHeight: 80,
       automaticallyImplyLeading: showAppBar,
-      title: showAppBar
-          ? Image.asset(
-              'assets/images/logo.png',
-              height: 80,
-              width: width * 0.4,
+      title: !showAppBar
+          ? Text(
+              title ?? 'AfrikFlow',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             )
-          : Text(title ?? 'AfrikFlow'),
-      elevation: 18,
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Hello ${user?.firstName}",
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  "Welcome back",
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
+              ],
+            ),
+      elevation: 22,
       actions: [
         IconButton(
           icon: const PhIcon(

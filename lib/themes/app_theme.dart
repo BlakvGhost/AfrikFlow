@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF76abae);
-  static const Color secondaryColor = Color(0xFF31363f);
+  static const Color secondaryColor = Color(0xFF000000);
   static const Color backgroundColor = Color(0xFFeeeeee);
   static const Color whiteColor = Color(0xFFeeeeee);
 
@@ -11,10 +12,10 @@ class AppTheme {
       primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundColor,
       brightness: Brightness.light,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: secondaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 20),
       ),
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
@@ -47,8 +48,10 @@ class AppTheme {
           borderSide: BorderSide(color: Colors.grey.shade200, width: 1.0),
         ),
       ),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: Colors.black),
+      textTheme: GoogleFonts.poppinsTextTheme(
+        ThemeData.light().textTheme.copyWith(
+              bodyMedium: const TextStyle(color: Colors.black),
+            ),
       ),
       useMaterial3: true,
     );
@@ -59,10 +62,10 @@ class AppTheme {
       primaryColor: primaryColor,
       scaffoldBackgroundColor: secondaryColor,
       brightness: Brightness.dark,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: secondaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 20),
       ),
       colorScheme: const ColorScheme.dark(
         primary: primaryColor,
@@ -95,8 +98,10 @@ class AppTheme {
           borderSide: BorderSide(color: Colors.grey.shade600, width: 1.0),
         ),
       ),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: Colors.white),
+      textTheme: GoogleFonts.poppinsTextTheme(
+        ThemeData.dark().textTheme.copyWith(
+              bodyMedium: const TextStyle(color: Colors.white),
+            ),
       ),
       useMaterial3: true,
     );
