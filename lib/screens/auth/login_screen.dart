@@ -136,6 +136,8 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                     labelText: 'E-mail/ Numéro de téléphone',
                     border: OutlineInputBorder(),
                   ),
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
                 const SizedBox(height: 20),
                 PasswordInputField(passwordController: _passwordController),

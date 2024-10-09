@@ -217,6 +217,8 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                     labelText: 'Numéro de téléphone',
                     border: OutlineInputBorder(),
                   ),
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -225,6 +227,8 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                     labelText: 'Nom',
                     border: OutlineInputBorder(),
                   ),
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -233,6 +237,8 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                     labelText: 'Prénom',
                     border: OutlineInputBorder(),
                   ),
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
                 const SizedBox(height: 20),
                 TextField(
@@ -241,6 +247,8 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                     labelText: 'E-mail',
                     border: OutlineInputBorder(),
                   ),
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
                 const SizedBox(height: 20),
                 PasswordInputField(passwordController: _passwordController),

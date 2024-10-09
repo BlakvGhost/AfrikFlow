@@ -20,6 +20,8 @@ class PasswordInputFieldState extends State<PasswordInputField> {
     return TextField(
       controller: widget.passwordController,
       obscureText: _isObscure,
+      textInputAction: TextInputAction.next,
+      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
       decoration: InputDecoration(
         labelText: widget.label ?? 'Mot de passe',
         border: const OutlineInputBorder(),
