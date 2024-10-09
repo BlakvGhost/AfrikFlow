@@ -92,6 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         TransactionItem(),
                         TransactionItem(),
                         TransactionItem(),
+                        TransactionItem(),
                       ],
                     ),
                   ),
