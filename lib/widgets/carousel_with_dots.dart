@@ -24,7 +24,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(18.0)),
                   child: Image.asset(
-                    'assets/onboard/onboard1.jpg',
+                    'assets/images/carousel2.jpg',
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: 200,
@@ -37,6 +37,18 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
                   ),
                   child: Image.asset(
                     'assets/onboard/onboard2.jpg',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(18.0),
+                    bottomRight: Radius.circular(18.0),
+                  ),
+                  child: Image.asset(
+                    'assets/images/carousel1.jpg',
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: 200,
@@ -61,7 +73,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
         const SizedBox(height: 5.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [0, 1].map((index) {
+          children: [0, 1, 2].map((index) {
             return Container(
               width: 8.0,
               height: 8.0,
