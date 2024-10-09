@@ -33,31 +33,6 @@ class HomeScreen extends ConsumerWidget {
                     label: "Historiques",
                     index: 3),
                 CircleButton(
-                    icon: PhosphorIconsDuotone.gearSix,
-                    label: "Paramètre",
-                    index: 4),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CircleButton(
-                    icon: PhosphorIconsDuotone.userCircleGear,
-                    label: "Profile",
-                    index: 5),
-                CircleButton(
-                    icon: PhosphorIconsDuotone.notification,
-                    label: "Notifications",
-                    index: 6),
-                CircleButton(
-                    icon: PhosphorIconsDuotone.fileText,
-                    label: "Assistance",
-                    index: 7),
-                CircleButton(
                     icon: PhosphorIconsDuotone.dotsNine,
                     label: "Tous",
                     index: 8),
