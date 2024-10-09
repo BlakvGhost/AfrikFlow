@@ -85,30 +85,14 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          // Sample transactions
+
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(horizontal: 12.0),
             child: Column(
               children: [
-                TransactionItem(
-                  title: 'Spotify Music',
-                  amount: 'XOF 168',
-                  date: '5 Aug, 2022',
-                  time: '6:40 PM',
-                ),
-                TransactionItem(
-                  title: 'Github Brand',
-                  amount: 'XOF 168',
-                  date: '2 Aug, 2022',
-                  time: '12:56 PM',
-                ),
-                TransactionItem(
-                  title: 'Dropbox Pro',
-                  amount: 'XOF 299',
-                  date: '22 Jul, 2022',
-                  time: '11:32 AM',
-                ),
+                TransactionItem(),
+                TransactionItem(),
+                TransactionItem(),
               ],
             ),
           ),
