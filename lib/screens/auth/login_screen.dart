@@ -1,4 +1,5 @@
 import 'package:afrik_flow/utils/helpers.dart';
+import 'package:afrik_flow/widgets/app_logo.dart';
 import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -88,8 +89,10 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 120),
+              padding: const EdgeInsets.only(top: 60),
               children: [
+                const AppLogo(),
+                const SizedBox(height: 10),
                 const Center(
                   child: Text(
                     'Connectez-vous!',
@@ -148,7 +151,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                     child: const Text('Mot de passe oublié?'),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const AuthScreenBottomCgu(),
                 CustomElevatedButton(
                   label: 'Se connecter',
                   onPressed: isLoading ? null : _login,
@@ -181,7 +184,6 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
               ],
             ),
           ),
-          const AuthScreenBottomCgu(),
         ],
       ),
     );

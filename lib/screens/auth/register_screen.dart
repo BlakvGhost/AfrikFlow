@@ -3,6 +3,7 @@ import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/helpers.dart';
+import 'package:afrik_flow/widgets/app_logo.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
@@ -138,8 +139,10 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.only(top: 20),
               children: [
+                const AppLogo(),
+                const SizedBox(height: 10),
                 const Center(
                   child: Text(
                     'Inscrivez-vous!',
@@ -257,7 +260,8 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                   passwordController: _confirmPasswordController,
                   label: "Confirmer mot de passe",
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
+                const AuthScreenBottomCgu(),
                 CustomElevatedButton(
                   label: 'S\'inscrire',
                   onPressed: isLoadingBtn ? null : _register,
@@ -290,7 +294,6 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
               ],
             ),
           ),
-          const AuthScreenBottomCgu(),
         ],
       ),
     );

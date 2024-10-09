@@ -5,8 +5,8 @@ import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/format_utils.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:afrik_flow/utils/helpers.dart';
+import 'package:afrik_flow/widgets/app_logo.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
-import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
@@ -112,8 +112,10 @@ class EmailVerificationScreenState
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 80),
+              padding: const EdgeInsets.only(top: 60),
               children: [
+                const AppLogo(),
+                const SizedBox(height: 10),
                 const Center(
                   child: Text(
                     'Vérification de l’email',
@@ -198,7 +200,6 @@ class EmailVerificationScreenState
               ],
             ),
           ),
-          const AuthScreenBottomCgu(),
         ],
       ),
     );

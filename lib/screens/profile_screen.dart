@@ -79,7 +79,7 @@ class ProfileScreen extends ConsumerWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  _showLogoutConfirmation(context);
+                  _showLogoutConfirmation(context, ref);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -96,7 +96,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showLogoutConfirmation(BuildContext context) {
+  void _showLogoutConfirmation(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -111,9 +111,11 @@ class ProfileScreen extends ConsumerWidget {
               child: const Text('Annuler'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                UserNotifier().logout();
+
+                await ref.read(userProvider.notifier).logout();
+
                 context.go('/login');
               },
               child: const Text('Se déconnecter'),

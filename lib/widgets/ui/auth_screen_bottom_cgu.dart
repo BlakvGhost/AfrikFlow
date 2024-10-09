@@ -5,7 +5,7 @@ class AuthScreenBottomCgu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.only(bottom: 20.0, top: 20),
+      padding: EdgeInsets.only(bottom: 15),
       child: Text.rich(
         TextSpan(
           children: [
