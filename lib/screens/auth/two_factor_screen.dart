@@ -146,6 +146,12 @@ class TwoFactorScreenState extends ConsumerState<TwoFactorScreen> {
                   backgroundColor: Colors.transparent,
                   enableActiveFill: true,
                   controller: pinController,
+                  onCompleted: (value) {
+                    if (value.length == 6) {
+                      FocusScope.of(context).unfocus();
+                      _handleAPI();
+                    }
+                  },
                   onChanged: (value) {},
                   textStyle: const TextStyle(
                     color: Colors.black,

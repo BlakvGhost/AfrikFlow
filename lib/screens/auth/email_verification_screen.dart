@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/format_utils.dart';
@@ -9,8 +10,10 @@ import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:afrik_flow/providers/user_notifier.dart';
 
-class EmailVerificationScreen extends StatefulWidget {
+class EmailVerificationScreen extends ConsumerStatefulWidget {
   const EmailVerificationScreen({super.key, required this.email});
 
   final String email;
@@ -19,7 +22,8 @@ class EmailVerificationScreen extends StatefulWidget {
   EmailVerificationScreenState createState() => EmailVerificationScreenState();
 }
 
-class EmailVerificationScreenState extends State<EmailVerificationScreen> {
+class EmailVerificationScreenState
+    extends ConsumerState<EmailVerificationScreen> {
   TextEditingController pinController = TextEditingController();
   FocusNode pinFocusNode = FocusNode();
   Timer? countdownTimer;
@@ -46,9 +50,12 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
     });
 
     if (result['success']) {
-      context.go(
-        '/home',
-      );
+      if (result['data'] != null && result['data']['data'] != null) {
+        final user = User.fromJson(result['data']['data']);
+        ref.read(userProvider.notifier).setUser(user);
+      }
+
+      context.go('/home');
     } else {
       showToast(context, result['message']);
     }
@@ -146,6 +153,12 @@ class EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   backgroundColor: Colors.transparent,
                   enableActiveFill: true,
                   controller: pinController,
+                  onCompleted: (value) {
+                    if (value.length == 6) {
+                      FocusScope.of(context).unfocus();
+                      _handleAPI();
+                    }
+                  },
                   onChanged: (value) {},
                   textStyle: const TextStyle(
                     color: Colors.black,
