@@ -1,9 +1,11 @@
 import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/models/user.dart';
+import 'package:afrik_flow/providers/api_client_provider.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:afrik_flow/services/firebase_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthService {
   final FirebaseService _firebaseService = FirebaseService();
@@ -141,10 +143,11 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getSelfData() async {
+  Future<Map<String, dynamic>> getSelfData(WidgetRef ref) async {
+    final apiClient = ref.read(apiClientProvider);
     final url = Uri.parse('$apiBaseUrl/user/me');
 
-    final response = await http.get(
+    final response = await apiClient.get(
       url,
       headers: {'Content-Type': 'application/json'},
     );

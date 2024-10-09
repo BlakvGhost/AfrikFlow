@@ -9,7 +9,7 @@ class User {
   final bool isAdmin;
   final bool isActive;
   final bool isVerified;
-  final String token;
+  final String? token;
   final String? avatar;
   final String? legalDoc;
   final Country country;
@@ -32,6 +32,40 @@ class User {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  User copyWith({
+    int? id,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? phoneNumber,
+    bool? isAdmin,
+    bool? isActive,
+    bool? isVerified,
+    String? token,
+    String? avatar,
+    String? legalDoc,
+    Country? country,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return User(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      isAdmin: isAdmin ?? this.isAdmin,
+      isActive: isActive ?? this.isActive,
+      isVerified: isVerified ?? this.isVerified,
+      token: token ?? this.token,
+      avatar: avatar ?? this.avatar,
+      legalDoc: legalDoc ?? this.legalDoc,
+      country: country ?? this.country,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

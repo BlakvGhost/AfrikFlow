@@ -16,12 +16,14 @@ class UserNotifier extends StateNotifier<User?> {
     _storeUserData(user);
   }
 
-  Future<void> refreshUserData() async {
-    final result = await _authService.getSelfData();
-    print(result);
+  Future<void> refreshUserData(WidgetRef ref) async {
+    final result = await _authService.getSelfData(ref);
+
     if (result['success']) {
       final User newUserData = result['user'];
-      setUser(newUserData);
+      User updatedUserData = User.fromJson(newUserData.toJson());
+      updatedUserData = updatedUserData.copyWith(token: state?.token);
+      setUser(updatedUserData);
     } else {}
   }
 

@@ -20,7 +20,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     setState(() {
       isRefresh = true;
     });
-    await ref.read(userProvider.notifier).refreshUserData();
+    await ref.read(userProvider.notifier).refreshUserData(ref);
     setState(() {
       isRefresh = false;
     });
