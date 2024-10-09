@@ -18,14 +18,11 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
       children: [
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.only(top: 0),
+            padding: const EdgeInsets.only(left: 12, right: 12),
             child: CarouselSlider(
               items: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(18.0),
-                    bottomRight: Radius.circular(18.0),
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.0)),
                   child: Image.asset(
                     'assets/onboard/onboard1.jpg',
                     fit: BoxFit.cover,

@@ -116,7 +116,7 @@ class BaseScreen extends ConsumerWidget {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            elevation: 28,
+            elevation: 22,
             currentIndex: currentIndex!,
             onTap: (index) {
               switch (index) {

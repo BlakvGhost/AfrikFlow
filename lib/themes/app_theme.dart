@@ -62,6 +62,9 @@ class AppTheme {
       primaryColor: primaryColor,
       scaffoldBackgroundColor: secondaryColor,
       brightness: Brightness.dark,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: secondaryColor,
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: secondaryColor,
         iconTheme: const IconThemeData(color: Colors.white),
