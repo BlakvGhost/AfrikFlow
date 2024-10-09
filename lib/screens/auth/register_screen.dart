@@ -10,15 +10,17 @@ import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:afrik_flow/providers/auth_notifier.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
   RegisterScreenState createState() => RegisterScreenState();
 }
 
-class RegisterScreenState extends State<RegisterScreen> {
+class RegisterScreenState extends ConsumerState<RegisterScreen> {
   String? selectedCountry;
   CountriesResponse? countries;
   bool isLoading = true;
@@ -104,6 +106,24 @@ class RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       isLoadingBtn = false;
     });
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      isLoadingBtn = true;
+    });
+
+    final result = await ref.read(authProvider.notifier).signInWithGoogle();
+
+    setState(() {
+      isLoadingBtn = false;
+    });
+
+    if (result['success']) {
+      context.go('/home');
+    } else {
+      showToast(context, result['message']);
+    }
   }
 
   @override
@@ -249,7 +269,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: isLoadingBtn ? null : _signInWithGoogle,
                   icon: const PhIcon(child: PhosphorIconsDuotone.googleLogo),
                   label: const Text('Google'),
                   style: ElevatedButton.styleFrom(
