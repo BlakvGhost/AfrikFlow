@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'afrikflow-12043',
     storageBucket: 'afrikflow-12043.appspot.com',
   );
+
 }
