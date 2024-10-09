@@ -113,7 +113,7 @@ class ProfileScreen extends ConsumerWidget {
               onPressed: () {
                 Navigator.of(context).pop();
                 UserNotifier().logout();
-                context.go('/');
+                context.go('/login');
               },
               child: const Text('Se déconnecter'),
             ),
