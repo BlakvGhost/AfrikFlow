@@ -1,3 +1,4 @@
+import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,10 @@ class BaseScreen extends ConsumerWidget {
   final int? currentIndex;
   final Function(int)? onTabTapped;
 
-  AppBar? getHomePageAppBar(double width, BuildContext context, WidgetRef ref,
-      bool showAppBar, String? title) {
+  Future<AppBar?> getHomePageAppBar(double width, BuildContext context,
+      WidgetRef ref, bool showAppBar, String? title) async {
+    final user = ref.watch(userProvider);
+
     return AppBar(
       automaticallyImplyLeading: showAppBar,
       title: showAppBar
@@ -38,9 +41,9 @@ class BaseScreen extends ConsumerWidget {
           },
         ),
         IconButton(
-          icon: const CircleAvatar(
+          icon: CircleAvatar(
             radius: 18,
-            backgroundImage: NetworkImage(
+            backgroundImage: NetworkImage(user?.avatar ??
                 "https://avatars.githubusercontent.com/u/86885681?v=4"),
           ),
           onPressed: () {
@@ -76,60 +79,67 @@ class BaseScreen extends ConsumerWidget {
       ),
     );
 
-    return Scaffold(
-      appBar: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
-      body: child,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/send');
-        },
-        backgroundColor: AppTheme.primaryColor,
-        child: const PhIcon(
-          child: PhosphorIconsDuotone.paperPlaneTilt,
-          canMode: true,
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 28,
-        currentIndex: currentIndex!,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go('/home');
-              break;
-            case 1:
-              context.push('/transactions');
-              break;
-            case 2:
+    return FutureBuilder<AppBar?>(
+      future: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
+      builder: (context, snapshot) {
+        return Scaffold(
+          appBar: snapshot.data,
+          body: child,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonAnimator:
+              FloatingActionButtonAnimator.noAnimation,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
               context.push('/send');
-              break;
-            case 3:
-              context.push('/profile');
-              break;
-            case 4:
-              context.push('/settings');
-              break;
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-              icon: PhIcon(child: PhosphorIconsDuotone.house),
-              label: 'Accueil'),
-          BottomNavigationBarItem(
-              icon: PhIcon(child: PhosphorIconsDuotone.cardholder),
-              label: 'Transactions'),
-          BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
-          BottomNavigationBarItem(
-              icon: PhIcon(child: PhosphorIconsDuotone.userCircleGear),
-              label: 'Profil'),
-          BottomNavigationBarItem(
-              icon: PhIcon(child: PhosphorIconsDuotone.gearSix),
-              label: 'Paramètres'),
-        ],
-      ),
+            },
+            backgroundColor: AppTheme.primaryColor,
+            child: const PhIcon(
+              child: PhosphorIconsDuotone.paperPlaneTilt,
+              canMode: true,
+            ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            elevation: 28,
+            currentIndex: currentIndex!,
+            onTap: (index) {
+              switch (index) {
+                case 0:
+                  context.go('/home');
+                  break;
+                case 1:
+                  context.push('/transactions');
+                  break;
+                case 2:
+                  context.push('/send');
+                  break;
+                case 3:
+                  context.push('/profile');
+                  break;
+                case 4:
+                  context.push('/settings');
+                  break;
+              }
+            },
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(
+                  icon: PhIcon(child: PhosphorIconsDuotone.house),
+                  label: 'Accueil'),
+              BottomNavigationBarItem(
+                  icon: PhIcon(child: PhosphorIconsDuotone.cardholder),
+                  label: 'Transactions'),
+              BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
+              BottomNavigationBarItem(
+                  icon: PhIcon(child: PhosphorIconsDuotone.userCircleGear),
+                  label: 'Profil'),
+              BottomNavigationBarItem(
+                  icon: PhIcon(child: PhosphorIconsDuotone.gearSix),
+                  label: 'Paramètres'),
+            ],
+          ),
+        );
+      },
     );
   }
 }

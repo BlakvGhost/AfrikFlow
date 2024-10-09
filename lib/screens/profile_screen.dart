@@ -18,9 +18,9 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Stack(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(
+                backgroundImage: NetworkImage(user?.avatar ??
                     'https://avatars.githubusercontent.com/u/86885681?v=4'),
               ),
               Positioned(
