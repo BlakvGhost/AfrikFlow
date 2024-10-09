@@ -20,8 +20,9 @@ class ProfileScreen extends ConsumerWidget {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(user?.avatar ??
-                    'https://avatars.githubusercontent.com/u/86885681?v=4'),
+                backgroundImage: user?.avatar != null
+                    ? NetworkImage("${user?.avatar}")
+                    : const AssetImage('assets/images/man.png'),
               ),
               Positioned(
                 bottom: 0,

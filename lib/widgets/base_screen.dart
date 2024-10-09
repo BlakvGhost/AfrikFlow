@@ -58,8 +58,9 @@ class BaseScreen extends ConsumerWidget {
         IconButton(
           icon: CircleAvatar(
             radius: 18,
-            backgroundImage: NetworkImage(user?.avatar ??
-                "https://avatars.githubusercontent.com/u/86885681?v=4"),
+            backgroundImage: user?.avatar != null
+                ? NetworkImage("${user?.avatar}")
+                : const AssetImage('assets/images/man.png'),
           ),
           onPressed: () {
             context.push('/profile');
