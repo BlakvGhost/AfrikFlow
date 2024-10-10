@@ -99,6 +99,7 @@ class BaseScreen extends ConsumerWidget {
         return Scaffold(
           appBar: snapshot.data,
           body: child,
+          extendBody: true,
         );
       },
     );
