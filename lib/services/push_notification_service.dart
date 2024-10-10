@@ -20,7 +20,7 @@ class PushNotificationService {
     }
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Message reçu : ${message.notification?.title}');
+      // print('Message reçu : ${message.notification?.title}');
     });
   }
 
