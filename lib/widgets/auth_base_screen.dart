@@ -19,6 +19,7 @@ class AuthBaseScreen extends ConsumerWidget {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
+          systemNavigationBarDividerColor: Colors.transparent,
           systemNavigationBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
           systemNavigationBarIconBrightness: Brightness.light,
@@ -32,6 +33,7 @@ class AuthBaseScreen extends ConsumerWidget {
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Colors.white,
+        systemNavigationBarDividerColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
