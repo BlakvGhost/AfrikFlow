@@ -1,5 +1,5 @@
-import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:afrik_flow/themes/app_theme.dart';
 
 class SendScreen extends StatefulWidget {
   const SendScreen({super.key});
@@ -10,12 +10,7 @@ class SendScreen extends StatefulWidget {
 
 class SendScreenState extends State<SendScreen>
     with SingleTickerProviderStateMixin {
-  String? selectedCountry;
-  String? selectedOperator;
-  String? selectedCardType;
-  List<String> operators = [];
-
-  bool supportFees = false;
+  late TabController _tabController;
 
   final Map<String, Map<String, dynamic>> countriesAndOperators = {
     'Bénin': {
@@ -31,8 +26,12 @@ class SendScreenState extends State<SendScreen>
       'operators': ['Orange', 'Free', 'Expresso'],
     },
   };
+  String? selectedCountry;
+  String? selectedOperator;
+  String? selectedCardType;
+  List<String> operators = [];
 
-  late TabController _tabController;
+  bool supportFees = false;
 
   @override
   void initState() {
@@ -44,16 +43,33 @@ class SendScreenState extends State<SendScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 18,
-        toolbarHeight: 2,
+        toolbarHeight: 30,
+        elevation: 0,
         automaticallyImplyLeading: false,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppTheme.primaryColor,
-          tabs: const [
-            Tab(text: 'Transfert local'),
-            Tab(text: 'Transfert par carte de crédit'),
-          ],
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(40.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: AppTheme.primaryColor.withOpacity(0.1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildTabButton(context, 0, 'Local'),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  _buildTabButton(context, 1, 'Carte de crédit'),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -62,6 +78,34 @@ class SendScreenState extends State<SendScreen>
           _buildLocalTransferContent(),
           _buildCreditCardTransfer(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTabButton(BuildContext context, int index, String text) {
+    final isActive = _tabController.index == index;
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _tabController.index = index;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          backgroundColor: isActive
+              ? AppTheme.primaryColor
+              : AppTheme.primaryColor.withOpacity(0.1),
+          foregroundColor: isActive ? Colors.white : AppTheme.primaryColor,
+          elevation: isActive ? 5 : 0,
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
