@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:afrik_flow/widgets/carousel_with_dots.dart';
 import 'package:afrik_flow/widgets/transaction_item.dart';
+import 'package:afrik_flow/models/transaction.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +16,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool isRefresh = false;
+  List<Transaction> transactions = [];
 
   Future<void> _refresh() async {
     setState(() {
@@ -28,6 +30,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+    final transactions = user?.transactions.take(5).toList();
+
     return RefreshIndicator(
       onRefresh: _refresh,
       child: isRefresh
@@ -63,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Transactions overview section
+
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
@@ -84,15 +89,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
                   ),
-
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Column(
                       children: [
-                        TransactionItem(),
-                        TransactionItem(),
-                        TransactionItem(),
-                        TransactionItem(),
+                        if (transactions!.isEmpty)
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height / 4,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    PhosphorIconsDuotone.warning,
+                                    color: Colors.grey[600],
+                                    size: 50,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Flexible(
+                                    child: user!.isVerified
+                                        ? const Text(
+                                            "Vous n'avez pas encore effectué de transfert.",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white),
+                                            textAlign: TextAlign.center,
+                                          )
+                                        : const Text(
+                                            "Veuillez à la validation de votre compte avant d'effectuer un transfert.",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          for (var transaction in transactions)
+                            TransactionItem(transaction: transaction),
                       ],
                     ),
                   ),

@@ -1,128 +1,126 @@
 import 'package:flutter/material.dart';
+import 'package:afrik_flow/providers/user_notifier.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:afrik_flow/widgets/transaction_item.dart';
 
-class TransactionsScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> transactions = [
-    {
-      "date": "05/04/2024",
-      "transactionId": "101578963",
-      "amount": "350 000",
-      "currency": "FCFA",
-      "cardType": "Visa",
-      "fromName": "Kabirou ALASSANE",
-      "toName": "Elfried KIDJE",
-      "fromOperator": "MTN",
-      "toOperator": "Orange"
-    },
-    {
-      "date": "05/04/2024",
-      "transactionId": "101578963",
-      "amount": "5 000",
-      "currency": "FCFA",
-      "cardType": "Visa",
-      "fromName": "Souad Gaya",
-      "toName": "Elfried KIDJE",
-      "fromOperator": "MTN",
-      "toOperator": "Orange"
-    },
-    {
-      "date": "05/04/2024",
-      "transactionId": "101578963",
-      "amount": "5 000",
-      "currency": "FCFA",
-      "cardType": "Visa",
-      "fromName": "Elfried KIDJE",
-      "toName": "Elfried KIDJE",
-      "fromOperator": "MTN",
-      "toOperator": "Orange"
-    },
-  ];
+class TransactionsScreen extends ConsumerStatefulWidget {
+  const TransactionsScreen({super.key});
 
-  TransactionsScreen({super.key});
+  @override
+  ConsumerState<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
+  String searchQuery = "";
+  bool isRefreshing = false;
+
+  Future<void> _refresh() async {
+    setState(() {
+      isRefreshing = true;
+    });
+
+    await ref.read(userProvider.notifier).refreshUserData(ref);
+    setState(() {
+      isRefreshing = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: transactions.length,
-        separatorBuilder: (context, index) => const Divider(),
-        itemBuilder: (context, index) {
-          final transaction = transactions[index];
-          return _buildTransactionCard(transaction);
-        },
-      ),
-    );
-  }
+    final user = ref.watch(userProvider);
+    final transactions = user?.transactions ?? [];
 
-  Widget _buildTransactionCard(Map<String, dynamic> transaction) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          transaction['date'],
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.white60),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(8),
+    final filteredTransactions = transactions.where((transaction) {
+      final description =
+          "De ${transaction.payinPhoneNumber} vers ${transaction.payoutPhoneNumber}";
+      return description.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          transaction.amount.toString().contains(searchQuery);
+    }).toList();
+
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: isRefreshing
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          prefixIcon:
+                              const Icon(PhosphorIconsDuotone.magnifyingGlass),
+                          hintText: "Rechercher une transaction...",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (query) {
+                          setState(() {
+                            searchQuery = query;
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Titre de la section
+                    const Text(
+                      'Historique des Transactions',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    if (filteredTransactions.isEmpty)
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              PhosphorIconsDuotone.warning,
+                              color: Colors.grey[600],
+                              size: 50,
+                            ),
+                            const SizedBox(height: 22),
+                            Text(
+                              "Aucune transaction trouvée.",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Column(
+                        children: filteredTransactions
+                            .map((transaction) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child:
+                                      TransactionItem(transaction: transaction),
+                                ))
+                            .toList(),
+                      ),
+                  ],
+                ),
               ),
-              child: Text(
-                'Trans... ${transaction['transactionId']}',
-                style: const TextStyle(color: Colors.white),
-              ),
             ),
-            Text(
-              '${transaction['amount']} ${transaction['currency']}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        Row(
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.grey[300],
-                  radius: 20,
-                  backgroundImage: const NetworkImage(
-                      "https://media.licdn.com/dms/image/D4E12AQE8uOMdl4km9w/article-cover_image-shrink_600_2000/0/1678624190074?e=2147483647&v=beta&t=YEhO6rD75nuvHIg9za08JHadmzcjOyl-xBdtim_UnU4"),
-                ),
-                Positioned(
-                  left: 22,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    radius: 20,
-                    backgroundImage: const NetworkImage(
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReoan3T0XNqnM9MJzptamAyMNNv70le5prnw&s"),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 18),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  transaction['fromName'],
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text('Par ${transaction['cardType']}'),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
-        const SizedBox(height: 10),
-      ],
     );
   }
 }

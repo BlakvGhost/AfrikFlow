@@ -12,7 +12,7 @@ class MyApp extends ConsumerWidget {
 
   Future<String?> _determineInitialRoute(WidgetRef ref) async {
     final prefs = await SharedPreferences.getInstance();
-    final user = ref.watch(userProvider);
+    final user = ref.read(userProvider);
 
     if (user != null) {
       PushNotificationService().init(ref);

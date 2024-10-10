@@ -1,24 +1,16 @@
+import 'package:afrik_flow/models/transaction.dart';
 import 'package:flutter/material.dart';
 
 class TransactionItem extends StatelessWidget {
+  final Transaction transaction;
+
   const TransactionItem({
     super.key,
+    required this.transaction,
   });
 
   @override
   Widget build(BuildContext context) {
-    final transaction = {
-      "date": "05/04/2024",
-      "transactionId": "101578963",
-      "amount": "350 000",
-      "currency": "FCFA",
-      "cardType": "Visa",
-      "fromName": "Kabirou ALASSANE",
-      "toName": "Elfried KIDJE",
-      "fromOperator": "MTN",
-      "toOperator": "Orange"
-    };
-
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(15.0),
@@ -56,12 +48,12 @@ class TransactionItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    transaction['fromName']!,
+                    "De ${transaction.payinPhoneNumber} vers ${transaction.payoutPhoneNumber}",
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   Text(
-                    'Par ${transaction['cardType']}',
+                    'Par ${transaction.mode == 'local' ? 'transfert local' : 'carte de crédit'}',
                     style: const TextStyle(color: Colors.black),
                   ),
                 ],
@@ -69,9 +61,9 @@ class TransactionItem extends StatelessWidget {
               const SizedBox(height: 10),
             ],
           ),
-          const Text("XOF 500",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          Text("XOF ${transaction.amountWithoutFees}",
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black)),
         ],
       ),
     );
