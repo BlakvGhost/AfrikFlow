@@ -192,6 +192,7 @@ class AuthService {
           final responseData = jsonDecode(response.body);
           return {'success': true, 'data': responseData};
         } else {
+          print(jsonDecode(response.body));
           final errorMessage = jsonDecode(response.body)['message'];
           return {'success': false, 'message': errorMessage};
         }

@@ -2,12 +2,14 @@ class Country {
   final String code;
   final String id;
   final String slug;
+  final String flag;
   final String countryCode;
 
   Country({
     required this.code,
     required this.id,
     required this.slug,
+    required this.flag,
     required this.countryCode,
   });
 
@@ -16,6 +18,7 @@ class Country {
       code: json['code'] as String,
       id: json['id'].toString(),
       slug: json['slug'] as String,
+      flag: json['flag'] as String,
       countryCode: json['country_code'] as String,
     );
   }
@@ -24,6 +27,7 @@ class Country {
     return {
       'code': code,
       'slug': slug,
+      'flag': flag,
       'country_code': countryCode,
       'id': id,
     };

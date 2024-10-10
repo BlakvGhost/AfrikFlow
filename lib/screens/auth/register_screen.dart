@@ -195,7 +195,7 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                           child: Row(
                             children: [
                               Image.network(
-                                "https://flagsapi.com/${country.code}/flat/64.png",
+                                country.flag,
                                 width: 24,
                                 height: 24,
                               ),

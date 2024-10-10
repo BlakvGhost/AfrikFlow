@@ -14,8 +14,6 @@ class User {
   final String? legalDoc;
   final bool isTwoFactorEnabled;
   final Country country;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
   User({
     required this.id,
@@ -31,8 +29,6 @@ class User {
     this.legalDoc,
     required this.isTwoFactorEnabled,
     required this.country,
-    required this.createdAt,
-    required this.updatedAt,
   });
 
   User copyWith({
@@ -48,8 +44,6 @@ class User {
     String? avatar,
     String? legalDoc,
     Country? country,
-    DateTime? createdAt,
-    DateTime? updatedAt,
   }) {
     return User(
       id: id ?? this.id,
@@ -64,8 +58,6 @@ class User {
       avatar: avatar ?? this.avatar,
       legalDoc: legalDoc ?? this.legalDoc,
       country: country ?? this.country,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       isTwoFactorEnabled: isTwoFactorEnabled,
     );
   }
@@ -85,8 +77,6 @@ class User {
       legalDoc: json['legal_doc'],
       isTwoFactorEnabled: json['is_2fa_active'] == 1,
       country: Country.fromJson(json['country']),
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
     );
   }
 
@@ -105,8 +95,6 @@ class User {
       'legal_doc': legalDoc,
       'is_2fa_active': isTwoFactorEnabled,
       'country': country.toJson(),
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
     };
   }
 }
