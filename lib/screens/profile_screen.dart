@@ -1,3 +1,4 @@
+import 'package:afrik_flow/models/log.dart';
 import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
@@ -33,7 +34,11 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
             color: Colors.green,
             size: 24,
           )
-        : const SizedBox.shrink();
+        : const Icon(
+            PhosphorIconsDuotone.warning,
+            color: Colors.red,
+            size: 24,
+          );
   }
 
   void editName(User? user) {
@@ -69,9 +74,6 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             TextButton(
               onPressed: () {
-                // ref
-                //     .read(userProvider.notifier)
-                //     .updateUser(firstName, lastName);
                 Navigator.of(context).pop();
               },
               child: const Text('Enregistrer'),
@@ -82,7 +84,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget buildActivityHistory(List<String> activityHistory) {
+  Widget buildActivityHistory(List<Log> logs) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -94,11 +96,34 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: activityHistory.length,
+          itemCount: logs.length,
           itemBuilder: (context, index) {
+            String actionMessage;
+            IconData icon;
+
+            switch (logs[index].action) {
+              case 'login':
+                actionMessage = 'Vous vous êtes connecté.';
+                icon = PhosphorIconsDuotone.signIn;
+                break;
+              case 'register':
+                actionMessage = 'Vous vous êtes inscrit.';
+                icon = PhosphorIconsDuotone.userPlus;
+                break;
+              case 'transfer':
+                actionMessage = 'Vous avez effectué un transfert.';
+                icon = PhosphorIconsDuotone.arrowRight;
+                break;
+              default:
+                actionMessage = logs[index].action;
+                icon = PhosphorIconsDuotone.info;
+            }
+
             return ListTile(
-              leading: const Icon(PhosphorIconsDuotone.clock),
-              title: Text(activityHistory[index]),
+              leading: Icon(icon),
+              title: Text(actionMessage),
+              subtitle: Text(logs[index].humarizeDate),
+              trailing: Text(logs[index].city),
             );
           },
         ),
@@ -199,6 +224,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
+    final logs = user?.logs.take(10).toList();
 
     return RefreshIndicator(
       onRefresh: _refresh,
@@ -260,11 +286,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    buildActivityHistory([
-                      "Login successful",
-                      "Password changed",
-                      "Login failed"
-                    ]),
+                    buildActivityHistory(logs!),
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
