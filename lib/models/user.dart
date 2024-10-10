@@ -1,4 +1,6 @@
 import 'package:afrik_flow/models/country.dart';
+import 'package:afrik_flow/models/log.dart';
+import 'package:afrik_flow/models/transaction.dart';
 
 class User {
   final int id;
@@ -14,6 +16,8 @@ class User {
   final String? legalDoc;
   final bool isTwoFactorEnabled;
   final Country country;
+  final List<Transaction> transactions;
+  final List<Log> logs;
 
   User({
     required this.id,
@@ -29,6 +33,8 @@ class User {
     this.legalDoc,
     required this.isTwoFactorEnabled,
     required this.country,
+    required this.transactions,
+    required this.logs,
   });
 
   User copyWith({
@@ -44,6 +50,8 @@ class User {
     String? avatar,
     String? legalDoc,
     Country? country,
+    List<Transaction>? transactions,
+    List<Log>? logs,
   }) {
     return User(
       id: id ?? this.id,
@@ -58,6 +66,8 @@ class User {
       avatar: avatar ?? this.avatar,
       legalDoc: legalDoc ?? this.legalDoc,
       country: country ?? this.country,
+      transactions: transactions ?? this.transactions,
+      logs: logs ?? this.logs,
       isTwoFactorEnabled: isTwoFactorEnabled,
     );
   }
@@ -77,6 +87,10 @@ class User {
       legalDoc: json['legal_doc'],
       isTwoFactorEnabled: json['is_2fa_active'] == 1,
       country: Country.fromJson(json['country']),
+      transactions: (json['transactions'] as List)
+          .map((i) => Transaction.fromJson(i))
+          .toList(),
+      logs: (json['logs'] as List).map((i) => Log.fromJson(i)).toList(),
     );
   }
 
@@ -95,6 +109,8 @@ class User {
       'legal_doc': legalDoc,
       'is_2fa_active': isTwoFactorEnabled,
       'country': country.toJson(),
+      'transactions': transactions.map((t) => t.toJson()).toList(),
+      'logs': logs.map((l) => l.toJson()).toList(),
     };
   }
 }
