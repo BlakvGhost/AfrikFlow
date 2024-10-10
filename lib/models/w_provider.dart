@@ -22,12 +22,12 @@ class WProvider {
   factory WProvider.fromJson(Map<String, dynamic> json) {
     return WProvider(
       id: json['id'],
-      name: json['name'],
-      withdrawMode: json['withdraw_mode'],
-      sendingMode: json['sending_mode'],
-      logo: json['logo'],
-      fpayName: json['fpay_name'],
-      country: Country.fromJson(json['country']),
+      name: json['name'] ?? '',
+      withdrawMode: json['withdraw_mode'] ?? '',
+      sendingMode: json['sending_mode'] ?? '',
+      logo: json['logo'] ?? '',
+      fpayName: json['fpay_name'] ?? '',
+      country: Country.fromJson(json['country'] ?? {}),
     );
   }
 

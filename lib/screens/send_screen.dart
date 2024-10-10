@@ -1,31 +1,21 @@
+import 'package:afrik_flow/models/w_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/services/transaction_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SendScreen extends StatefulWidget {
+class SendScreen extends ConsumerStatefulWidget {
   const SendScreen({super.key});
 
   @override
   SendScreenState createState() => SendScreenState();
 }
 
-class SendScreenState extends State<SendScreen>
+class SendScreenState extends ConsumerState<SendScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Future<List<WProvider>> _walletProvidersFuture;
 
-  final Map<String, Map<String, dynamic>> countriesAndOperators = {
-    'Bénin': {
-      'code': "BJ",
-      'operators': ['MTN', 'Celtiis', 'Moov'],
-    },
-    'Côte d’Ivoire': {
-      'code': "CI",
-      'operators': ['MTN', 'Orange', 'Moov'],
-    },
-    'Sénégal': {
-      'code': "SN",
-      'operators': ['Orange', 'Free', 'Expresso'],
-    },
-  };
   String? selectedCountry;
   String? selectedOperator;
   String? selectedCardType;
@@ -37,47 +27,53 @@ class SendScreenState extends State<SendScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    final transactionService = TransactionService(ref: ref);
+    _walletProvidersFuture = transactionService.listWalletProviders();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 30,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: AppTheme.primaryColor.withOpacity(0.1),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildTabButton(context, 0, 'Local'),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  _buildTabButton(context, 1, 'Carte de crédit'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: TabBarView(
         controller: _tabController,
         children: [
           _buildLocalTransferContent(),
-          _buildCreditCardTransfer(),
+          _buildCreditCardTransferContent(),
         ],
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 30,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      automaticallyImplyLeading: false,
+      centerTitle: true,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(40.0),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              color: AppTheme.primaryColor.withOpacity(0.1),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildTabButton(context, 0, 'Local'),
+                const SizedBox(
+                  width: 5,
+                ),
+                _buildTabButton(context, 1, 'Carte de crédit'),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -86,11 +82,9 @@ class SendScreenState extends State<SendScreen>
     final isActive = _tabController.index == index;
     return Expanded(
       child: ElevatedButton(
-        onPressed: () {
-          setState(() {
-            _tabController.index = index;
-          });
-        },
+        onPressed: () => setState(() {
+          _tabController.index = index;
+        }),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
@@ -111,147 +105,97 @@ class SendScreenState extends State<SendScreen>
   }
 
   Widget _buildLocalTransferContent() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            _buildSection("De :"),
-            const SizedBox(height: 16),
-            _buildCountryOperatorDropdown(),
-            const SizedBox(height: 16),
-            _buildPhoneNumberField('90 90 25 25'),
-            const SizedBox(height: 16),
-            _buildAmountField(),
-            const SizedBox(height: 16),
-            _buildAgreeSupportFees(),
-            const SizedBox(height: 16),
-            _buildSection("Vers :"),
-            const SizedBox(height: 16),
-            _buildCountryOperatorDropdown(),
-            const SizedBox(height: 16),
-            _buildAmountField(),
-            const SizedBox(height: 16),
-            _buildPhoneNumberField('96 96 96 96'),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCreditCardTransfer() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            _buildReasonDropdown(),
-            const SizedBox(height: 16),
-            _buildAmountField(),
-            const SizedBox(height: 16),
-            _buildCardTypeSelection(),
-            const SizedBox(height: 16),
-            _buildAgreeSupportFees(),
-            const SizedBox(height: 24),
-            _buildSection("Vers :"),
-            const SizedBox(height: 16),
-            _buildCountryOperatorDropdown(),
-            const SizedBox(height: 16),
-            _buildPhoneNumberField('96 96 96 96'),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReasonDropdown() {
-    List<String> reasons = [
-      "Aide familiale",
-      "Paiement de facture",
-      "Cadeau",
-      "Autre",
-    ];
-
-    String? selectedReason;
-
-    return DropdownButtonFormField<String>(
-      value: selectedReason,
-      hint: const Text('Sélectionnez une raison'),
-      decoration: InputDecoration(
-        labelText: 'Raison d\'envoi',
-        labelStyle: const TextStyle(color: AppTheme.primaryColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      onChanged: (value) {
-        setState(() {
-          selectedReason = value;
-        });
+    return FutureBuilder<List<WProvider>>(
+      future: _walletProvidersFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Erreur: ${snapshot.error}'));
+        } else {
+          final walletProviders = snapshot.data!;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildSectionTitle("De :"),
+                        const SizedBox(height: 16),
+                        _buildCountryOperatorDropdown(walletProviders),
+                        const SizedBox(height: 16),
+                        _buildPhoneNumberField('90 90 25 25'),
+                        const SizedBox(height: 16),
+                        _buildAmountField(),
+                        const SizedBox(height: 16),
+                        _buildAgreeSupportFeesSwitch(),
+                        const SizedBox(height: 16),
+                        _buildSectionTitle("Vers :"),
+                        const SizedBox(height: 16),
+                        _buildCountryOperatorDropdown(walletProviders),
+                        const SizedBox(height: 16),
+                        _buildPhoneNumberField('96 96 96 96'),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        }
       },
-      items: reasons.map((reason) {
-        return DropdownMenuItem<String>(
-          value: reason,
-          child: Text(reason),
-        );
-      }).toList(),
     );
   }
 
-  Widget _buildCardTypeSelection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Type de carte',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Flexible(
-              child: RadioListTile<String>(
-                title: const Text("Visa"),
-                value: 'Visa',
-                groupValue: selectedCardType,
-                onChanged: (value) {
-                  setState(() {
-                    selectedCardType = value;
-                  });
-                },
-                activeColor: AppTheme.primaryColor,
+  Widget _buildCreditCardTransferContent() {
+    return FutureBuilder<List<WProvider>>(
+      future: _walletProvidersFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Erreur: ${snapshot.error}'));
+        } else {
+          final walletProviders = snapshot.data!;
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 24),
+                  _buildReasonDropdown(),
+                  const SizedBox(height: 16),
+                  _buildAmountField(),
+                  const SizedBox(height: 16),
+                  _buildCardTypeSelection(),
+                  const SizedBox(height: 16),
+                  _buildAgreeSupportFeesSwitch(),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle("Vers :"),
+                  const SizedBox(height: 16),
+                  _buildCountryOperatorDropdown(walletProviders),
+                  const SizedBox(height: 16),
+                  _buildPhoneNumberField('96 96 96 96'),
+                  const SizedBox(height: 32),
+                ],
               ),
             ),
-            Flexible(
-              child: RadioListTile<String>(
-                title: const Text("Mastercard"),
-                value: 'Mastercard',
-                groupValue: selectedCardType,
-                onChanged: (value) {
-                  setState(() {
-                    selectedCardType = value;
-                  });
-                },
-                activeColor: AppTheme.primaryColor,
-              ),
-            ),
-          ],
-        ),
-      ],
+          );
+        }
+      },
     );
   }
 
-  Widget _buildSection(String title) {
+  Widget _buildSectionTitle(String title) {
     return Center(
       child: Text(
         title,
@@ -264,53 +208,42 @@ class SendScreenState extends State<SendScreen>
     );
   }
 
-  Widget _buildCountryOperatorDropdown() {
-    return Row(
-      children: [
-        Expanded(
-          child: DropdownButtonFormField<String>(
-            value: selectedCountry != null && selectedOperator != null
-                ? '$selectedCountry - $selectedOperator'
-                : null,
-            hint: const Text('Choisir un pays et un opérateur'),
-            onChanged: (value) {
-              if (value != null) {
-                final parts = value.split(' - ');
-                setState(() {
-                  selectedCountry = parts[0];
-                  selectedOperator = parts[1];
-                });
-              }
-            },
-            items: countriesAndOperators.keys.expand((country) {
-              final operators =
-                  countriesAndOperators[country]!['operators'] as List<String>;
-              return operators.map((operator) {
-                return DropdownMenuItem<String>(
-                  value: '$country - $operator',
-                  child: Row(
-                    children: [
-                      Image.network(
-                        "https://flagsapi.com/${countriesAndOperators[country]!['code']}/flat/64.png",
-                        width: 24,
-                        height: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text('$country - $operator'),
-                    ],
-                  ),
-                );
-              });
-            }).toList(),
-            decoration: InputDecoration(
-              labelText: 'Pays et opérateur',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+  Widget _buildCountryOperatorDropdown(List<WProvider> walletProviders) {
+    return DropdownButtonFormField<String>(
+      isExpanded: true,
+      value: selectedOperator,
+      hint: const Text('Choisir un opérateur'),
+      onChanged: (value) {
+        if (value != null) {
+          // final parts = value.split(' - ');
+          setState(() {
+            // selectedCountry = parts[0];
+            selectedOperator = value;
+          });
+        }
+      },
+      items: walletProviders.map((provider) {
+        return DropdownMenuItem<String>(
+          value: "${provider.id}",
+          child: Row(
+            children: [
+              Image.network(
+                provider.country.flag,
+                width: 24,
+                height: 24,
               ),
-            ),
+              const SizedBox(width: 8),
+              Text(provider.name),
+            ],
           ),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        labelText: 'Pays et opérateur',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
-      ],
+      ),
     );
   }
 
@@ -339,7 +272,7 @@ class SendScreenState extends State<SendScreen>
     );
   }
 
-  Widget _buildAgreeSupportFees() {
+  Widget _buildAgreeSupportFeesSwitch() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -359,9 +292,56 @@ class SendScreenState extends State<SendScreen>
             });
           },
           activeColor: AppTheme.primaryColor,
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ],
+    );
+  }
+
+  Widget _buildReasonDropdown() {
+    final reasons = ['Frais de scolarité', 'Facture', 'Autre'];
+    return DropdownButtonFormField<String>(
+      hint: const Text("Raison de l'envoi"),
+      onChanged: (value) {
+        setState(() {
+          // Handle selected reason
+        });
+      },
+      items: reasons.map((reason) {
+        return DropdownMenuItem<String>(
+          value: reason,
+          child: Text(reason),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        labelText: 'Raison',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardTypeSelection() {
+    final cardTypes = ['Visa', 'MasterCard'];
+    return DropdownButtonFormField<String>(
+      hint: const Text("Type de carte"),
+      onChanged: (value) {
+        setState(() {
+          selectedCardType = value;
+        });
+      },
+      items: cardTypes.map((type) {
+        return DropdownMenuItem<String>(
+          value: type,
+          child: Text(type),
+        );
+      }).toList(),
+      decoration: InputDecoration(
+        labelText: 'Type de carte',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
     );
   }
 }
