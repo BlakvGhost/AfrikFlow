@@ -66,17 +66,17 @@ class BaseScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           color: AppTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(50),
                         ),
                         constraints: const BoxConstraints(
                           minWidth: 15,
-                          minHeight: 2,
+                          minHeight: 15,
                         ),
                         child: Text(
-                          user.notifications.length as String,
+                          user.notifications.length.toString(),
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 12,
+                            fontSize: 8,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
@@ -130,6 +130,10 @@ class BaseScreen extends ConsumerWidget {
     return FutureBuilder<AppBar?>(
       future: getHomePageAppBar(screenWidth, context, ref, showAppBar, title),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
         return Scaffold(
           appBar: snapshot.data,
           body: child,
