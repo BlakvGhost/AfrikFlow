@@ -79,7 +79,7 @@ class TransactionService {
     required String payinWProviderId,
     required String payoutWProviderId,
     required double amount,
-    required double senderSupportFee,
+    required bool senderSupportFee,
   }) async {
     final url = Uri.parse('$apiBaseUrl/calculate-transaction-fees');
 
@@ -95,7 +95,7 @@ class TransactionService {
     );
 
     if (response.statusCode == 200) {
-      return {'success': true, 'data': jsonDecode(response.body)['data']};
+      return {'success': true, 'data': jsonDecode(response.body)};
     } else {
       final errorMessage = jsonDecode(response.body)['message'];
       return {'success': false, 'message': errorMessage};

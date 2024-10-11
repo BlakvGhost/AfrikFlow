@@ -1,8 +1,10 @@
 import 'package:afrik_flow/models/w_provider.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/services/transaction_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class SendScreen extends ConsumerStatefulWidget {
   const SendScreen({super.key});
@@ -15,24 +17,104 @@ class SendScreenState extends ConsumerState<SendScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Future<List<WProvider>> _walletProvidersFuture;
+  late TransactionService _transactionService;
 
-  String? selectedCountry;
-  String? selectedOperator;
+  String? selectedPayinOperator;
+  String? selectedPayoutOperator;
   String? selectedCardType;
   List<String> operators = [];
 
   double _buttonPosition = 0.0;
   final double _buttonWidth = 60.0;
-  final double _sliderWidth = 300.0;
+  final double _sliderWidth = 800.0;
+  double calculatedFees = 0.0;
+  double totalAmount = 0.0;
 
   bool supportFees = false;
+
+  final TextEditingController _payinPhoneNumberController =
+      TextEditingController();
+  final TextEditingController _payoutPhoneNumberController =
+      TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    final transactionService = TransactionService(ref: ref);
-    _walletProvidersFuture = transactionService.listWalletProviders();
+    _transactionService = TransactionService(ref: ref);
+    _walletProvidersFuture = _transactionService.listWalletProviders();
+  }
+
+  @override
+  void dispose() {
+    _payinPhoneNumberController.dispose();
+    _payoutPhoneNumberController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void _calculateFees() async {
+    if (selectedPayinOperator != null &&
+        selectedPayoutOperator != null &&
+        totalAmount > 0) {
+      final response = await _transactionService.calculateFees(
+        payinWProviderId: selectedPayinOperator!,
+        payoutWProviderId: selectedPayoutOperator!,
+        amount: double.parse(_amountController.text),
+        senderSupportFee: supportFees,
+      );
+
+      if (response['success']) {
+        setState(() {
+          calculatedFees = double.parse("${response['data']['totalFees']}");
+          totalAmount = double.parse("${response['data']['amountWithFees']}");
+        });
+      }
+    }
+  }
+
+  Future<void> _confirmAndSendTransaction() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: Text('Voulez-vous envoyer $totalAmount FCFA ?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text('Confirmer'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      final sendResponse = await _transactionService.sendTransaction(
+        payinPhoneNumber: _payinPhoneNumberController.text,
+        payinWProviderId: selectedPayinOperator!,
+        payoutPhoneNumber: _payoutPhoneNumberController.text,
+        payoutWProviderId: _payoutPhoneNumberController.text,
+        amount: double.parse(_amountController.text),
+        senderSupportFee: supportFees,
+      );
+
+      if (sendResponse['success']) {
+        context.push('transactions');
+      } else {
+        showToast(context, sendResponse['message']);
+      }
+    }
   }
 
   @override
@@ -130,12 +212,12 @@ class SendScreenState extends ConsumerState<SendScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         _buildSectionTitle("De :"),
                         const SizedBox(height: 16),
-                        _buildCountryOperatorDropdown(walletProviders),
+                        _buildCountryOperatorDropdown(walletProviders, true),
                         const SizedBox(height: 16),
-                        _buildPhoneNumberField('90 90 25 25'),
+                        _buildPhoneNumberField(_payinPhoneNumberController),
                         const SizedBox(height: 16),
                         _buildAmountField(),
                         const SizedBox(height: 16),
@@ -143,9 +225,9 @@ class SendScreenState extends ConsumerState<SendScreen>
                         const SizedBox(height: 10),
                         _buildSectionTitle("Vers :"),
                         const SizedBox(height: 16),
-                        _buildCountryOperatorDropdown(walletProviders),
+                        _buildCountryOperatorDropdown(walletProviders, false),
                         const SizedBox(height: 16),
-                        _buildPhoneNumberField('96 96 96 96'),
+                        _buildPhoneNumberField(_payoutPhoneNumberController),
                         _buildSlideButton(),
                       ],
                     ),
@@ -186,9 +268,9 @@ class SendScreenState extends ConsumerState<SendScreen>
                   const SizedBox(height: 24),
                   _buildSectionTitle("Vers :"),
                   const SizedBox(height: 16),
-                  _buildCountryOperatorDropdown(walletProviders),
+                  _buildCountryOperatorDropdown(walletProviders, false),
                   const SizedBox(height: 16),
-                  _buildPhoneNumberField('96 96 96 96'),
+                  _buildPhoneNumberField(_payoutPhoneNumberController),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -201,7 +283,7 @@ class SendScreenState extends ConsumerState<SendScreen>
 
   Widget _buildSlideButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 30),
       child: Stack(
         children: [
           Container(
@@ -212,9 +294,9 @@ class SendScreenState extends ConsumerState<SendScreen>
               borderRadius: BorderRadius.circular(50),
             ),
             alignment: Alignment.center,
-            child: const Text(
-              'Slide to send 5000 FCFA',
-              style: TextStyle(
+            child: Text(
+              'Glisser pour envoyer $totalAmount FCFA',
+              style: const TextStyle(
                 color: AppTheme.primaryColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -222,7 +304,7 @@ class SendScreenState extends ConsumerState<SendScreen>
             ),
           ),
           AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 200),
             left: _buttonPosition,
             top: 0,
             bottom: 0,
@@ -233,7 +315,7 @@ class SendScreenState extends ConsumerState<SendScreen>
                   if (_buttonPosition < 0) _buttonPosition = 0;
                   if (_buttonPosition > _sliderWidth - _buttonWidth) {
                     _buttonPosition = _sliderWidth - _buttonWidth;
-                    // _completeTransaction();
+                    _confirmAndSendTransaction();
                   }
                 });
               },
@@ -277,18 +359,22 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildCountryOperatorDropdown(List<WProvider> walletProviders) {
+  Widget _buildCountryOperatorDropdown(
+      List<WProvider> walletProviders, bool isPayin) {
     return DropdownButtonFormField<String>(
       isExpanded: true,
-      value: selectedOperator,
+      value: isPayin ? selectedPayinOperator : selectedPayoutOperator,
       hint: const Text('Choisir un opérateur'),
       onChanged: (value) {
         if (value != null) {
-          // final parts = value.split(' - ');
           setState(() {
-            // selectedCountry = parts[0];
-            selectedOperator = value;
+            if (isPayin) {
+              selectedPayinOperator = value;
+            } else {
+              selectedPayoutOperator = value;
+            }
           });
+          _calculateFees();
         }
       },
       items: walletProviders.map((provider) {
@@ -318,6 +404,7 @@ class SendScreenState extends ConsumerState<SendScreen>
 
   Widget _buildAmountField() {
     return TextFormField(
+      controller: _amountController,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: 'Montant',
@@ -326,12 +413,16 @@ class SendScreenState extends ConsumerState<SendScreen>
         ),
         suffixText: 'FCFA',
       ),
+      onChanged: (value) {
+        totalAmount = double.parse(value);
+        _calculateFees();
+      },
     );
   }
 
-  Widget _buildPhoneNumberField(String phoneNumber) {
+  Widget _buildPhoneNumberField(TextEditingController controller) {
     return TextFormField(
-      initialValue: phoneNumber,
+      controller: controller,
       decoration: InputDecoration(
         labelText: 'Numéro de téléphone',
         border: OutlineInputBorder(
@@ -359,6 +450,7 @@ class SendScreenState extends ConsumerState<SendScreen>
             setState(() {
               supportFees = value;
             });
+            _calculateFees();
           },
           activeColor: AppTheme.primaryColor,
         ),
@@ -371,9 +463,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     return DropdownButtonFormField<String>(
       hint: const Text("Raison de l'envoi"),
       onChanged: (value) {
-        setState(() {
-          // Handle selected reason
-        });
+        setState(() {});
       },
       items: reasons.map((reason) {
         return DropdownMenuItem<String>(
