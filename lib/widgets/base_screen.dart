@@ -1,4 +1,5 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
+import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,10 +45,45 @@ class BaseScreen extends ConsumerWidget {
       elevation: 22,
       actions: [
         IconButton(
-          icon: const PhIcon(
-            child: PhosphorIconsDuotone.bell,
-            isWhite: true,
-            smartColor: true,
+          icon: Stack(
+            children: user!.notifications.isEmpty
+                ? [
+                    const PhIcon(
+                      child: PhosphorIconsDuotone.bell,
+                      isWhite: true,
+                      smartColor: true,
+                    ),
+                  ]
+                : [
+                    const PhIcon(
+                      child: PhosphorIconsDuotone.bellRinging,
+                      isWhite: true,
+                      smartColor: true,
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 15,
+                          minHeight: 2,
+                        ),
+                        child: Text(
+                          user.notifications.length as String,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
           ),
           onPressed: () {
             context.push('/notifications');
@@ -56,9 +92,7 @@ class BaseScreen extends ConsumerWidget {
         IconButton(
           icon: CircleAvatar(
             radius: 18,
-            backgroundImage: user?.avatar != null
-                ? NetworkImage("${user?.avatar}")
-                : const AssetImage('assets/images/man.png'),
+            backgroundImage: NetworkImage(user.avatar ?? ''),
           ),
           onPressed: () {
             context.push('/profile');

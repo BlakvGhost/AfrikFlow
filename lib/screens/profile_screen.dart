@@ -240,9 +240,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage: user?.avatar != null
-                              ? NetworkImage("${user?.avatar}")
-                              : const AssetImage('assets/images/man.png'),
+                          backgroundImage: NetworkImage(user?.avatar ?? ''),
                         ),
                         Positioned(
                           bottom: 0,
