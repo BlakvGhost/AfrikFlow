@@ -21,6 +21,10 @@ class SendScreenState extends ConsumerState<SendScreen>
   String? selectedCardType;
   List<String> operators = [];
 
+  double _buttonPosition = 0.0;
+  final double _buttonWidth = 60.0;
+  final double _sliderWidth = 300.0;
+
   bool supportFees = false;
 
   @override
@@ -126,7 +130,7 @@ class SendScreenState extends ConsumerState<SendScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         _buildSectionTitle("De :"),
                         const SizedBox(height: 16),
                         _buildCountryOperatorDropdown(walletProviders),
@@ -136,13 +140,13 @@ class SendScreenState extends ConsumerState<SendScreen>
                         _buildAmountField(),
                         const SizedBox(height: 16),
                         _buildAgreeSupportFeesSwitch(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         _buildSectionTitle("Vers :"),
                         const SizedBox(height: 16),
                         _buildCountryOperatorDropdown(walletProviders),
                         const SizedBox(height: 16),
                         _buildPhoneNumberField('96 96 96 96'),
-                        const SizedBox(height: 32),
+                        _buildSlideButton(),
                       ],
                     ),
                   ),
@@ -192,6 +196,71 @@ class SendScreenState extends ConsumerState<SendScreen>
           );
         }
       },
+    );
+  }
+
+  Widget _buildSlideButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      child: Stack(
+        children: [
+          Container(
+            height: 60,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            alignment: Alignment.center,
+            child: const Text(
+              'Slide to send 5000 FCFA',
+              style: TextStyle(
+                color: AppTheme.primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            left: _buttonPosition,
+            top: 0,
+            bottom: 0,
+            child: GestureDetector(
+              onHorizontalDragUpdate: (details) {
+                setState(() {
+                  _buttonPosition += details.delta.dx;
+                  if (_buttonPosition < 0) _buttonPosition = 0;
+                  if (_buttonPosition > _sliderWidth - _buttonWidth) {
+                    _buttonPosition = _sliderWidth - _buttonWidth;
+                    // _completeTransaction();
+                  }
+                });
+              },
+              onHorizontalDragEnd: (details) {
+                if (_buttonPosition < _sliderWidth - _buttonWidth) {
+                  setState(() {
+                    _buttonPosition = 0;
+                  });
+                }
+              },
+              child: Container(
+                height: 60,
+                width: _buttonWidth,
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
