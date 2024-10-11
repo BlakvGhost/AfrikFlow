@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/services/transaction_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:slide_action/slide_action.dart';
 import 'package:go_router/go_router.dart';
 
 class SendScreen extends ConsumerStatefulWidget {
@@ -24,13 +25,12 @@ class SendScreenState extends ConsumerState<SendScreen>
   String? selectedCardType;
   List<String> operators = [];
 
-  double _buttonPosition = 0.0;
-  final double _buttonWidth = 60.0;
-  final double _sliderWidth = 800.0;
-  double calculatedFees = 0.0;
+  double totalSendAmount = 0.0;
   double totalAmount = 0.0;
 
   bool supportFees = false;
+
+  bool isProcessing = false;
 
   final TextEditingController _payinPhoneNumberController =
       TextEditingController();
@@ -67,7 +67,8 @@ class SendScreenState extends ConsumerState<SendScreen>
 
       if (response['success']) {
         setState(() {
-          calculatedFees = double.parse("${response['data']['totalFees']}");
+          totalSendAmount =
+              double.parse("${response['data']['amountWithoutFees']}");
           totalAmount = double.parse("${response['data']['amountWithFees']}");
         });
       }
@@ -79,20 +80,107 @@ class SendScreenState extends ConsumerState<SendScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmation'),
-          content: Text('Voulez-vous envoyer $totalAmount FCFA ?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Annuler'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
+          backgroundColor: const Color(0xFF1C1C1C),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Wrap(
+            children: [
+              Text(
+                'Confirmation de transaction',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            // Ajout d'un SingleChildScrollView
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Détails de la transaction :',
+                  style: TextStyle(
+                    color: AppTheme.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Total à payer :',
+                        style: TextStyle(color: Colors.white)),
+                    Text('$totalAmount FCFA',
+                        style: const TextStyle(color: Colors.greenAccent)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Total à recevoir :',
+                        style: TextStyle(color: Colors.white)),
+                    Text('$totalSendAmount FCFA',
+                        style: const TextStyle(color: Colors.greenAccent)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Wrap(
+                  children: [
+                    Text(
+                      'Voulez-vous envoyer de ${_payinPhoneNumberController.text} vers ${_payoutPhoneNumberController.text} ?',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            TextButton(
-              child: const Text('Confirmer'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 110,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                    label: const Text(
+                      'Annuler',
+                      style: TextStyle(color: Colors.redAccent),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 110,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.check_circle, color: Colors.white),
+                    label: const Text(
+                      'Confirmer',
+                      style: TextStyle(color: Colors.white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         );
@@ -100,21 +188,36 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
 
     if (result == true) {
+      setState(() {
+        isProcessing = true;
+      });
+
       final sendResponse = await _transactionService.sendTransaction(
         payinPhoneNumber: _payinPhoneNumberController.text,
         payinWProviderId: selectedPayinOperator!,
         payoutPhoneNumber: _payoutPhoneNumberController.text,
-        payoutWProviderId: _payoutPhoneNumberController.text,
+        payoutWProviderId: selectedPayoutOperator!,
         amount: double.parse(_amountController.text),
         senderSupportFee: supportFees,
       );
+      setState(() {
+        isProcessing = false;
+      });
 
       if (sendResponse['success']) {
-        context.push('transactions');
+        context.push('/transactions');
       } else {
         showToast(context, sendResponse['message']);
       }
     }
+  }
+
+  bool _canSlide() {
+    return selectedPayinOperator != null &&
+        selectedPayoutOperator != null &&
+        _payinPhoneNumberController.text.isNotEmpty &&
+        _payoutPhoneNumberController.text.isNotEmpty &&
+        _amountController.text.isNotEmpty;
   }
 
   @override
@@ -123,10 +226,12 @@ class SendScreenState extends ConsumerState<SendScreen>
       appBar: _buildAppBar(),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildLocalTransferContent(),
-          _buildCreditCardTransferContent(),
-        ],
+        children: isProcessing
+            ? [const Center(child: CircularProgressIndicator())]
+            : [
+                _buildLocalTransferContent(),
+                _buildCreditCardTransferContent(),
+              ],
       ),
     );
   }
@@ -284,11 +389,10 @@ class SendScreenState extends ConsumerState<SendScreen>
   Widget _buildSlideButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 30),
-      child: Stack(
-        children: [
-          Container(
+      child: SlideAction(
+        trackBuilder: (context, state) {
+          return Container(
             height: 60,
-            width: double.infinity,
             decoration: BoxDecoration(
               color: AppTheme.primaryColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(50),
@@ -302,46 +406,31 @@ class SendScreenState extends ConsumerState<SendScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            left: _buttonPosition,
-            top: 0,
-            bottom: 0,
-            child: GestureDetector(
-              onHorizontalDragUpdate: (details) {
-                setState(() {
-                  _buttonPosition += details.delta.dx;
-                  if (_buttonPosition < 0) _buttonPosition = 0;
-                  if (_buttonPosition > _sliderWidth - _buttonWidth) {
-                    _buttonPosition = _sliderWidth - _buttonWidth;
-                    _confirmAndSendTransaction();
-                  }
-                });
-              },
-              onHorizontalDragEnd: (details) {
-                if (_buttonPosition < _sliderWidth - _buttonWidth) {
-                  setState(() {
-                    _buttonPosition = 0;
-                  });
-                }
-              },
-              child: Container(
-                height: 60,
-                width: _buttonWidth,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
-                ),
-              ),
+          );
+        },
+        thumbBuilder: (context, state) {
+          return Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor,
+              borderRadius: BorderRadius.circular(50),
             ),
-          ),
-        ],
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+            ),
+          );
+        },
+        action: () {
+          if (_canSlide()) {
+            _confirmAndSendTransaction();
+          } else {
+            showToast(context, "Veuillez remplir tous les champs nécessaires");
+          }
+        },
+        actionSnapThreshold: 0.85,
       ),
     );
   }
@@ -388,7 +477,12 @@ class SendScreenState extends ConsumerState<SendScreen>
                 height: 24,
               ),
               const SizedBox(width: 8),
-              Text(provider.name),
+              Expanded(
+                child: Text(
+                  provider.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         );
@@ -417,18 +511,21 @@ class SendScreenState extends ConsumerState<SendScreen>
         totalAmount = double.parse(value);
         _calculateFees();
       },
+      textInputAction: TextInputAction.next,
     );
   }
 
   Widget _buildPhoneNumberField(TextEditingController controller) {
     return TextFormField(
       controller: controller,
+      keyboardType: TextInputType.phone,
       decoration: InputDecoration(
         labelText: 'Numéro de téléphone',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
+      textInputAction: TextInputAction.next,
     );
   }
 

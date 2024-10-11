@@ -14,6 +14,7 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   String searchQuery = "";
   bool isRefreshing = false;
+  bool isLoading = false; // Ajout d'un état de chargement
 
   Future<void> _refresh() async {
     setState(() {
@@ -28,6 +29,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+      ref.read(userProvider.notifier).refreshUserData(ref);
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     final user = ref.watch(userProvider);
     final transactions = user?.transactions ?? [];
 

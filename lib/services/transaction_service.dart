@@ -36,11 +36,10 @@ class TransactionService {
         'payout_wprovider_id': payoutWProviderId,
         'amount': amount,
         'sender_support_fee': senderSupportFee,
-        'type': type,
-        'otp_code': otpCode,
       }),
     );
 
+    print(jsonDecode(response.body));
     if (response.statusCode == 200) {
       return {'success': true, 'data': jsonDecode(response.body)['data']};
     } else {
