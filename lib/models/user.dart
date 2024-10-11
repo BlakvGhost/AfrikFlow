@@ -1,6 +1,7 @@
 import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/models/log.dart';
 import 'package:afrik_flow/models/transaction.dart';
+import 'package:afrik_flow/models/notification.dart';
 
 class User {
   final int id;
@@ -18,6 +19,7 @@ class User {
   final Country country;
   final List<Transaction> transactions;
   final List<Log> logs;
+  final List<Notification> notifications;
 
   User({
     required this.id,
@@ -35,6 +37,7 @@ class User {
     required this.country,
     required this.transactions,
     required this.logs,
+    required this.notifications,
   });
 
   User copyWith({
@@ -52,6 +55,7 @@ class User {
     Country? country,
     List<Transaction>? transactions,
     List<Log>? logs,
+    List<Notification>? notifications,
   }) {
     return User(
       id: id ?? this.id,
@@ -68,6 +72,7 @@ class User {
       country: country ?? this.country,
       transactions: transactions ?? this.transactions,
       logs: logs ?? this.logs,
+      notifications: notifications ?? this.notifications,
       isTwoFactorEnabled: isTwoFactorEnabled,
     );
   }
@@ -91,6 +96,9 @@ class User {
           .map((i) => Transaction.fromJson(i))
           .toList(),
       logs: (json['logs'] as List).map((i) => Log.fromJson(i)).toList(),
+      notifications: (json['notifications'] as List)
+          .map((i) => Notification.fromJson(i))
+          .toList(),
     );
   }
 
@@ -111,6 +119,7 @@ class User {
       'country': country.toJson(),
       'transactions': transactions.map((t) => t.toJson()).toList(),
       'logs': logs.map((l) => l.toJson()).toList(),
+      'notifications': notifications.map((n) => n.toJson()).toList(),
     };
   }
 }
