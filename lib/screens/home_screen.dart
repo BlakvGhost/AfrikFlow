@@ -68,7 +68,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
@@ -100,11 +99,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    PhosphorIconsDuotone.warning,
-                                    color: Colors.grey[600],
-                                    size: 50,
-                                  ),
                                   const SizedBox(height: 16),
                                   Flexible(
                                     child: user!.isVerified
@@ -112,14 +106,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             "Vous n'avez pas encore effectué de transfert.",
                                             style: TextStyle(
                                                 fontSize: 16,
-                                                color: Colors.white),
+                                                color: Colors.white60),
                                             textAlign: TextAlign.center,
                                           )
                                         : const Text(
                                             "Veuillez à la validation de votre compte avant d'effectuer un transfert.",
                                             style: TextStyle(
                                                 fontSize: 16,
-                                                color: Colors.white),
+                                                color: Colors.white60),
                                             textAlign: TextAlign.center,
                                           ),
                                   ),

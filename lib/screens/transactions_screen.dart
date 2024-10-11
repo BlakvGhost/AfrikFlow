@@ -90,7 +90,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              PhosphorIconsDuotone.warning,
+                              PhosphorIconsDuotone.info,
                               color: Colors.grey[600],
                               size: 50,
                             ),
