@@ -97,7 +97,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         if (transactions!.isEmpty)
                           SizedBox(
-                            height: MediaQuery.of(context).size.height / 4,
+                            height: MediaQuery.of(context).size.height / 6,
                             child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,

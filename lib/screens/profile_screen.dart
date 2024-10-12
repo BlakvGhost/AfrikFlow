@@ -276,7 +276,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     ListTile(
                       leading: const Icon(PhosphorIconsDuotone.phone),
-                      title: Text(user.phoneNumber),
+                      title: Text(user.phoneNumber ?? 'Vide'),
                       trailing: IconButton(
                         icon: const Icon(PhosphorIconsDuotone.pencilSimple),
                         onPressed: () {},

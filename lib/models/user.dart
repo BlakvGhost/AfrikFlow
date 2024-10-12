@@ -8,7 +8,7 @@ class User {
   final String firstName;
   final String lastName;
   final String email;
-  final String phoneNumber;
+  final String? phoneNumber;
   final bool isAdmin;
   final bool isActive;
   final bool isVerified;
@@ -26,7 +26,7 @@ class User {
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.phoneNumber,
+    this.phoneNumber,
     required this.isAdmin,
     required this.isActive,
     required this.isVerified,

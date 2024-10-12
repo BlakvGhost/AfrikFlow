@@ -35,10 +35,13 @@ class AuthBaseScreen extends ConsumerWidget {
         systemNavigationBarColor: Colors.white,
         systemNavigationBarDividerColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
-        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
 
-    return Scaffold(body: SafeArea(child: child));
+    return Scaffold(
+      body: SafeArea(child: child),
+      extendBodyBehindAppBar: true,
+    );
   }
 }
