@@ -378,7 +378,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                     buildActivityHistory(logs!),
                     const SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
+                      padding: const EdgeInsets.only(top: 8.0),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(

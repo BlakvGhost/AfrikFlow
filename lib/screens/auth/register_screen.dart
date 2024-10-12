@@ -1,6 +1,7 @@
 import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
+import 'package:afrik_flow/services/push_notification_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/app_logo.dart';
@@ -121,6 +122,7 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     if (result['success']) {
+      await PushNotificationService().init(ref, context);
       context.go('/home');
     } else {
       showToast(context, result['message']);

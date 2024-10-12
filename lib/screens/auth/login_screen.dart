@@ -1,3 +1,4 @@
+import 'package:afrik_flow/services/push_notification_service.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/app_logo.dart';
 import 'package:afrik_flow/widgets/input/password_input_field.dart';
@@ -68,6 +69,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     if (result['success']) {
+      await PushNotificationService().init(ref, context);
       context.go('/home');
     } else {
       showToast(context, result['message']);
