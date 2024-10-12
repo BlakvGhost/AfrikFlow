@@ -39,7 +39,6 @@ class TransactionService {
       }),
     );
 
-    print(jsonDecode(response.body));
     if (response.statusCode == 200) {
       return {'success': true, 'data': jsonDecode(response.body)['data']};
     } else {
@@ -71,6 +70,20 @@ class TransactionService {
       return jsonResponse.map((json) => WProvider.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load Wallet Providers');
+    }
+  }
+
+  Future<Map<String, dynamic>> resubmit(String token) async {
+    final url = Uri.parse('$apiBaseUrl/refresh-transaction/$token');
+
+    final response = await apiClient.get(url);
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+      return {'success': true, 'data': jsonDecode(response.body)['data']};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
     }
   }
 

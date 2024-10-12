@@ -1,3 +1,4 @@
+import 'package:afrik_flow/models/transaction.dart';
 import 'package:afrik_flow/screens/all_service_screen.dart';
 import 'package:afrik_flow/screens/assistance_screen.dart';
 import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
@@ -8,12 +9,13 @@ import 'package:afrik_flow/screens/invoice_screen.dart';
 import 'package:afrik_flow/screens/notifications_screen.dart';
 import 'package:afrik_flow/screens/settings_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
+import 'package:afrik_flow/screens/transaction/detail_transaction.dart';
 import 'package:afrik_flow/widgets/auth_base_screen.dart';
 import 'package:afrik_flow/widgets/base_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/screens/home_screen.dart';
 import 'package:afrik_flow/screens/send_screen.dart';
-import 'package:afrik_flow/screens/transactions_screen.dart';
+import 'package:afrik_flow/screens/transaction/transactions_screen.dart';
 import 'package:afrik_flow/screens/profile_screen.dart';
 
 class AppRoutes {
@@ -49,11 +51,18 @@ class AppRoutes {
     ),
     GoRoute(
       path: '/transactions',
-      builder: (context, state) => BaseScreen(
+      builder: (context, state) => const BaseScreen(
         showAppBar: false,
         title: "Historiques",
         child: TransactionsScreen(),
       ),
+    ),
+    GoRoute(
+      path: '/transaction-details',
+      builder: (context, state) {
+        final transactionDetails = state.extra as Transaction;
+        return TransactionDetailsScreen(transaction: transactionDetails);
+      },
     ),
     GoRoute(
       path: '/profile',

@@ -33,6 +33,36 @@ void showToast(BuildContext context, dynamic message, {isList = false}) {
   );
 }
 
+void showSucessToast(BuildContext context, dynamic message, {isList = false}) {
+  if (isList) {
+    message = formatErrorMessage(message);
+  }
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          const PhIcon(
+            child: PhosphorIconsDuotone.checkCircle,
+            isWhite: true,
+            smartColor: true,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: AppTheme.whiteColor),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 8,
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: AppTheme.primaryColor,
+    ),
+  );
+}
+
 bool isValidEmail(String email) {
   String pattern = r'^[^@]+@[^@]+\.[^@]+';
   RegExp regex = RegExp(pattern);
