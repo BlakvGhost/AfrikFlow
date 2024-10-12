@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:afrik_flow/providers/api_client_provider.dart';
+import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -22,7 +23,7 @@ class PushNotificationService {
       await sendTokenToServer(token, ref);
     }
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
@@ -41,6 +42,7 @@ class PushNotificationService {
             ),
           ),
         );
+        await ref.read(userProvider.notifier).refreshUserData(ref);
       }
     });
   }
