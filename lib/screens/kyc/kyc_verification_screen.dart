@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:image/image.dart' as img;
 
 class KYCVerificationScreen extends ConsumerStatefulWidget {
   const KYCVerificationScreen({super.key});
@@ -31,27 +32,31 @@ class KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
     }
   }
 
+  Future<File> _compressImage(File imageFile) async {
+    final originalImage = img.decodeImage(imageFile.readAsBytesSync())!;
+
+    final compressedImage = img.copyResize(originalImage, width: 800);
+
+    final compressedFile = await imageFile
+        .writeAsBytes(img.encodeJpg(compressedImage, quality: 85));
+
+    return compressedFile;
+  }
+
   Future<void> _uploadImage() async {
     if (_selectedImage == null || _isLoading) return;
 
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
-    final response = await ApiService().uploadImage(_selectedImage!, ref);
+    final compressedImage = await _compressImage(_selectedImage!);
+
+    await ApiService().uploadImage(compressedImage, ref);
 
     setState(() {
       _isLoading = false;
     });
-
-    if (response['success']) {
-      // showSucessToast(context, response['data']);
-    } else {
-      setState(() {
-        _errorMessage = response['message'];
-      });
-    }
   }
 
   @override
@@ -64,59 +69,139 @@ class KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (firstKyc != null) ...[
-            if (firstKyc.status == 'pending') ...[
-              const Icon(
-                Icons.hourglass_top,
-                color: AppTheme.primaryColor,
-                size: 100,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Votre document est en cours de vérification, celà peu prendre un tout petit moment, vous serez informer une fois terminée...',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+          if (_isLoading)
+            const Column(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text(
+                  'Envoi en cours, cela peut prendre un moment car nous envoyons une image de haute qualité pour la vérification. Veuillez patienter...',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ] else if (firstKyc.status == 'success') ...[
-              const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 100,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Votre document KYC a été approuvé!',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              ],
+            ),
+          if (!_isLoading) ...[
+            if (firstKyc != null) ...[
+              if (firstKyc.status == 'pending') ...[
+                const Icon(
+                  Icons.hourglass_top,
+                  color: AppTheme.primaryColor,
+                  size: 100,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ] else if (firstKyc.status == 'failed') ...[
-              const Icon(
-                Icons.error,
-                color: Colors.red,
-                size: 100,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Échec de la vérification: ${firstKyc.failureReason ?? 'Raison inconnue'}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 16),
+                const Text(
+                  'Votre document est en cours de vérification, celà peu prendre un petit moment, vous serez informer une fois terminée...',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ] else if (firstKyc.status == 'success') ...[
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 100,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Votre document KYC a été approuvé!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ] else if (firstKyc.status == 'failed') ...[
+                const Icon(
+                  Icons.error,
                   color: Colors.red,
+                  size: 100,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 16),
+                Center(
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Échec de la vérification',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Raison: ${firstKyc.failureReason ?? 'Raison inconnue'}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.red,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: _pickImage,
+                  icon: const Icon(Icons.camera, color: Colors.white),
+                  label: const Text(
+                    'Reprendre une photo',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryColor,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 30,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ]
+            ] else ...[
+              _selectedImage != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(15.0),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        const Icon(
+                          Icons.camera_alt,
+                          color: AppTheme.primaryColor,
+                          size: 100,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Capturez une photo de votre carte d\'identité ou tout document justificatif pour la vérification KYC',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+              const SizedBox(height: 40),
               ElevatedButton.icon(
                 onPressed: _pickImage,
                 icon: const Icon(Icons.camera, color: Colors.white),
                 label: const Text(
-                  'Reprendre une photo',
+                  'Prendre une photo',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -130,82 +215,32 @@ class KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                   ),
                 ),
               ),
-            ]
-          ] else ...[
-            _selectedImage != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(15.0),
-                    child: Image.file(
-                      _selectedImage!,
-                      height: 250,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Column(
-                    children: [
-                      const Icon(
-                        Icons.camera_alt,
-                        color: AppTheme.primaryColor,
-                        size: 100,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Capturez une photo de votre carte d\'identité ou tout document justificatif pour la vérification KYC',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+              const SizedBox(height: 20),
+              Text(
+                'Assurez-vous que votre photo est bien claire pour la validation.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              CustomElevatedButton(
+                onPressed: _uploadImage,
+                backgroundColor: _selectedImage != null
+                    ? AppTheme.primaryColor
+                    : Colors.grey.shade400,
+                label: "Envoyer pour validation",
+              ),
+            ],
             const SizedBox(height: 40),
-            ElevatedButton.icon(
-              onPressed: _pickImage,
-              icon: const Icon(Icons.camera, color: Colors.white),
-              label: const Text(
-                'Prendre une photo',
-                style: TextStyle(color: Colors.white),
+            if (_errorMessage != null)
+              Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red, fontSize: 16),
+                textAlign: TextAlign.center,
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 15,
-                  horizontal: 30,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Assurez-vous que votre photo est bien claire pour la validation.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            CustomElevatedButton(
-              onPressed: _selectedImage != null ? _uploadImage : null,
-              backgroundColor: _selectedImage != null
-                  ? AppTheme.primaryColor
-                  : Colors.grey.shade400,
-              label: "Envoyer pour validation",
-              isLoading: _isLoading,
-            ),
           ],
-          const SizedBox(height: 40),
-          if (_errorMessage != null)
-            Text(
-              _errorMessage!,
-              style: const TextStyle(color: Colors.red, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
         ],
       ),
     );

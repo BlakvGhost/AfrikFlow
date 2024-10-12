@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:afrik_flow/providers/api_client_provider.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
@@ -13,8 +12,19 @@ import 'package:go_router/go_router.dart';
 class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final ApiService _apiService = ApiService();
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   Future<void> init(WidgetRef ref, BuildContext context) async {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
     await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
@@ -32,8 +42,6 @@ class PushNotificationService {
       AndroidNotification? android = message.notification?.android;
 
       if (notification != null && android != null) {
-        final flutterLocalNotificationsPlugin =
-            FlutterLocalNotificationsPlugin();
         flutterLocalNotificationsPlugin.show(
           notification.hashCode,
           notification.title,
@@ -45,19 +53,16 @@ class PushNotificationService {
               importance: Importance.max,
             ),
           ),
+          payload: jsonEncode(message.data),
         );
+
         await ref.read(userProvider.notifier).refreshUserData(ref);
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Notification opened: ${message.data}');
-
-      String? type = message.data['type'];
-      if (type != null) {
-        // ignore: use_build_context_synchronously
-        redirectToScreen(type, message.data['data'], ref, context);
-      }
+      _handleNotificationClick(message.data, ref, context);
     });
   }
 
@@ -71,9 +76,16 @@ class PushNotificationService {
     );
   }
 
+  void _handleNotificationClick(
+      Map<String, dynamic> data, WidgetRef ref, BuildContext context) {
+    String? type = data['type'];
+    if (type != null) {
+      redirectToScreen(type, data['data'], ref, context);
+    }
+  }
+
   void redirectToScreen(
-      String type, data, WidgetRef ref, BuildContext context) {
-    print(data);
+      String type, dynamic data, WidgetRef ref, BuildContext context) {
     _apiService.markNotificationAsRead(data['id'], ref);
 
     switch (type) {
@@ -82,6 +94,9 @@ class PushNotificationService {
         break;
       case 'WelcomeMessage':
         context.push('/send');
+        break;
+      case 'KYC':
+        context.push('/kyc');
         break;
       default:
         context.go('/home');

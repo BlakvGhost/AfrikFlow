@@ -79,7 +79,6 @@ class ApiService {
 
     final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
 
-    print(jsonResponse);
     if (response.statusCode == 200) {
       await ref.read(userProvider.notifier).refreshUserData(ref);
       return {'success': true, 'data': jsonResponse['data']};
