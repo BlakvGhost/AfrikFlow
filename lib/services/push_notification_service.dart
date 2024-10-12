@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:afrik_flow/providers/api_client_provider.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,7 +32,7 @@ class PushNotificationService {
 
     await apiClient.post(
       url,
-      body: {'device_id': token},
+      body: jsonEncode({'device_id': token}),
     );
   }
 }
