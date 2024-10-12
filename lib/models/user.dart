@@ -2,6 +2,7 @@ import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/models/log.dart';
 import 'package:afrik_flow/models/transaction.dart';
 import 'package:afrik_flow/models/notification.dart';
+import 'package:afrik_flow/models/kyc.dart';
 
 class User {
   final int id;
@@ -20,6 +21,8 @@ class User {
   final List<Transaction> transactions;
   final List<Log> logs;
   final List<Notification> notifications;
+  final List<Kyc> kycs;
+  final bool isAcceptedNotifications;
 
   User({
     required this.id,
@@ -38,6 +41,8 @@ class User {
     required this.transactions,
     required this.logs,
     required this.notifications,
+    required this.kycs,
+    required this.isAcceptedNotifications,
   });
 
   User copyWith({
@@ -56,6 +61,8 @@ class User {
     List<Transaction>? transactions,
     List<Log>? logs,
     List<Notification>? notifications,
+    List<Kyc>? kycs,
+    bool? isAcceptedNotifications,
   }) {
     return User(
       id: id ?? this.id,
@@ -73,6 +80,9 @@ class User {
       transactions: transactions ?? this.transactions,
       logs: logs ?? this.logs,
       notifications: notifications ?? this.notifications,
+      kycs: kycs ?? this.kycs,
+      isAcceptedNotifications:
+          isAcceptedNotifications ?? this.isAcceptedNotifications,
       isTwoFactorEnabled: isTwoFactorEnabled,
     );
   }
@@ -99,6 +109,8 @@ class User {
       notifications: (json['notifications'] as List)
           .map((i) => Notification.fromJson(i))
           .toList(),
+      kycs: (json['kycs'] as List).map((i) => Kyc.fromJson(i)).toList(),
+      isAcceptedNotifications: json['isAcceptedNotifications'] == 1,
     );
   }
 
@@ -120,6 +132,8 @@ class User {
       'transactions': transactions.map((t) => t.toJson()).toList(),
       'logs': logs.map((l) => l.toJson()).toList(),
       'notifications': notifications.map((n) => n.toJson()).toList(),
+      'kycs': kycs.map((k) => k.toJson()).toList(),
+      'isAcceptedNotifications': isAcceptedNotifications ? 1 : 0,
     };
   }
 }

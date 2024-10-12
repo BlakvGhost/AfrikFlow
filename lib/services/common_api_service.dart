@@ -77,13 +77,14 @@ class ApiService {
 
     final responseBody = await response.stream.bytesToString();
 
+    final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+
+    print(jsonResponse);
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
       await ref.read(userProvider.notifier).refreshUserData(ref);
       return {'success': true, 'data': jsonResponse['data']};
     } else {
-      final errorMessage = jsonDecode(responseBody)['message'];
-      return {'success': false, 'message': errorMessage};
+      return {'success': false, 'message': jsonResponse['message']};
     }
   }
 }
