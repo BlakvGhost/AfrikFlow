@@ -10,12 +10,13 @@ import 'package:go_router/go_router.dart';
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  Future<String?> _determineInitialRoute(WidgetRef ref) async {
+  Future<String?> _determineInitialRoute(WidgetRef ref, BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final user = ref.read(userProvider);
 
     if (user != null) {
-      PushNotificationService().init(ref);
+      // ignore: use_build_context_synchronously
+      PushNotificationService().init(ref, context);
       return '/home';
     }
 
@@ -30,7 +31,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<String?>(
-      future: _determineInitialRoute(ref),
+      future: _determineInitialRoute(ref, context),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(

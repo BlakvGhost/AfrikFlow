@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:afrik_flow/models/transaction.dart';
 
 class Notification {
@@ -44,4 +46,10 @@ class Notification {
       'humarizeDate': humarizeDate,
     };
   }
+
+  static const String PROMOTION = 'promotion';
+  static const String INFO = 'info';
+  static const String ALERT = 'alert';
+  static const String WELCOME = 'welcome';
+  static const String TRANSFERT = 'transfert';
 }
