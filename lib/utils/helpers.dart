@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:afrik_flow/widgets/ui/ph_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:image/image.dart' as img;
+
 
 void showToast(BuildContext context, dynamic message, {isList = false}) {
   if (isList) {
@@ -83,4 +87,15 @@ String formatErrorMessage(Map<String, dynamic> errors) {
   });
 
   return formattedMessage.toString();
+}
+
+Future<File> compressImage(File imageFile) async {
+  final originalImage = img.decodeImage(imageFile.readAsBytesSync())!;
+
+  final compressedImage = img.copyResize(originalImage, width: 800);
+
+  final compressedFile =
+      await imageFile.writeAsBytes(img.encodeJpg(compressedImage, quality: 85));
+
+  return compressedFile;
 }

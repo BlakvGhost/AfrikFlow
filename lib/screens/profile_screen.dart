@@ -62,7 +62,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     if (response['success']) {
       showSucessToast(context, "Votre profile est bien mis à jour!");
-      await _refresh();
+      // await _refresh();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(response['message']),
@@ -299,10 +299,13 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
       setState(() {
         _avatarFile = File(pickedFile.path);
       });
+
+      final compressedImage = await compressImage(_avatarFile!);
+
       updateProfile(
         firstName: ref.read(userProvider)?.firstName ?? '',
         lastName: ref.read(userProvider)?.lastName ?? '',
-        avatar: _avatarFile,
+        avatar: compressedImage,
       );
     }
   }
