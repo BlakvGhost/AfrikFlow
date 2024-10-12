@@ -1,9 +1,9 @@
-import 'package:afrik_flow/providers/user_notifier.dart';
-import 'package:afrik_flow/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:afrik_flow/providers/user_notifier.dart';
+import 'package:afrik_flow/widgets/circle_button.dart';
 import 'package:afrik_flow/widgets/carousel_with_dots.dart';
 import 'package:afrik_flow/widgets/transaction_item.dart';
 import 'package:afrik_flow/models/transaction.dart';
@@ -43,6 +43,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!user!.isVerified) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Flexible(
+                            child: Text(
+                              'Votre compte n\'est pas encore vérifié. Veuillez compléter la vérification pour accéder à tous les services.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            onPressed: () {
+                              context.push('/kyc');
+                            },
+                            child: const Text(
+                              'Vérifier',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const CarouselWithDots(),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -98,28 +139,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         if (transactions!.isEmpty)
                           SizedBox(
                             height: MediaQuery.of(context).size.height / 6,
-                            child: Center(
+                            child: const Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 16),
+                                  SizedBox(height: 16),
                                   Flexible(
-                                    child: user!.isVerified
-                                        ? const Text(
-                                            "Vous n'avez pas encore effectué de transfert.",
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white60),
-                                            textAlign: TextAlign.center,
-                                          )
-                                        : const Text(
-                                            "Veuillez à la validation de votre compte avant d'effectuer un transfert.",
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white60),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                  ),
+                                      child: Text(
+                                    "Vous n'avez pas encore effectué de transfert.",
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white60),
+                                    textAlign: TextAlign.center,
+                                  )),
                                 ],
                               ),
                             ),

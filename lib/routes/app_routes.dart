@@ -6,6 +6,7 @@ import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
 import 'package:afrik_flow/screens/invoice_screen.dart';
+import 'package:afrik_flow/screens/kyc/kyc_verification_screen.dart';
 import 'package:afrik_flow/screens/notifications_screen.dart';
 import 'package:afrik_flow/screens/settings_screen.dart';
 import 'package:afrik_flow/screens/splashs/splash_screen.dart';
@@ -78,6 +79,14 @@ class AppRoutes {
         showAppBar: false,
         title: "Vos Factures",
         child: InvoiceScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/kyc',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "Vérification de votre identité",
+        child: KYCVerificationScreen(),
       ),
     ),
     GoRoute(

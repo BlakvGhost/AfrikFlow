@@ -171,7 +171,7 @@ class EmailVerificationScreenState
                   children: [
                     const Center(
                       child: Text(
-                        "Vous n'avez pas reçu le code ?",
+                        "Vous n'avez pas reçu ?",
                         style: TextStyle(fontSize: 14),
                       ),
                     ),

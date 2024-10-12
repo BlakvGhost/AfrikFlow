@@ -1,4 +1,6 @@
+import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/models/w_provider.dart';
+import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
@@ -231,6 +233,8 @@ class SendScreenState extends ConsumerState<SendScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+
     return Scaffold(
       appBar: _buildAppBar(),
       body: TabBarView(
@@ -238,7 +242,7 @@ class SendScreenState extends ConsumerState<SendScreen>
         children: isProcessing
             ? [const Center(child: CircularProgressIndicator())]
             : [
-                _buildLocalTransferContent(),
+                _buildLocalTransferContent(user!),
                 _buildCreditCardTransferContent(),
               ],
       ),
@@ -304,7 +308,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildLocalTransferContent() {
+  Widget _buildLocalTransferContent(User user) {
     if (walletProviders == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -337,7 +341,7 @@ class SendScreenState extends ConsumerState<SendScreen>
                   _buildCountryOperatorDropdown(walletProviders!, false),
                   const SizedBox(height: 16),
                   _buildPhoneNumberField(_payoutPhoneNumberController),
-                  _buildSlideButton(),
+                  _buildSlideButton(user),
                 ],
               ),
             ),
@@ -379,7 +383,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildSlideButton() {
+  Widget _buildSlideButton(User user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 30),
       child: SlideAction(
@@ -417,10 +421,16 @@ class SendScreenState extends ConsumerState<SendScreen>
           );
         },
         action: () {
-          if (_canSlide()) {
-            _confirmAndSendTransaction();
+          if (!user.isVerified) {
+            showToast(context,
+                "Votre compte n'est pas encore vérifié. Veuillez compléter la vérification pour accéder à ce service.");
           } else {
-            showToast(context, "Veuillez remplir tous les champs nécessaires");
+            if (_canSlide()) {
+              _confirmAndSendTransaction();
+            } else {
+              showToast(
+                  context, "Veuillez remplir tous les champs nécessaires");
+            }
           }
         },
         actionSnapThreshold: 0.85,
