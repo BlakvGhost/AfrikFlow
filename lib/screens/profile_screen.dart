@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:afrik_flow/models/log.dart';
 import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
-import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/services/common_api_service.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/kyc_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -17,6 +21,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool isRefresh = false;
+  File? _avatarFile;
 
   Future<void> _refresh() async {
     setState(() {
@@ -42,12 +47,37 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
           );
   }
 
+  Future<void> updateProfile(
+      {required String firstName,
+      required String lastName,
+      String? phoneNumber,
+      File? avatar}) async {
+    final response = await ApiService().updateUserProfile(
+      firstName,
+      lastName,
+      phoneNumber ?? '',
+      avatar: avatar,
+      ref: ref,
+    );
+
+    if (response['success']) {
+      showSucessToast(context, "Votre profile est bien mis à jour!");
+      await _refresh();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(response['message']),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
   void editName(User? user) {
+    String firstName = user?.firstName ?? '';
+    String lastName = user?.lastName ?? '';
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String firstName = user?.firstName ?? '';
-        String lastName = user?.lastName ?? '';
         return AlertDialog(
           title: const Text('Modifier le nom'),
           content: Column(
@@ -58,9 +88,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                 controller: TextEditingController(text: firstName),
                 onChanged: (value) => firstName = value,
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               TextField(
                 decoration: const InputDecoration(labelText: 'Nom'),
                 controller: TextEditingController(text: lastName),
@@ -75,6 +103,44 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             TextButton(
               onPressed: () {
+                updateProfile(firstName: firstName, lastName: lastName);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Enregistrer'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void editPhoneNumber(User? user) {
+    String phoneNumber = user?.phoneNumber ?? '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Modifier votre Numéro'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: const InputDecoration(labelText: 'Numéro'),
+                controller: TextEditingController(text: phoneNumber),
+                onChanged: (value) => phoneNumber = value,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                updateProfile(
+                    firstName: '', lastName: '', phoneNumber: phoneNumber);
                 Navigator.of(context).pop();
               },
               child: const Text('Enregistrer'),
@@ -114,6 +180,10 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
               case 'transfer':
                 actionMessage = 'Vous avez effectué un transfert.';
                 icon = PhosphorIconsDuotone.arrowRight;
+                break;
+              case 'logout':
+                actionMessage = 'Vous vous êtes déconnecté.';
+                icon = PhosphorIconsDuotone.userSwitch;
                 break;
               default:
                 actionMessage = logs[index].action;
@@ -221,6 +291,22 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Future<void> _pickAvatar() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _avatarFile = File(pickedFile.path);
+      });
+      updateProfile(
+        firstName: ref.read(userProvider)?.firstName ?? '',
+        lastName: ref.read(userProvider)?.lastName ?? '',
+        avatar: _avatarFile,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
@@ -241,15 +327,18 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage: NetworkImage(user.avatar ?? ''),
+                          backgroundImage: _avatarFile != null
+                              ? FileImage(_avatarFile!)
+                              : NetworkImage(user.avatar ?? '')
+                                  as ImageProvider,
                         ),
                         Positioned(
                           bottom: 0,
                           right: 0,
                           child: IconButton(
                             icon: const Icon(PhosphorIconsDuotone.camera,
-                                color: AppTheme.primaryColor),
-                            onPressed: () {},
+                                color: Colors.blue),
+                            onPressed: _pickAvatar,
                           ),
                         ),
                         Positioned(
@@ -271,17 +360,15 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ListTile(
                       leading: const Icon(PhosphorIconsDuotone.envelope),
                       title: Text(user.email),
-                      trailing: IconButton(
-                        icon: const Icon(PhosphorIconsDuotone.pencilSimple),
-                        onPressed: () {},
-                      ),
                     ),
                     ListTile(
                       leading: const Icon(PhosphorIconsDuotone.phone),
                       title: Text(user.phoneNumber ?? 'Vide'),
                       trailing: IconButton(
                         icon: const Icon(PhosphorIconsDuotone.pencilSimple),
-                        onPressed: () {},
+                        onPressed: () {
+                          editPhoneNumber(user);
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -300,7 +387,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           child: const Text(
                             "Se déconnecter",
-                            style: TextStyle(color: AppTheme.whiteColor),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ),

@@ -225,7 +225,7 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: _firstNameController,
+                  controller: _lastNameController,
                   decoration: const InputDecoration(
                     labelText: 'Nom',
                     border: OutlineInputBorder(),
@@ -235,7 +235,7 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: _lastNameController,
+                  controller: _firstNameController,
                   decoration: const InputDecoration(
                     labelText: 'Prénom',
                     border: OutlineInputBorder(),

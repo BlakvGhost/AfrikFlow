@@ -86,4 +86,54 @@ class ApiService {
       return {'success': false, 'message': jsonResponse['message']};
     }
   }
+
+  Future<Map<String, dynamic>> updateUserProfile(
+      String? firstName, String? lastName, String? phoneNumber,
+      {bool? isTwoFactorEnabled,
+      bool? isAcceptedNotifications,
+      File? avatar,
+      required WidgetRef ref}) async {
+    final user = ref.read(userProvider);
+
+    final url = Uri.parse('$apiBaseUrl/user/update-profile');
+    final request = http.MultipartRequest('POST', url);
+    request.headers['Authorization'] = 'Bearer ${user?.token}';
+
+    if (firstName != null && firstName.isNotEmpty) {
+      request.fields['first_name'] = firstName;
+    }
+
+    if (lastName != null && lastName.isNotEmpty) {
+      request.fields['last_name'] = lastName;
+    }
+
+    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+      request.fields['phone_number'] = phoneNumber;
+    }
+
+    if (isTwoFactorEnabled != null) {
+      request.fields['isTwoFactorEnabled'] = isTwoFactorEnabled.toString();
+    }
+
+    if (isAcceptedNotifications != null) {
+      request.fields['isAcceptedNotifications'] =
+          isAcceptedNotifications.toString();
+    }
+
+    if (avatar != null) {
+      request.files
+          .add(await http.MultipartFile.fromPath('avatar', avatar.path));
+    }
+
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      await ref.read(userProvider.notifier).refreshUserData(ref);
+      return {'success': true, 'message': jsonDecode(responseBody)['message']};
+    } else {
+      final errorMessage = jsonDecode(responseBody)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
 }
