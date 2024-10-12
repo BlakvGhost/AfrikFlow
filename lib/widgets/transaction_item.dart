@@ -51,7 +51,7 @@ class TransactionItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "De ${transaction.payinPhoneNumber} vers ${transaction.payoutPhoneNumber}",
+                      "Vers ${transaction.payoutPhoneNumber} par ${transaction.payinPhoneNumber}",
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, color: Colors.black),
                       overflow: TextOverflow.ellipsis,

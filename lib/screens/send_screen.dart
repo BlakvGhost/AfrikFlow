@@ -156,8 +156,7 @@ class SendScreenState extends ConsumerState<SendScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SizedBox(
-                  width: 110,
+                Flexible(
                   child: TextButton.icon(
                     icon: const Icon(Icons.cancel, color: Colors.redAccent),
                     label: const Text(
@@ -171,8 +170,8 @@ class SendScreenState extends ConsumerState<SendScreen>
                     },
                   ),
                 ),
-                SizedBox(
-                  width: 110,
+                const SizedBox(width: 10),
+                Flexible(
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.check_circle, color: Colors.white),
                     label: const Text(

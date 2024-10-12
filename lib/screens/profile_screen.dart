@@ -137,7 +137,6 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
       builder: (BuildContext context) {
         return Dialog(
           elevation: 18,
-          backgroundColor: AppTheme.primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),

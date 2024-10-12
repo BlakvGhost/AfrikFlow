@@ -2,6 +2,7 @@ import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/widgets/circle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:afrik_flow/widgets/carousel_with_dots.dart';
 import 'package:afrik_flow/widgets/transaction_item.dart';
@@ -83,7 +84,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         IconButton(
                           icon:
                               const Icon(PhosphorIconsDuotone.magnifyingGlass),
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push('/transactions');
+                          },
                         ),
                       ],
                     ),
