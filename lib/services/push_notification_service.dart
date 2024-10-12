@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:afrik_flow/providers/api_client_provider.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PushNotificationService {
@@ -22,7 +23,25 @@ class PushNotificationService {
     }
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // print('Message reçu : ${message.notification?.title}');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        final flutterLocalNotificationsPlugin =
+            FlutterLocalNotificationsPlugin();
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'high_importance_channel',
+              'High Importance Notifications',
+              importance: Importance.max,
+            ),
+          ),
+        );
+      }
     });
   }
 

@@ -51,7 +51,6 @@ class SendScreenState extends ConsumerState<SendScreen>
   @override
   void initState() {
     super.initState();
-    print("Loading");
     _tabController = TabController(length: 2, vsync: this);
     _transactionService = TransactionService(ref: ref);
     _loadWalletProviders();
