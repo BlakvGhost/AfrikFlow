@@ -31,101 +31,92 @@ class _BaseScreenState extends ConsumerState<BaseScreen> {
   AppBar? appBar;
 
   @override
-  void initState() {
-    super.initState();
-    _initAppBar();
-  }
+  Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
 
-  Future<void> _initAppBar() async {
-    final user = ref.read(userProvider);
-    setState(() {
-      appBar = AppBar(
-        toolbarHeight: 80,
-        automaticallyImplyLeading: true,
-        title: !widget.showAppBar
-            ? Text(
-                widget.title ?? 'AfrikFlow',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Hello ${user?.firstName}",
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const Text(
-                    "Welcome back",
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                ],
-              ),
-        elevation: 22,
-        actions: [
-          IconButton(
-            icon: Stack(
-              children: user!.notifications.isEmpty
-                  ? [
-                      const PhIcon(
-                        child: PhosphorIconsDuotone.bell,
-                        isWhite: true,
-                        smartColor: true,
-                      ),
-                    ]
-                  : [
-                      const PhIcon(
-                        child: PhosphorIconsDuotone.bellRinging,
-                        isWhite: true,
-                        smartColor: true,
-                      ),
-                      Positioned(
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(50),
+    final appBar = AppBar(
+      toolbarHeight: 80,
+      automaticallyImplyLeading: true,
+      title: !widget.showAppBar
+          ? Text(
+              widget.title ?? 'AfrikFlow',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Hello ${user?.firstName ?? 'Guest'}",
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  "Welcome back",
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
+              ],
+            ),
+      elevation: 22,
+      actions: [
+        IconButton(
+          icon: Stack(
+            children: user?.notifications.isEmpty ?? true
+                ? [
+                    const PhIcon(
+                      child: PhosphorIconsDuotone.bell,
+                      isWhite: true,
+                      smartColor: true,
+                    ),
+                  ]
+                : [
+                    const PhIcon(
+                      child: PhosphorIconsDuotone.bellRinging,
+                      isWhite: true,
+                      smartColor: true,
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 15,
+                          minHeight: 15,
+                        ),
+                        child: Text(
+                          user!.notifications.length.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
                           ),
-                          constraints: const BoxConstraints(
-                            minWidth: 15,
-                            minHeight: 15,
-                          ),
-                          child: Text(
-                            user.notifications.length.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ],
-            ),
-            onPressed: () {
-              context.push('/notifications');
-            },
+                    ),
+                  ],
           ),
-          IconButton(
-            icon: CircleAvatar(
-              radius: 18,
-              backgroundImage: NetworkImage(user.avatar ?? ''),
-            ),
-            onPressed: () {
-              context.push('/profile');
-            },
+          onPressed: () {
+            context.push('/notifications');
+          },
+        ),
+        IconButton(
+          icon: CircleAvatar(
+            radius: 18,
+            backgroundImage: NetworkImage(user?.avatar ?? ''),
           ),
-        ],
-      );
-    });
-  }
+          onPressed: () {
+            context.push('/profile');
+          },
+        ),
+      ],
+    );
 
-  @override
-  Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -140,6 +131,7 @@ class _BaseScreenState extends ConsumerState<BaseScreen> {
     return Scaffold(
       appBar: appBar,
       body: widget.child,
+      floatingActionButton: widget.floatingActionButton,
       extendBody: true,
     );
   }
