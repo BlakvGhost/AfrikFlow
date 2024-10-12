@@ -19,7 +19,6 @@ class FirebaseService {
 
       return await _auth.signInWithCredential(credential);
     } catch (e) {
-      print("Erreur lors de la connexion Google: $e");
       return null;
     }
   }
