@@ -235,11 +235,52 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
+                    if (!user!.isVerified) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Flexible(
+                              child: Text(
+                                'Votre compte n\'est pas encore vérifié. Veuillez compléter la vérification pour accéder à tous les services.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              onPressed: () {
+                                context.push('/kyc');
+                              },
+                              child: const Text(
+                                'Vérifier',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     Stack(
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage: NetworkImage(user?.avatar ?? ''),
+                          backgroundImage: NetworkImage(user.avatar ?? ''),
                         ),
                         Positioned(
                           bottom: 0,
@@ -260,7 +301,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 20),
                     ListTile(
                       leading: const Icon(PhosphorIconsDuotone.userCircle),
-                      title: Text("${user?.firstName} ${user?.lastName}"),
+                      title: Text("${user.firstName} ${user.lastName}"),
                       trailing: IconButton(
                         icon: const Icon(PhosphorIconsDuotone.pencilSimple),
                         onPressed: () => editName(user),
@@ -268,7 +309,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     ListTile(
                       leading: const Icon(PhosphorIconsDuotone.envelope),
-                      title: Text(user!.email),
+                      title: Text(user.email),
                       trailing: IconButton(
                         icon: const Icon(PhosphorIconsDuotone.pencilSimple),
                         onPressed: () {},
