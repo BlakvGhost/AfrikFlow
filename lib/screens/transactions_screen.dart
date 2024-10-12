@@ -14,7 +14,7 @@ class TransactionsScreen extends ConsumerStatefulWidget {
 class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
   String searchQuery = "";
   bool isRefreshing = false;
-  bool isLoading = false; // Ajout d'un état de chargement
+  bool isLoading = false;
 
   Future<void> _refresh() async {
     setState(() {
@@ -61,7 +61,6 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: TextField(
@@ -81,10 +80,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         },
                       ),
                     ),
-
                     const SizedBox(height: 20),
-
-                    // Titre de la section
                     const Text(
                       'Historique des Transactions',
                       style: TextStyle(
@@ -92,9 +88,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 10),
-
                     if (filteredTransactions.isEmpty)
                       Center(
                         child: Column(

@@ -17,13 +17,13 @@ class SendScreen extends ConsumerStatefulWidget {
 class SendScreenState extends ConsumerState<SendScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late Future<List<WProvider>> _walletProvidersFuture;
   late TransactionService _transactionService;
 
   String? selectedPayinOperator;
   String? selectedPayoutOperator;
   String? selectedCardType;
   List<String> operators = [];
+  List<WProvider>? walletProviders;
 
   double totalSendAmount = 0.0;
   double totalAmount = 0.0;
@@ -38,12 +38,23 @@ class SendScreenState extends ConsumerState<SendScreen>
       TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
+  Future<void> _loadWalletProviders() async {
+    final providers = await _transactionService.listWalletProviders();
+
+    if (mounted) {
+      setState(() {
+        walletProviders = providers;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    print("Loading");
     _tabController = TabController(length: 2, vsync: this);
     _transactionService = TransactionService(ref: ref);
-    _walletProvidersFuture = _transactionService.listWalletProviders();
+    _loadWalletProviders();
   }
 
   @override
@@ -187,7 +198,7 @@ class SendScreenState extends ConsumerState<SendScreen>
       },
     );
 
-    if (result == true) {
+    if (result == true && _canSlide()) {
       setState(() {
         isProcessing = true;
       });
@@ -296,93 +307,77 @@ class SendScreenState extends ConsumerState<SendScreen>
   }
 
   Widget _buildLocalTransferContent() {
-    return FutureBuilder<List<WProvider>>(
-      future: _walletProvidersFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Erreur: ${snapshot.error}'));
-        } else {
-          final walletProviders = snapshot.data!;
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 16),
-                        _buildSectionTitle("De :"),
-                        const SizedBox(height: 16),
-                        _buildCountryOperatorDropdown(walletProviders, true),
-                        const SizedBox(height: 16),
-                        _buildPhoneNumberField(_payinPhoneNumberController),
-                        const SizedBox(height: 16),
-                        _buildAmountField(),
-                        const SizedBox(height: 16),
-                        _buildAgreeSupportFeesSwitch(),
-                        const SizedBox(height: 10),
-                        _buildSectionTitle("Vers :"),
-                        const SizedBox(height: 16),
-                        _buildCountryOperatorDropdown(walletProviders, false),
-                        const SizedBox(height: 16),
-                        _buildPhoneNumberField(_payoutPhoneNumberController),
-                        _buildSlideButton(),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
+    if (walletProviders == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-  Widget _buildCreditCardTransferContent() {
-    return FutureBuilder<List<WProvider>>(
-      future: _walletProvidersFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Erreur: ${snapshot.error}'));
-        } else {
-          final walletProviders = snapshot.data!;
-          return SingleChildScrollView(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 24),
-                  _buildReasonDropdown(),
+                  const SizedBox(height: 16),
+                  _buildSectionTitle("De :"),
+                  const SizedBox(height: 16),
+                  _buildCountryOperatorDropdown(walletProviders!, true),
+                  const SizedBox(height: 16),
+                  _buildPhoneNumberField(_payinPhoneNumberController),
                   const SizedBox(height: 16),
                   _buildAmountField(),
                   const SizedBox(height: 16),
-                  _buildCardTypeSelection(),
-                  const SizedBox(height: 16),
                   _buildAgreeSupportFeesSwitch(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 10),
                   _buildSectionTitle("Vers :"),
                   const SizedBox(height: 16),
-                  _buildCountryOperatorDropdown(walletProviders, false),
+                  _buildCountryOperatorDropdown(walletProviders!, false),
                   const SizedBox(height: 16),
                   _buildPhoneNumberField(_payoutPhoneNumberController),
-                  const SizedBox(height: 32),
+                  _buildSlideButton(),
                 ],
               ),
             ),
-          );
-        }
+          ),
+        );
       },
+    );
+  }
+
+  Widget _buildCreditCardTransferContent() {
+    if (walletProviders == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            _buildReasonDropdown(),
+            const SizedBox(height: 16),
+            _buildAmountField(),
+            const SizedBox(height: 16),
+            _buildCardTypeSelection(),
+            const SizedBox(height: 16),
+            _buildAgreeSupportFeesSwitch(),
+            const SizedBox(height: 24),
+            _buildSectionTitle("Vers :"),
+            const SizedBox(height: 16),
+            _buildCountryOperatorDropdown(walletProviders!, false),
+            const SizedBox(height: 16),
+            _buildPhoneNumberField(_payoutPhoneNumberController),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
     );
   }
 
