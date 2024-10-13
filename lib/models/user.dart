@@ -23,6 +23,7 @@ class User {
   final List<Notification> notifications;
   final List<Kyc> kycs;
   final bool isAcceptedNotifications;
+  final bool isGoogleLogin;
 
   User({
     required this.id,
@@ -43,6 +44,7 @@ class User {
     required this.notifications,
     required this.kycs,
     required this.isAcceptedNotifications,
+    required this.isGoogleLogin,
   });
 
   User copyWith({
@@ -84,6 +86,7 @@ class User {
       isAcceptedNotifications:
           isAcceptedNotifications ?? this.isAcceptedNotifications,
       isTwoFactorEnabled: isTwoFactorEnabled,
+      isGoogleLogin: isGoogleLogin,
     );
   }
 
@@ -111,6 +114,7 @@ class User {
           .toList(),
       kycs: (json['kycs'] as List).map((i) => Kyc.fromJson(i)).toList(),
       isAcceptedNotifications: json['isAcceptedNotifications'] == 1,
+      isGoogleLogin: json['isGoogleLogin'] == 1,
     );
   }
 
@@ -134,6 +138,7 @@ class User {
       'notifications': notifications.map((n) => n.toJson()).toList(),
       'kycs': kycs.map((k) => k.toJson()).toList(),
       'isAcceptedNotifications': isAcceptedNotifications ? 1 : 0,
+      'isGoogleLogin': isGoogleLogin ? 1 : 0,
     };
   }
 }

@@ -575,11 +575,13 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                       ),
                     ),
-                    ListTile(
-                      leading: const Icon(PhosphorIconsDuotone.lock),
-                      title: const Text('Changer mot de passe'),
-                      onTap: () => changePassword(),
-                    ),
+                    if (!user.isGoogleLogin) ...[
+                      ListTile(
+                        leading: const Icon(PhosphorIconsDuotone.lock),
+                        title: const Text('Changer mot de passe'),
+                        onTap: () => changePassword(),
+                      ),
+                    ],
                     ListTile(
                       leading: const Icon(PhosphorIconsDuotone.trash),
                       title: const Text('Supprimer le compte'),
