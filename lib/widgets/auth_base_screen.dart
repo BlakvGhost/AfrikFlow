@@ -25,7 +25,7 @@ class AuthBaseScreen extends ConsumerWidget {
           systemNavigationBarIconBrightness: Brightness.light,
         ),
       );
-      return Scaffold(body: SafeArea(child: child));
+      return Scaffold(body: child);
     }
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

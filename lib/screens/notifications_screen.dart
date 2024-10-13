@@ -154,7 +154,7 @@ class NotificationTile extends StatelessWidget {
             size: 30,
           ),
           title: Text(
-            _truncateText(notification.message, 50),
+            _truncateText(notification.message, 45),
             style: TextStyle(
                 fontWeight:
                     notification.isRead ? FontWeight.normal : FontWeight.bold,

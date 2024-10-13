@@ -480,7 +480,7 @@ class SendScreenState extends ConsumerState<SendScreen>
           child: Row(
             children: [
               Image.network(
-                provider.country.flag,
+                provider.logo,
                 width: 24,
                 height: 24,
               ),

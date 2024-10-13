@@ -34,18 +34,16 @@ class TransactionItem extends StatelessWidget {
                     CircleAvatar(
                       backgroundColor: Colors.grey[300],
                       radius: 20,
-                      backgroundImage: const NetworkImage(
-                        "https://media.licdn.com/dms/image/D4E12AQE8uOMdl4km9w/article-cover_image-shrink_600_2000/0/1678624190074?e=2147483647&v=beta&t=YEhO6rD75nuvHIg9za08JHadmzcjOyl-xBdtim_UnU4",
-                      ),
+                      backgroundImage:
+                          NetworkImage(transaction.payinWProvider.logo),
                     ),
                     Positioned(
                       left: 22,
                       child: CircleAvatar(
                         backgroundColor: Colors.grey[300],
                         radius: 20,
-                        backgroundImage: const NetworkImage(
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReoan3T0XNqnM9MJzptamAyMNNv70le5prnw&s",
-                        ),
+                        backgroundImage:
+                            NetworkImage(transaction.payoutWProvider.logo),
                       ),
                     ),
                   ],
