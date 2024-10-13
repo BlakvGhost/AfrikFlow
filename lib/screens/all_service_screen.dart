@@ -11,8 +11,8 @@ class AllServiceScreen extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Wrap(
-          spacing: 16.0,
-          runSpacing: 16.0,
+          spacing: 14.0,
+          runSpacing: 14.0,
           children: [
             CircleButton(
                 icon: PhosphorIconsDuotone.paperPlaneTilt,
