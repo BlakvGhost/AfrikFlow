@@ -1,9 +1,9 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class InvoiceScreen extends ConsumerStatefulWidget {
   const InvoiceScreen({super.key});
@@ -97,7 +97,7 @@ class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
                           alignment: Alignment.centerRight,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              context.push(transaction.invoiceUrl!);
+                              launchURL(transaction.invoiceUrl!);
                             },
                             icon: const Icon(
                               PhosphorIconsDuotone.downloadSimple,

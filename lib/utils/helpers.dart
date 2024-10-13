@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:image/image.dart' as img;
-
+import 'package:url_launcher/url_launcher.dart';
 
 void showToast(BuildContext context, dynamic message, {isList = false}) {
   if (isList) {
@@ -98,4 +98,13 @@ Future<File> compressImage(File imageFile) async {
       await imageFile.writeAsBytes(img.encodeJpg(compressedImage, quality: 85));
 
   return compressedFile;
+}
+
+Future<void> launchURL(String url) async {
+  final url0 = Uri.parse(url);
+  if (await canLaunchUrl(url0)) {
+    await launchUrl(url0);
+  } else {
+    throw 'Could not launch $url';
+  }
 }

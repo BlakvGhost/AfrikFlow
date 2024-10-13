@@ -272,7 +272,9 @@ class TransactionDetailsScreenState
   Widget _buildDownloadButton(BuildContext context) {
     return Center(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          launchURL(_transaction.invoiceUrl!);
+        },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
           shape: RoundedRectangleBorder(
