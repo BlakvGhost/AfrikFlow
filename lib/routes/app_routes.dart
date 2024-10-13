@@ -109,7 +109,7 @@ class AppRoutes {
       path: '/settings',
       builder: (context, state) => const BaseScreen(
         showAppBar: false,
-        title: "Reglage",
+        title: "Paramètres",
         child: SettingsScreen(),
       ),
     ),

@@ -1,6 +1,8 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
+import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -18,13 +20,16 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
 
+    _notificationsEnabled = user?.isAcceptedNotifications ?? false;
+    _twoFactorEnabled = user?.isTwoFactorEnabled ?? false;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
           child: Text(
-            'Paramètres',
+            'Géneral',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -68,32 +73,52 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
             });
           },
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ElevatedButton(
-            onPressed: () {
-              // Action à réaliser lors de la sauvegarde
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Paramètres mis à jour.')),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.tealAccent[700],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CustomElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Paramètres mis à jour.')),
+                  );
+                },
+                label: "Enregistrer",
               ),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            child: const Center(
-              child: Text(
-                'Enregistrer',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
+              const SizedBox(height: 20),
+              _buildUtilityButton(
+                icon: Icons.help_outline,
+                label: 'Aide',
+                onPressed: () {
+                  // Action d'aide (ouvrir une page FAQ ou de support)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Accéder à l\'aide.')),
+                  );
+                },
               ),
-            ),
+              _buildUtilityButton(
+                icon: Icons.share_outlined,
+                label: 'Partager l\'app',
+                onPressed: () {
+                  // Utilise le package Share pour partager l'app
+                  Share.share(
+                      'Découvrez cette application incroyable ! https://lien-de-l-app.com');
+                },
+              ),
+              _buildUtilityButton(
+                icon: Icons.info_outline,
+                label: 'À propos',
+                onPressed: () {
+                  // Action à propos (ouvrir une page avec des infos sur l'app)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Informations sur l\'application.')),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ],
@@ -138,6 +163,31 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
             inactiveTrackColor: Colors.grey[600],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildUtilityButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          label,
+          style: const TextStyle(color: Colors.white),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey[850],
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
     );
   }
