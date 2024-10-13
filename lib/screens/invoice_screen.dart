@@ -1,11 +1,23 @@
+import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:afrik_flow/models/notification.dart' as notification_model;
+import 'package:go_router/go_router.dart';
 
-class InvoiceScreen extends StatelessWidget {
+class InvoiceScreen extends ConsumerStatefulWidget {
   const InvoiceScreen({super.key});
 
   @override
+  ConsumerState<InvoiceScreen> createState() => _InvoiceScreenState();
+}
+
+class _InvoiceScreenState extends ConsumerState<InvoiceScreen> {
+  @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+    final transactions = user?.transactions;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -70,7 +70,8 @@ class TransactionDetailsScreenState
                     const SizedBox(height: 20),
                     if (_shouldShowRetryButton()) _buildRetryButton(context),
                     const SizedBox(height: 20),
-                    _buildDownloadButton(context),
+                    if (_transaction.payoutStatus == 'success')
+                      _buildDownloadButton(context),
                   ],
                 ),
               ),
@@ -156,15 +157,16 @@ class TransactionDetailsScreenState
             _buildDetailRow(
                 'Montant transfere:', '${_transaction.amountWithoutFees} FCFA'),
             const SizedBox(height: 8),
-            _buildStatusRow('Statut Payin:', _transaction.payinStatus),
+            _buildStatusRow('Statut récuperation:', _transaction.payinStatus),
             const SizedBox(height: 8),
-            _buildStatusRow('Statut Payout:', _transaction.payoutStatus),
+            _buildStatusRow('Statut d\'envoi:', _transaction.payoutStatus),
             const SizedBox(height: 8),
-            _buildDetailRow('Téléphone Payin:', _transaction.payinPhoneNumber),
+            _buildDetailRow(
+                'Numéro récuperation:', _transaction.payinPhoneNumber),
             const SizedBox(height: 8),
             if (_transaction.payoutPhoneNumber != null)
               _buildDetailRow(
-                  'Téléphone Payout:', _transaction.payoutPhoneNumber!),
+                  'Numéro d\'envoi:', _transaction.payoutPhoneNumber!),
           ],
         ),
       ),
@@ -244,8 +246,8 @@ class TransactionDetailsScreenState
   }
 
   bool _shouldShowRetryButton() {
-    return _transaction.payinStatus != 'success' ||
-        _transaction.payoutStatus != 'success';
+    return _transaction.payinStatus == 'failed' ||
+        _transaction.payoutStatus == 'failed';
   }
 
   Widget _buildRetryButton(BuildContext context) {
