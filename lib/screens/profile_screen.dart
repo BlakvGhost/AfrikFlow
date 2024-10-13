@@ -5,6 +5,8 @@ import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/utils/helpers.dart';
+import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
+import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:afrik_flow/widgets/kyc_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +24,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool isRefresh = false;
   File? _avatarFile;
+  final ApiService _apiService = ApiService();
 
   Future<void> _refresh() async {
     setState(() {
@@ -52,22 +55,56 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
       required String lastName,
       String? phoneNumber,
       File? avatar}) async {
-    final response = await ApiService().updateUserProfile(
+    setState(() {
+      isRefresh = true;
+    });
+
+    final response = await _apiService.updateUserProfile(
       firstName,
       lastName,
       phoneNumber ?? '',
       avatar: avatar,
       ref: ref,
     );
+    setState(() {
+      isRefresh = false;
+    });
 
     if (response['success']) {
       showSucessToast(context, "Votre profile est bien mis à jour!");
-      // await _refresh();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(response['message']),
-        backgroundColor: Colors.red,
-      ));
+      showToast(context, response['message']);
+    }
+  }
+
+  Future<void> updatePassword(
+      {required String currentPassword,
+      required String newPassword,
+      required String confirmNewPassword}) async {
+    if (newPassword.isEmpty ||
+        currentPassword.isEmpty ||
+        confirmNewPassword.isEmpty) {
+      return showToast(context, "Veuillez remplir tous les champs de saisie.");
+    }
+
+    if (newPassword != confirmNewPassword) {
+      return showToast(context, "Vos deux mots de passes sont pas les mêmes");
+    }
+
+    setState(() {
+      isRefresh = true;
+    });
+
+    final response = await _apiService.updateUserPassword(
+        currentPassword, newPassword, confirmNewPassword, ref);
+
+    setState(() {
+      isRefresh = false;
+    });
+    if (response['success']) {
+      showSucessToast(context, "Votre mot de passe est bien changé");
+    } else {
+      showToast(context, response['message'], isList: true);
     }
   }
 
@@ -75,40 +112,64 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
     String firstName = user?.firstName ?? '';
     String lastName = user?.lastName ?? '';
 
-    showDialog(
+    showModalBottomSheet(
+      elevation: 22,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[900],
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Modifier le nom'),
-          content: Column(
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 22,
+              left: 22,
+              right: 22),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const Text(
+                'Modifier votre nom',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
               TextField(
                 decoration: const InputDecoration(labelText: 'Prénom'),
                 controller: TextEditingController(text: firstName),
                 onChanged: (value) => firstName = value,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               TextField(
                 decoration: const InputDecoration(labelText: 'Nom'),
                 controller: TextEditingController(text: lastName),
                 onChanged: (value) => lastName = value,
               ),
+              const SizedBox(height: 20),
+              CustomElevatedButton(
+                onPressed: () {
+                  updateProfile(firstName: firstName, lastName: lastName);
+                  Navigator.of(context).pop();
+                },
+                label: "Enregistrer",
+              ),
+              const SizedBox(height: 20),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Annuler'),
-            ),
-            TextButton(
-              onPressed: () {
-                updateProfile(firstName: firstName, lastName: lastName);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Enregistrer'),
-            ),
-          ],
         );
       },
     );
@@ -117,33 +178,168 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
   void editPhoneNumber(User? user) {
     String phoneNumber = user?.phoneNumber ?? '';
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      elevation: 22,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Modifier votre Numéro'),
-          content: Column(
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 22,
+              left: 22,
+              right: 22),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const Text(
+                'Modifier votre numéro',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
               TextField(
-                decoration: const InputDecoration(labelText: 'Numéro'),
+                decoration:
+                    const InputDecoration(labelText: 'Numéro de téléphone'),
                 controller: TextEditingController(text: phoneNumber),
                 onChanged: (value) => phoneNumber = value,
               ),
+              const SizedBox(height: 20),
+              CustomElevatedButton(
+                onPressed: () {
+                  updateProfile(
+                      firstName: '', lastName: '', phoneNumber: phoneNumber);
+                  Navigator.of(context).pop();
+                },
+                label: "Enregistrer",
+              ),
+              const SizedBox(height: 20),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void changePassword() {
+    TextEditingController oldPassword = TextEditingController();
+    TextEditingController newPassword = TextEditingController();
+    TextEditingController confirmNewPassword = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      elevation: 22,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              top: 22,
+              left: 22,
+              right: 22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const Text(
+                'Modifier votre mot de passe',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              PasswordInputField(
+                passwordController: oldPassword,
+                label: 'Ancien mot de passe',
+              ),
+              const SizedBox(height: 10),
+              PasswordInputField(
+                passwordController: newPassword,
+                label: 'Nouveau mot de passe',
+              ),
+              const SizedBox(height: 10),
+              PasswordInputField(
+                passwordController: confirmNewPassword,
+                label: 'Confirmer nouveau mot de passe',
+              ),
+              const SizedBox(height: 20),
+              CustomElevatedButton(
+                onPressed: () {
+                  updatePassword(
+                      confirmNewPassword: confirmNewPassword.text,
+                      currentPassword: oldPassword.text,
+                      newPassword: newPassword.text);
+                  Navigator.of(context).pop();
+                },
+                label: "Enregistrer",
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void deleteAccount() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.grey[900],
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Supprimer le compte'),
+          content: const Text(
+              'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Annuler'),
             ),
             TextButton(
-              onPressed: () {
-                updateProfile(
-                    firstName: '', lastName: '', phoneNumber: phoneNumber);
+              onPressed: () async {
+                setState(() {
+                  isRefresh = true;
+                });
+                final res = await _apiService.deleteAccount(ref);
+                setState(() {
+                  isRefresh = false;
+                });
+                if (res['success']) {
+                  context.go('/');
+                }
                 Navigator.of(context).pop();
               },
-              child: const Text('Enregistrer'),
+              child: const Text('Supprimer'),
             ),
           ],
         );
@@ -205,6 +401,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _showLogoutConfirmation(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
+      barrierColor: Colors.grey[900],
       builder: (BuildContext context) {
         return Dialog(
           elevation: 18,
@@ -374,27 +571,25 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                       ),
                     ),
+                    ListTile(
+                      leading: const Icon(PhosphorIconsDuotone.lock),
+                      title: const Text('Changer mot de passe'),
+                      onTap: () => changePassword(),
+                    ),
+                    ListTile(
+                      leading: const Icon(PhosphorIconsDuotone.trash),
+                      title: const Text('Supprimer le compte'),
+                      onTap: () => deleteAccount(),
+                    ),
+                    ListTile(
+                      leading: const Icon(PhosphorIconsDuotone.userSwitch),
+                      title: const Text(
+                        'Se déconnecter',
+                      ),
+                      onTap: () => _showLogoutConfirmation(context, ref),
+                    ),
                     const SizedBox(height: 20),
                     buildActivityHistory(logs!),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _showLogoutConfirmation(context, ref);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
-                          child: const Text(
-                            "Se déconnecter",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

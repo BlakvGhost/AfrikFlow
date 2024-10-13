@@ -136,4 +136,40 @@ class ApiService {
       return {'success': false, 'message': errorMessage};
     }
   }
+
+  Future<Map<String, dynamic>> updateUserPassword(String currentPassword,
+      String newPassword, String confirmNewPassword, WidgetRef ref) async {
+    final ApiClient apiClient = ref.read(apiClientProvider);
+
+    final url = Uri.parse('$apiBaseUrl/user/update-password');
+    final response = await apiClient.post(url,
+        body: jsonEncode({
+          'current_password': currentPassword,
+          'new_password': newPassword,
+          'new_password_confirmation': confirmNewPassword,
+        }));
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'message': jsonDecode(response.body)['message']};
+    } else {
+      print(jsonDecode(response.body));
+      final errorMessage = jsonDecode(response.body)['data'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteAccount(WidgetRef ref) async {
+    final ApiClient apiClient = ref.read(apiClientProvider);
+
+    final url = Uri.parse('$apiBaseUrl/user/delete-account');
+    final response = await apiClient.delete(url);
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'message': jsonDecode(response.body)['message']};
+    } else {
+      print(jsonDecode(response.body));
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
 }
