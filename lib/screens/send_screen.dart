@@ -69,7 +69,7 @@ class SendScreenState extends ConsumerState<SendScreen>
   void _calculateFees() async {
     if (selectedPayinOperator != null &&
         selectedPayoutOperator != null &&
-        totalAmount > 0) {
+        totalAmount >= 500) {
       final response = await _transactionService.calculateFees(
         payinWProviderId: selectedPayinOperator!,
         payoutWProviderId: selectedPayoutOperator!,
@@ -426,7 +426,12 @@ class SendScreenState extends ConsumerState<SendScreen>
                 "Votre compte n'est pas encore vérifié. Veuillez compléter la vérification pour accéder à ce service.");
           } else {
             if (_canSlide()) {
-              _confirmAndSendTransaction();
+              if (double.parse(_amountController.text) < 500) {
+                showToast(
+                    context, "Le montant minimun d'envoi est de 500 FCFA");
+              } else {
+                _confirmAndSendTransaction();
+              }
             } else {
               showToast(
                   context, "Veuillez remplir tous les champs nécessaires");
