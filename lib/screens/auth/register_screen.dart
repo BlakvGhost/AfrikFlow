@@ -41,8 +41,20 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkSession();
+    });
     super.initState();
     _loadCountries();
+  }
+
+  Future<void> _checkSession() async {
+    final user = ref.read(userProvider);
+    if (user?.token != null) {
+      if (mounted) {
+        context.go('/home');
+      }
+    }
   }
 
   Future<void> _loadCountries() async {
@@ -132,11 +144,6 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.read(userProvider);
-    if (user?.token != null) {
-      context.go('/home');
-    }
-
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

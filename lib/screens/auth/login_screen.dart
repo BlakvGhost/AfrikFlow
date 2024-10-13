@@ -28,6 +28,23 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
 
   final AuthService _authService = AuthService();
 
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkSession();
+    });
+    super.initState();
+  }
+
+  Future<void> _checkSession() async {
+    final user = ref.read(userProvider);
+    if (user?.token != null) {
+      if (mounted) {
+        context.go('/home');
+      }
+    }
+  }
+
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       showToast(context, "Veuillez remplir tous les champs.");
@@ -86,11 +103,6 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.read(userProvider);
-    if (user?.token != null) {
-      context.go('/home');
-    }
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
