@@ -2,6 +2,7 @@ import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -92,30 +93,22 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
                 icon: Icons.help_outline,
                 label: 'Aide',
                 onPressed: () {
-                  // Action d'aide (ouvrir une page FAQ ou de support)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Accéder à l\'aide.')),
-                  );
+                  context.push('/faq');
                 },
               ),
               _buildUtilityButton(
                 icon: Icons.share_outlined,
                 label: 'Partager l\'app',
                 onPressed: () {
-                  // Utilise le package Share pour partager l'app
                   Share.share(
-                      'Découvrez cette application incroyable ! https://lien-de-l-app.com');
+                      'Découvrez AfrikFlow, cette application incroyable de Transfert d\'argent en Afrique ! https://afrikflow.com');
                 },
               ),
               _buildUtilityButton(
                 icon: Icons.info_outline,
                 label: 'À propos',
                 onPressed: () {
-                  // Action à propos (ouvrir une page avec des infos sur l'app)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Informations sur l\'application.')),
-                  );
+                  context.push('/about');
                 },
               ),
             ],

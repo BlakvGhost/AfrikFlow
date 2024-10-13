@@ -49,6 +49,9 @@ class CircleButtonState extends State<CircleButton> {
               case 8:
                 context.push('/all-services');
                 break;
+              case 9:
+                context.push('/about');
+                break;
             }
           },
           style: ElevatedButton.styleFrom(

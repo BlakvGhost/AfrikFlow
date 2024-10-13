@@ -5,6 +5,8 @@ import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
+import 'package:afrik_flow/screens/help/about_screen.dart';
+import 'package:afrik_flow/screens/help/help_screen.dart';
 import 'package:afrik_flow/screens/invoice_screen.dart';
 import 'package:afrik_flow/screens/kyc/kyc_verification_screen.dart';
 import 'package:afrik_flow/screens/notifications_screen.dart';
@@ -111,6 +113,22 @@ class AppRoutes {
         showAppBar: false,
         title: "Paramètres",
         child: SettingsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/faq',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "Aide/FAQ",
+        child: HelpScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/about',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        title: "À propos",
+        child: AboutScreen(),
       ),
     ),
     GoRoute(

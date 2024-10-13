@@ -42,6 +42,8 @@ class AllServiceScreen extends StatelessWidget {
                 icon: PhosphorIconsDuotone.fileText,
                 label: "Assistance",
                 index: 7),
+            CircleButton(
+                icon: PhosphorIconsDuotone.info, label: 'À propos', index: 9),
           ],
         ),
       ),
