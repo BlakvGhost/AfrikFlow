@@ -1,4 +1,5 @@
 import 'package:afrik_flow/models/country.dart';
+import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/services/auth_service.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/services/push_notification_service.dart';
@@ -131,6 +132,11 @@ class RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.read(userProvider);
+    if (user?.token != null) {
+      context.go('/home');
+    }
+
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

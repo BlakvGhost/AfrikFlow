@@ -1,3 +1,4 @@
+import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/services/push_notification_service.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/app_logo.dart';
@@ -85,6 +86,11 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.read(userProvider);
+    if (user?.token != null) {
+      context.go('/home');
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
