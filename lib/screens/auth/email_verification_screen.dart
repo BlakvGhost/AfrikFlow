@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/services/auth_service.dart';
+import 'package:afrik_flow/services/push_notification_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/utils/format_utils.dart';
 import 'package:afrik_flow/utils/global_constant.dart';
@@ -54,6 +55,8 @@ class EmailVerificationScreenState
         final user = User.fromJson(result['data']['data']);
         ref.read(userProvider.notifier).setUser(user);
       }
+
+      await PushNotificationService().init(ref, context);
 
       context.go('/home');
     } else {

@@ -108,6 +108,19 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
+  Future<void> deleteAccountAction() async {
+    setState(() {
+      isRefresh = true;
+    });
+    final res = await _apiService.deleteAccount(ref);
+    setState(() {
+      isRefresh = false;
+    });
+    if (res['success']) {
+      context.go('/');
+    }
+  }
+
   void editName(User? user) {
     String firstName = user?.firstName ?? '';
     String lastName = user?.lastName ?? '';
@@ -326,17 +339,8 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: const Text('Annuler'),
             ),
             TextButton(
-              onPressed: () async {
-                setState(() {
-                  isRefresh = true;
-                });
-                final res = await _apiService.deleteAccount(ref);
-                setState(() {
-                  isRefresh = false;
-                });
-                if (res['success']) {
-                  context.go('/');
-                }
+              onPressed: () {
+                deleteAccountAction();
                 Navigator.of(context).pop();
               },
               child: const Text('Supprimer'),

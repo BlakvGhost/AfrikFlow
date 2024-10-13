@@ -231,6 +231,7 @@ class KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                     ? AppTheme.primaryColor
                     : Colors.grey.shade400,
                 label: "Envoyer pour validation",
+                isLoading: _isLoading,
               ),
             ],
             const SizedBox(height: 40),
