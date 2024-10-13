@@ -475,7 +475,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
                         onPressed: () async {
                           Navigator.of(context).pop();
 
-                          await ref.read(userProvider.notifier).logout();
+                          await ref.read(userProvider.notifier).logout(context);
 
                           context.go('/login');
                         },

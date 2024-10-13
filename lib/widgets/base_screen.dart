@@ -130,7 +130,7 @@ class _BaseScreenState extends ConsumerState<BaseScreen> {
 
     return Scaffold(
       appBar: appBar,
-      body: widget.child,
+      body: SafeArea(child: widget.child),
       floatingActionButton: widget.floatingActionButton,
       extendBody: true,
     );
