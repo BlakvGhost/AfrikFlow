@@ -80,14 +80,15 @@ class PushNotificationService {
       Map<String, dynamic> data, WidgetRef ref, BuildContext context) {
     String? type = data['type'];
     if (type != null) {
+      if (data['id'] != null) {
+        _apiService.markNotificationAsRead(data['id'], ref);
+      }
       redirectToScreen(type, data['data'], ref, context);
     }
   }
 
   void redirectToScreen(
       String type, dynamic data, WidgetRef ref, BuildContext context) {
-    _apiService.markNotificationAsRead(data['id'], ref);
-
     switch (type) {
       case 'Transaction':
         context.push('/transaction-details');
