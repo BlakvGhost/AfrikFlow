@@ -11,7 +11,7 @@ class KycBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final firstKyc = user.kycs.isNotEmpty ? user.kycs.first : null;
 
-    if (!user.isVerified || firstKyc?.status == 'pending') {
+    if (!user.isVerified && firstKyc?.status != 'success') {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
@@ -27,7 +27,9 @@ class KycBanner extends StatelessWidget {
               child: Text(
                 firstKyc == null
                     ? 'Votre compte n\'est pas encore vérifié. Veuillez compléter la vérification pour accéder à tous les services.'
-                    : "Votre compte est en cours de validation",
+                    : (firstKyc.status == 'pending'
+                        ? "Votre compte est en cours de validation"
+                        : "La validation de votre compte a échouée"),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

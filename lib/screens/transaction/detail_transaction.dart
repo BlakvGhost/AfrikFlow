@@ -88,7 +88,7 @@ class TransactionDetailsScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Transaction #${_transaction.id}',
+              'Trans #${_transaction.transactionNumber}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -117,14 +117,16 @@ class TransactionDetailsScreenState
                     CircleAvatar(
                       backgroundColor: Colors.grey[300],
                       radius: 20,
-                      backgroundImage: NetworkImage(_transaction.payinWProvider.logo),
+                      backgroundImage:
+                          NetworkImage(_transaction.payinWProvider.logo),
                     ),
                     Positioned(
                       left: 22,
                       child: CircleAvatar(
                         backgroundColor: Colors.grey[300],
                         radius: 20,
-                        backgroundImage: NetworkImage(_transaction.payoutWProvider.logo),
+                        backgroundImage:
+                            NetworkImage(_transaction.payoutWProvider.logo),
                       ),
                     ),
                   ],

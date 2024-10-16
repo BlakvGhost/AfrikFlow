@@ -100,6 +100,13 @@ Future<File> compressImage(File imageFile) async {
   return compressedFile;
 }
 
+Future<File> compressImageInBackground(File imageFile) async {
+  final originalImage = img.decodeImage(imageFile.readAsBytesSync())!;
+  final compressedImage = img.copyResize(originalImage, width: 800);
+  final compressedBytes = img.encodeJpg(compressedImage, quality: 85);
+  return imageFile.writeAsBytes(compressedBytes);
+}
+
 Future<void> launchURL(String url) async {
   final url0 = Uri.parse(url);
   if (await canLaunchUrl(url0)) {

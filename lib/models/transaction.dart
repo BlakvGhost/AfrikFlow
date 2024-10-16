@@ -19,6 +19,7 @@ class Transaction {
   final DateTime createdAt;
   final String humarizeDate;
   final String? invoiceUrl;
+  final String transactionNumber;
 
   Transaction({
     required this.id,
@@ -39,6 +40,7 @@ class Transaction {
     required this.createdAt,
     required this.humarizeDate,
     this.invoiceUrl,
+    required this.transactionNumber,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
@@ -61,6 +63,7 @@ class Transaction {
       createdAt: DateTime.parse(json['created_at']),
       humarizeDate: json['humarizeDate'],
       invoiceUrl: json['invoice_url'],
+      transactionNumber: json['transaction_number'],
     );
   }
 
@@ -84,6 +87,7 @@ class Transaction {
       'created_at': createdAt.toIso8601String(),
       'humarizeDate': humarizeDate,
       'invoice_url': invoiceUrl,
+      'transaction_number': transactionNumber,
     };
   }
 }

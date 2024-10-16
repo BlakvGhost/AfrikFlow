@@ -31,6 +31,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   @override
+  void initState() {
+    _refresh();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     final transactions = user?.transactions.take(5).toList();

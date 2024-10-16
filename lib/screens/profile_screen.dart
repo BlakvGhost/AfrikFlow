@@ -117,6 +117,7 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
       isRefresh = false;
     });
     if (res['success']) {
+      await ref.read(userProvider.notifier).logout(context);
       context.go('/');
     }
   }

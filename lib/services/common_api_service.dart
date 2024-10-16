@@ -152,7 +152,6 @@ class ApiService {
     if (response.statusCode == 200) {
       return {'success': true, 'message': jsonDecode(response.body)['message']};
     } else {
-      print(jsonDecode(response.body));
       final errorMessage = jsonDecode(response.body)['data'];
       return {'success': false, 'message': errorMessage};
     }
@@ -167,7 +166,6 @@ class ApiService {
     if (response.statusCode == 200) {
       return {'success': true, 'message': jsonDecode(response.body)['message']};
     } else {
-      print(jsonDecode(response.body));
       final errorMessage = jsonDecode(response.body)['message'];
       return {'success': false, 'message': errorMessage};
     }
