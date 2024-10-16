@@ -8,6 +8,7 @@ import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:afrik_flow/widgets/kyc_banner.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -502,7 +503,8 @@ class ProfileScreenState extends ConsumerState<ProfileScreen> {
         _avatarFile = File(pickedFile.path);
       });
 
-      final compressedImage = await compressImage(_avatarFile!);
+      final compressedImage =
+          await compute(compressImageInBackground, _avatarFile!);
 
       updateProfile(
         firstName: ref.read(userProvider)?.firstName ?? '',
