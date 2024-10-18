@@ -159,7 +159,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> deleteAccount(WidgetRef ref) async {
     final ApiClient apiClient = ref.read(apiClientProvider);
-  
+
     final url = Uri.parse('$apiBaseUrl/user/delete-account');
     final response = await apiClient.delete(url);
 

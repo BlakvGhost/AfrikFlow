@@ -8,6 +8,7 @@ import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
 import 'package:afrik_flow/screens/help/about_screen.dart';
 import 'package:afrik_flow/screens/help/help_screen.dart';
 import 'package:afrik_flow/screens/invoice_screen.dart';
+import 'package:afrik_flow/screens/kyc/kyc_get_started_screen.dart';
 import 'package:afrik_flow/screens/kyc/kyc_verification_screen.dart';
 import 'package:afrik_flow/screens/notifications_screen.dart';
 import 'package:afrik_flow/screens/settings_screen.dart';
@@ -89,6 +90,15 @@ class AppRoutes {
         showAppBar: false,
         title: "Vérification de votre identité",
         child: KYCVerificationScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/kyc-get-started',
+      builder: (context, state) => const BaseScreen(
+        showAppBar: false,
+        isFullScreen: true,
+        title: "Vérification de votre identité",
+        child: KYCGetStartedScreen(),
       ),
     ),
     GoRoute(

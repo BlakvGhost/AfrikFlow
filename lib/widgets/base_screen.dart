@@ -11,6 +11,7 @@ class BaseScreen extends ConsumerStatefulWidget {
   final Widget child;
   final String? title;
   final bool showAppBar;
+  final bool isFullScreen;
   final Widget? floatingActionButton;
   final Function(int)? onTabTapped;
 
@@ -21,6 +22,7 @@ class BaseScreen extends ConsumerStatefulWidget {
     this.showAppBar = true,
     this.floatingActionButton,
     this.onTabTapped,
+    this.isFullScreen = false,
   });
 
   @override
@@ -34,88 +36,90 @@ class _BaseScreenState extends ConsumerState<BaseScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
 
-    final appBar = AppBar(
-      toolbarHeight: 80,
-      automaticallyImplyLeading: true,
-      title: !widget.showAppBar
-          ? Text(
-              widget.title ?? 'AfrikFlow',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Hello ${user?.firstName ?? 'Guest'}",
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  "Welcome back",
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
-              ],
-            ),
-      elevation: 22,
-      actions: [
-        IconButton(
-          icon: Stack(
-            children: user?.notifications.isEmpty ?? true
-                ? [
-                    const PhIcon(
-                      child: PhosphorIconsDuotone.bell,
-                      isWhite: true,
-                      smartColor: true,
-                    ),
-                  ]
-                : [
-                    const PhIcon(
-                      child: PhosphorIconsDuotone.bellRinging,
-                      isWhite: true,
-                      smartColor: true,
-                    ),
-                    Positioned(
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 15,
-                          minHeight: 15,
-                        ),
-                        child: Text(
-                          user!.notifications.length.toString(),
-                          style: const TextStyle(
+    final appBar = !widget.isFullScreen
+        ? AppBar(
+            toolbarHeight: 80,
+            automaticallyImplyLeading: true,
+            title: !widget.showAppBar
+                ? Text(
+                    widget.title ?? 'AfrikFlow',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Hello ${user?.firstName ?? 'Guest'}",
+                        style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ),
-                  ],
-          ),
-          onPressed: () {
-            context.push('/notifications');
-          },
-        ),
-        IconButton(
-          icon: CircleAvatar(
-            radius: 18,
-            backgroundImage: NetworkImage(user?.avatar ?? ''),
-          ),
-          onPressed: () {
-            context.push('/profile');
-          },
-        ),
-      ],
-    );
+                      const Text(
+                        "Welcome back",
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                    ],
+                  ),
+            elevation: 22,
+            actions: [
+              IconButton(
+                icon: Stack(
+                  children: user?.notifications.isEmpty ?? true
+                      ? [
+                          const PhIcon(
+                            child: PhosphorIconsDuotone.bell,
+                            isWhite: true,
+                            smartColor: true,
+                          ),
+                        ]
+                      : [
+                          const PhIcon(
+                            child: PhosphorIconsDuotone.bellRinging,
+                            isWhite: true,
+                            smartColor: true,
+                          ),
+                          Positioned(
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 15,
+                                minHeight: 15,
+                              ),
+                              child: Text(
+                                user!.notifications.length.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ],
+                ),
+                onPressed: () {
+                  context.push('/notifications');
+                },
+              ),
+              IconButton(
+                icon: CircleAvatar(
+                  radius: 18,
+                  backgroundImage: NetworkImage(user?.avatar ?? ''),
+                ),
+                onPressed: () {
+                  context.push('/profile');
+                },
+              ),
+            ],
+          )
+        : null;
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(

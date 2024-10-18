@@ -61,7 +61,6 @@ class PushNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Notification opened: ${message.data}');
       _handleNotificationClick(message.data, ref, context);
     });
   }
