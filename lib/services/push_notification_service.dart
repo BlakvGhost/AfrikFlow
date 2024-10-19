@@ -23,7 +23,17 @@ class PushNotificationService {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+        _handleNotificationClick(notificationResponse.payload!, ref, context);
+      },
+      onDidReceiveBackgroundNotificationResponse:
+          (NotificationResponse notificationResponse) {
+        _handleNotificationClick(notificationResponse.payload!, ref, context);
+      },
+    );
 
     await _firebaseMessaging.requestPermission(
       alert: true,
@@ -59,10 +69,6 @@ class PushNotificationService {
         await ref.read(userProvider.notifier).refreshUserData(ref);
       }
     });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleNotificationClick(message.data, ref, context);
-    });
   }
 
   Future<void> sendTokenToServer(String token, WidgetRef ref) async {
@@ -76,18 +82,19 @@ class PushNotificationService {
   }
 
   void _handleNotificationClick(
-      Map<String, dynamic> data, WidgetRef ref, BuildContext context) {
-    String? type = data['type'];
+      String data, WidgetRef ref, BuildContext context) {
+    print(jsonDecode(data)['content']);
+    final data0 = jsonDecode(data)['content'];
+    String? type = data0['notificationType'];
     if (type != null) {
-      if (data['id'] != null) {
-        _apiService.markNotificationAsRead(data['id'], ref);
+      if (data0['data']['id'] != null) {
+        _apiService.markNotificationAsRead(data0['data']['id'], ref);
       }
-      redirectToScreen(type, data['data'], ref, context);
+      redirectToScreen(type, ref, context);
     }
   }
 
-  void redirectToScreen(
-      String type, dynamic data, WidgetRef ref, BuildContext context) {
+  void redirectToScreen(String type, WidgetRef ref, BuildContext context) {
     switch (type) {
       case 'Transaction':
         context.push('/transaction-details');
