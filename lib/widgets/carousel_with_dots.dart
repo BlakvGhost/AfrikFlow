@@ -32,11 +32,10 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
               future: _banners,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Conteneur avec la même taille que les images pour éviter le décalage
                   return Container(
                     height: 200,
                     width: double.infinity,
-                    alignment: Alignment.center, // Centrer le loader
+                    alignment: Alignment.center,
                     child: const CircularProgressIndicator(),
                   );
                 } else if (snapshot.hasError) {
@@ -54,7 +53,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height:
-                                  200, // Garde la taille des images constante
+                                  200,
                             ),
                           );
                         }).toList(),
