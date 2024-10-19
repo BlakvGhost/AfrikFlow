@@ -6,8 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class KYCVerificationScreen extends ConsumerStatefulWidget {
   const KYCVerificationScreen({super.key});
@@ -81,20 +82,154 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
     final firstKyc = user!.kycs.isNotEmpty ? user.kycs.first : null;
 
     if (firstKyc != null && firstKyc.status == 'success') {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Vérification KYC réussie'),
-          centerTitle: true,
+      return _buildSuccessScreen();
+    }
+
+    if (firstKyc != null && firstKyc.status == 'pending') {
+      return _buildPendingScreen();
+    }
+
+    if (firstKyc != null && firstKyc.status == 'failed') {
+      return _buildFailedScreen(
+          firstKyc.failedStep as int, firstKyc.failureReason!);
+    }
+
+    return _buildSubmissionScreen();
+  }
+
+  Widget _buildPendingScreen() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vérification KYC'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset('assets/animations/loading.json', height: 150),
+            const SizedBox(height: 26),
+            const Text(
+              'Votre document est en cours de vérification, cela peut prendre un petit moment...',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        body: const Center(
-          child: Text(
-            'Votre KYC a été vérifié avec succès.',
-            style: TextStyle(color: Colors.green, fontSize: 18),
+      ),
+    );
+  }
+
+  Widget _buildFailedScreen(int failedStep, String failureReason) {
+    String stepMessage;
+    Widget failedCard;
+
+    if (failedStep == 1) {
+      stepMessage = 'Échec à l\'étape du selfie. Veuillez réessayer.';
+      failedCard = _buildStepCard(
+        title: 'Selfie Photo',
+        description:
+            'Prenez un selfie avec votre caméra frontale pour vérifier votre identité.',
+        imagePath: 'assets/images/step1.png',
+        buttonText: _selfieImage != null ? 'Selfie pris' : 'Prendre le selfie',
+        onTap: _selfieImage == null ? _pickSelfie : null,
+        isCompleted: _selfieImage != null,
+      );
+    } else if (failedStep == 2) {
+      stepMessage = 'Échec à l\'étape du document. Veuillez réessayer.';
+      failedCard = _buildStepCard(
+        title: 'Scan du Document',
+        description:
+            'Prenez une photo de votre passeport ou de votre carte d\'identité pour vérifier vos informations.',
+        imagePath: 'assets/images/step2.png',
+        buttonText:
+            _documentImage != null ? 'Document pris' : 'Prendre la carte',
+        onTap: _documentImage == null ? _pickDocument : null,
+        isCompleted: _documentImage != null,
+      );
+    } else {
+      stepMessage = 'Échec de la vérification. Veuillez réessayer.';
+      failedCard = Column(
+        children: [
+          _buildStepCard(
+            title: 'Selfie Photo',
+            description:
+                'Prenez un selfie avec votre caméra frontale pour vérifier votre identité.',
+            imagePath: 'assets/images/step1.png',
+            buttonText:
+                _selfieImage != null ? 'Selfie pris' : 'Prendre le selfie',
+            onTap: _selfieImage == null ? _pickSelfie : null,
+            isCompleted: _selfieImage != null,
           ),
-        ),
+          const SizedBox(height: 20),
+          _buildStepCard(
+            title: 'Scan du Document',
+            description:
+                'Prenez une photo de votre passeport ou de votre carte d\'identité pour vérifier vos informations.',
+            imagePath: 'assets/images/step2.png',
+            buttonText:
+                _documentImage != null ? 'Document pris' : 'Prendre la carte',
+            onTap: _documentImage == null ? _pickDocument : null,
+            isCompleted: _documentImage != null,
+          ),
+        ],
       );
     }
 
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vérification KYC échouée'),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset('assets/animations/failed.json', height: 150),
+            const SizedBox(height: 20),
+            Text(
+              '$stepMessage\nRaison : $failureReason',
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            failedCard,
+            const SizedBox(height: 28),
+            CustomElevatedButton(
+              label: 'Réessayer',
+              onPressed: _uploadImages,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessScreen() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vérification KYC réussie'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset('assets/animations/success.json', height: 150),
+            const SizedBox(height: 26),
+            const Text(
+              'Votre document KYC a été approuvé!',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmissionScreen() {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vérification KYC'),
@@ -140,14 +275,6 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                 onPressed: _isLoading ? null : _uploadImages,
                 isLoading: _isLoading,
               ),
-              if (firstKyc != null && firstKyc.status == 'failed')
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Text(
-                    'Échec à l\'étape : ${firstKyc.failedStep}\nRaison: ${firstKyc.failureReason}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
             ],
           ),
         ),
@@ -201,9 +328,8 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    backgroundColor: isCompleted
-                        ? Colors.green
-                        : Colors.black26, // Coloration
+                    backgroundColor:
+                        isCompleted ? Colors.green : Colors.black26,
                   ),
                 ),
               ],

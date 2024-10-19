@@ -3,7 +3,7 @@ class Kyc {
   String? failureReason;
   String status;
   String? selfieImage;
-  String? failedStep;
+  int? failedStep;
 
   Kyc({
     required this.legalDoc,
@@ -19,7 +19,9 @@ class Kyc {
       failureReason: json['failure_reason'],
       status: json['status'],
       selfieImage: json['selfie_image'],
-      failedStep: json['failed_step'],
+      failedStep: json['failed_step'] != null
+          ? int.parse(json['failed_step'].toString())
+          : null,
     );
   }
 
@@ -29,7 +31,7 @@ class Kyc {
       'failure_reason': failureReason,
       'status': status,
       'selfie_image': selfieImage,
-      'failed_step': failedStep,
+      'failed_step': failedStep?.toString(),
     };
   }
 }

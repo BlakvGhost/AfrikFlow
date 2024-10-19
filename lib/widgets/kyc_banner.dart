@@ -45,7 +45,10 @@ class KycBanner extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                context.push('/kyc-get-started');
+                context.push(firstKyc?.status == 'pending' ||
+                        firstKyc?.status == 'success'
+                    ? '/kyc'
+                    : '/kyc-get-started');
               },
               child: const Text(
                 'Vérifier',
