@@ -82,7 +82,39 @@ class ApiService {
 
     final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
 
-    print(jsonResponse);
+    if (response.statusCode == 200) {
+      await ref.read(userProvider.notifier).refreshUserData(ref);
+      return {'success': true, 'data': jsonResponse['data']};
+    } else {
+      return {'success': false, 'message': jsonResponse['message']};
+    }
+  }
+
+  Future<Map<String, dynamic>> resubmitLegalDocuments(
+      File? image, File? selfieImage, String kycId, WidgetRef ref) async {
+    final user = ref.read(userProvider);
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$apiBaseUrl/user/upload-legal-doc/$kycId'),
+    );
+    request.headers['Authorization'] = 'Bearer ${user?.token}';
+
+    if (image != null) {
+      request.files
+          .add(await http.MultipartFile.fromPath('legal_doc', image.path));
+    }
+    if (selfieImage != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath('selfie_image', selfieImage.path));
+    }
+
+    var response = await request.send();
+
+    final responseBody = await response.stream.bytesToString();
+
+    final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+
     if (response.statusCode == 200) {
       await ref.read(userProvider.notifier).refreshUserData(ref);
       return {'success': true, 'data': jsonResponse['data']};

@@ -1,3 +1,4 @@
+import 'package:afrik_flow/models/kyc.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/utils/helpers.dart';
@@ -22,6 +23,7 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
   File? _selfieImage;
   File? _documentImage;
   bool _isLoading = false;
+  final ApiService _apiService = ApiService();
 
   Future<void> _pickSelfie() async {
     final picker = ImagePicker();
@@ -59,8 +61,8 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
           await compute(compressImageInBackground, _documentImage!);
       final compressedSelfieImage =
           await compute(compressImageInBackground, _selfieImage!);
-      final res = await ApiService()
-          .uploadImage(compressedLegalDocImage, compressedSelfieImage, ref);
+      final res = await _apiService.uploadImage(
+          compressedLegalDocImage, compressedSelfieImage, ref);
 
       setState(() {
         _isLoading = false;
@@ -70,6 +72,47 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
         showToast(context, res['message']);
       }
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _reSubmit(Kyc kyc) async {
+    if ((_selfieImage == null && _documentImage == null) || _isLoading) {
+      return showToast(context, "Veuillez prendre l'image");
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      File? compressedSelfieImage;
+      File? compressedLegalDocImage;
+
+      if (_selfieImage != null) {
+        compressedSelfieImage =
+            await compute(compressImageInBackground, _selfieImage!);
+      }
+
+      if (_documentImage != null) {
+        compressedLegalDocImage =
+            await compute(compressImageInBackground, _documentImage!);
+      }
+
+      final res = await _apiService.resubmitLegalDocuments(
+          compressedLegalDocImage, compressedSelfieImage, kyc.id, ref);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (!res['success']) {
+        showToast(context, res['message']);
+      }
+    } catch (e) {
+      print(e);
       setState(() {
         _isLoading = false;
       });
@@ -91,7 +134,7 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
 
     if (firstKyc != null && firstKyc.status == 'failed') {
       return _buildFailedScreen(
-          firstKyc.failedStep as int, firstKyc.failureReason!);
+          firstKyc.failedStep as int, firstKyc.failureReason!, firstKyc);
     }
 
     return _buildSubmissionScreen();
@@ -120,12 +163,10 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
     );
   }
 
-  Widget _buildFailedScreen(int failedStep, String failureReason) {
-    String stepMessage;
+  Widget _buildFailedScreen(int failedStep, String failureReason, Kyc kyc) {
     Widget failedCard;
 
     if (failedStep == 1) {
-      stepMessage = 'Échec à l\'étape du selfie. Veuillez réessayer.';
       failedCard = _buildStepCard(
         title: 'Selfie Photo',
         description:
@@ -134,9 +175,9 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
         buttonText: _selfieImage != null ? 'Selfie pris' : 'Prendre le selfie',
         onTap: _selfieImage == null ? _pickSelfie : null,
         isCompleted: _selfieImage != null,
+        isFailed: true,
       );
     } else if (failedStep == 2) {
-      stepMessage = 'Échec à l\'étape du document. Veuillez réessayer.';
       failedCard = _buildStepCard(
         title: 'Scan du Document',
         description:
@@ -146,9 +187,9 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
             _documentImage != null ? 'Document pris' : 'Prendre la carte',
         onTap: _documentImage == null ? _pickDocument : null,
         isCompleted: _documentImage != null,
+        isFailed: true,
       );
     } else {
-      stepMessage = 'Échec de la vérification. Veuillez réessayer.';
       failedCard = Column(
         children: [
           _buildStepCard(
@@ -160,6 +201,7 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                 _selfieImage != null ? 'Selfie pris' : 'Prendre le selfie',
             onTap: _selfieImage == null ? _pickSelfie : null,
             isCompleted: _selfieImage != null,
+            isFailed: true,
           ),
           const SizedBox(height: 20),
           _buildStepCard(
@@ -171,6 +213,7 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                 _documentImage != null ? 'Document pris' : 'Prendre la carte',
             onTap: _documentImage == null ? _pickDocument : null,
             isCompleted: _documentImage != null,
+            isFailed: true,
           ),
         ],
       );
@@ -181,27 +224,45 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
         title: const Text('Vérification KYC échouée'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Lottie.asset('assets/animations/failed.json', height: 150),
-            const SizedBox(height: 20),
-            Text(
-              '$stepMessage\nRaison : $failureReason',
-              style: const TextStyle(color: Colors.red, fontSize: 16),
-              textAlign: TextAlign.center,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Veuillez suivre les étapes ci-dessous pour résoumettre la vérification KYC.',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 30),
+                  Center(
+                    child: Text(
+                      failureReason,
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  failedCard,
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-            failedCard,
-            const SizedBox(height: 28),
-            CustomElevatedButton(
-              label: 'Réessayer',
-              onPressed: _uploadImages,
-            ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: CustomElevatedButton(
+                label: 'Réessayer',
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        _reSubmit(kyc);
+                      },
+                isLoading: _isLoading),
+          ),
+        ],
       ),
     );
   }
@@ -289,6 +350,7 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
     required String buttonText,
     required VoidCallback? onTap,
     required bool isCompleted,
+    bool isFailed = false,
   }) {
     return Stack(
       clipBehavior: Clip.none,
@@ -297,6 +359,9 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
           color: isCompleted ? Colors.green[800] : Colors.grey[800],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: isFailed
+                ? const BorderSide(color: Colors.red, width: 2)
+                : BorderSide.none,
           ),
           elevation: 2,
           child: Padding(
@@ -332,6 +397,12 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
                         isCompleted ? Colors.green : Colors.black26,
                   ),
                 ),
+                // if (isFailed) const SizedBox(height: 10),
+                // if (isFailed)
+                //   const Text(
+                //     'Échec de la vérification.',
+                //     style: TextStyle(color: Colors.red, fontSize: 14),
+                //   ),
               ],
             ),
           ),

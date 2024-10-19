@@ -4,6 +4,7 @@ class Kyc {
   String status;
   String? selfieImage;
   int? failedStep;
+  String id;
 
   Kyc({
     required this.legalDoc,
@@ -11,6 +12,7 @@ class Kyc {
     required this.status,
     this.selfieImage,
     this.failedStep,
+    required this.id,
   });
 
   factory Kyc.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class Kyc {
       failedStep: json['failed_step'] != null
           ? int.parse(json['failed_step'].toString())
           : null,
+      id: json['id'].toString(),
     );
   }
 
@@ -32,6 +35,7 @@ class Kyc {
       'status': status,
       'selfie_image': selfieImage,
       'failed_step': failedStep?.toString(),
+      'id': id,
     };
   }
 }
