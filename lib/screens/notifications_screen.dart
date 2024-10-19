@@ -18,6 +18,7 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   final ApiService _apiService = ApiService();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     }
 
     void markAllNotificationsAsRead() async {
+      setState(() {
+        isLoading = true;
+      });
       await _apiService.markNotificationsAsRead(ref);
+      setState(() {
+        isLoading = false;
+      });
     }
 
     return Column(
@@ -69,15 +76,26 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ElevatedButton.icon(
-            onPressed: () {
-              markAllNotificationsAsRead();
-            },
-            icon: const Icon(PhosphorIconsDuotone.checkCircle),
-            label: const Text(
-              'Tout marquer comme lu',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+            onPressed: isLoading ? null : markAllNotificationsAsRead,
+            icon: isLoading
+                ? null
+                : const Icon(
+                    PhosphorIconsDuotone.checkCircle,
+                    color: Colors.white,
+                  ),
+            label: isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Tout marquer comme lu',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
               shape: RoundedRectangleBorder(
