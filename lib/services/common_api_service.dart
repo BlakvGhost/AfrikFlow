@@ -61,7 +61,8 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> uploadImage(File image, WidgetRef ref) async {
+  Future<Map<String, dynamic>> uploadImage(
+      File image, File selfieImage, WidgetRef ref) async {
     final user = ref.read(userProvider);
 
     var request = http.MultipartRequest(
@@ -72,6 +73,8 @@ class ApiService {
 
     request.files
         .add(await http.MultipartFile.fromPath('legal_doc', image.path));
+    request.files.add(
+        await http.MultipartFile.fromPath('selfie_image', selfieImage.path));
 
     var response = await request.send();
 
@@ -79,6 +82,7 @@ class ApiService {
 
     final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
 
+    print(jsonResponse);
     if (response.statusCode == 200) {
       await ref.read(userProvider.notifier).refreshUserData(ref);
       return {'success': true, 'data': jsonResponse['data']};

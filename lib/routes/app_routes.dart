@@ -88,6 +88,7 @@ class AppRoutes {
       path: '/kyc',
       builder: (context, state) => const BaseScreen(
         showAppBar: false,
+        isFullScreen: true,
         title: "Vérification de votre identité",
         child: KYCVerificationScreen(),
       ),
