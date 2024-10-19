@@ -112,7 +112,6 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
         showToast(context, res['message']);
       }
     } catch (e) {
-      print(e);
       setState(() {
         _isLoading = false;
       });
@@ -277,7 +276,11 @@ class _KYCVerificationScreenState extends ConsumerState<KYCVerificationScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.asset('assets/animations/success.json', height: 150),
+            Image.asset(
+              'assets/images/approved.png',
+              height: 180,
+              fit: BoxFit.cover,
+            ),
             const SizedBox(height: 26),
             const Text(
               'Votre document KYC a été approuvé!',
