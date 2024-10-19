@@ -1,6 +1,8 @@
+import 'package:afrik_flow/services/common_api_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:afrik_flow/models/banner.dart' as home_banner;
 
 class CarouselWithDots extends StatefulWidget {
   const CarouselWithDots({super.key});
@@ -11,6 +13,13 @@ class CarouselWithDots extends StatefulWidget {
 
 class CarouselWithDotsState extends State<CarouselWithDots> {
   int _currentIndex = 0;
+  late Future<List<home_banner.Banner>> _banners;
+
+  @override
+  void initState() {
+    super.initState();
+    _banners = ApiService().fetchBanners();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,68 +28,75 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12, top: 10),
-            child: CarouselSlider(
-              items: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(18.0),
-                  child: Image.asset(
-                    'assets/images/carousel2.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
+            child: FutureBuilder<List<home_banner.Banner>>(
+              future: _banners,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Conteneur avec la même taille que les images pour éviter le décalage
+                  return Container(
                     height: 200,
-                  ),
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(18.0),
-                  child: Image.asset(
-                    'assets/onboard/onboard2.jpg',
-                    fit: BoxFit.cover,
                     width: double.infinity,
-                    height: 200,
-                  ),
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(18.0),
-                  child: Image.asset(
-                    'assets/images/carousel1.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 200,
-                  ),
-                ),
-              ],
-              options: CarouselOptions(
-                height: 200,
-                viewportFraction: 1.0,
-                enableInfiniteScroll: true,
-                autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 8),
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-              ),
+                    alignment: Alignment.center, // Centrer le loader
+                    child: const CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Erreur: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  final banners = snapshot.data!;
+                  return Column(
+                    children: [
+                      CarouselSlider(
+                        items: banners.map((banner) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(18.0),
+                            child: Image.network(
+                              banner.cover,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height:
+                                  200, // Garde la taille des images constante
+                            ),
+                          );
+                        }).toList(),
+                        options: CarouselOptions(
+                          height: 200,
+                          viewportFraction: 1.0,
+                          enableInfiniteScroll: true,
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 8),
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _currentIndex = index;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 5.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(banners.length, (index) {
+                          return Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 4.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentIndex == index
+                                  ? AppTheme.primaryColor
+                                  : Colors.grey,
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  );
+                } else {
+                  return const Text('Aucune bannière disponible');
+                }
+              },
             ),
           ),
-        ),
-        const SizedBox(height: 5.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [0, 1, 2].map((index) {
-            return Container(
-              width: 8.0,
-              height: 8.0,
-              margin:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _currentIndex == index
-                    ? AppTheme.primaryColor
-                    : Colors.grey,
-              ),
-            );
-          }).toList(),
         ),
       ],
     );

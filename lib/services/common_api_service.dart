@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:afrik_flow/models/banner.dart';
 import 'package:afrik_flow/models/country.dart';
 import 'package:afrik_flow/providers/api_client_provider.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
@@ -204,6 +205,21 @@ class ApiService {
     } else {
       final errorMessage = jsonDecode(response.body)['message'];
       return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<List<Banner>> fetchBanners() async {
+    final url = Uri.parse('$apiBaseUrl/banners');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonResponse = jsonDecode(response.body)['data'];
+      return jsonResponse.map((banner) => Banner.fromJson(banner)).toList();
+    } else {
+      throw Exception('Échec du chargement des bannières');
     }
   }
 }
