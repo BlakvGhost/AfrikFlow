@@ -21,13 +21,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<Transaction> transactions = [];
 
   Future<void> _refresh() async {
-    setState(() {
-      isRefresh = true;
-    });
+    if (mounted) {
+      setState(() {
+        isRefresh = true;
+      });
+    }
     await ref.read(userProvider.notifier).refreshUserData(ref);
-    setState(() {
-      isRefresh = false;
-    });
+    if (mounted) {
+      setState(() {
+        isRefresh = false;
+      });
+    }
   }
 
   @override

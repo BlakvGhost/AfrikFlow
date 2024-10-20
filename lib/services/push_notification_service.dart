@@ -11,7 +11,6 @@ import 'package:go_router/go_router.dart';
 
 class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final ApiService _apiService = ApiService();
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   Future<void> init(WidgetRef ref, BuildContext context) async {
@@ -26,13 +25,10 @@ class PushNotificationService {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse:
-          (NotificationResponse notificationResponse) {
+          (NotificationResponse notificationResponse) async {
         _handleNotificationClick(notificationResponse.payload!, ref, context);
       },
-      onDidReceiveBackgroundNotificationResponse:
-          (NotificationResponse notificationResponse) {
-        _handleNotificationClick(notificationResponse.payload!, ref, context);
-      },
+      onDidReceiveBackgroundNotificationResponse: backgroundHandler,
     );
 
     await _firebaseMessaging.requestPermission(
@@ -69,6 +65,7 @@ class PushNotificationService {
         await ref.read(userProvider.notifier).refreshUserData(ref);
       }
     });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
   }
 
   Future<void> sendTokenToServer(String token, WidgetRef ref) async {
@@ -80,34 +77,50 @@ class PushNotificationService {
       body: jsonEncode({'device_id': token}),
     );
   }
+}
 
-  void _handleNotificationClick(
-      String data, WidgetRef ref, BuildContext context) {
-    print(jsonDecode(data)['content']);
-    final data0 = jsonDecode(data)['content'];
+@pragma('vm:entry-point')
+Future<void> backgroundHandler(
+    NotificationResponse notificationResponse) async {}
+
+@pragma('vm:entry-point')
+void _handleNotificationClick(
+    String data, WidgetRef ref, BuildContext context) {
+  try {
+    final decodedData = jsonDecode(data);
+    final data0 = jsonDecode(decodedData['content']);
+
     String? type = data0['notificationType'];
+
     if (type != null) {
       if (data0['data']['id'] != null) {
-        _apiService.markNotificationAsRead(data0['data']['id'], ref);
+        int notificationId = data0['data']['id'];
+        ApiService().markNotificationAsRead(notificationId, ref);
       }
-      redirectToScreen(type, ref, context);
+      redirectToScreen(type, data0['data'], ref, context);
     }
+  } catch (e) {
+    //
   }
+}
 
-  void redirectToScreen(String type, WidgetRef ref, BuildContext context) {
-    switch (type) {
-      case 'Transaction':
-        context.push('/transaction-details');
-        break;
-      case 'WelcomeMessage':
-        context.push('/send');
-        break;
-      case 'KYC':
-        context.push('/kyc');
-        break;
-      default:
-        context.go('/home');
-        break;
-    }
+void redirectToScreen(
+    String type, dynamic data, WidgetRef ref, BuildContext context) {
+  switch (type) {
+    case 'Transaction':
+      context.push('/transaction-details', extra: data['transaction']);
+      break;
+    case 'WelcomeMessage':
+      context.push('/send');
+      break;
+    case 'KYC':
+      context.push('/kyc');
+      break;
+    case 'auth':
+      context.push('/profile');
+      break;
+    default:
+      context.go('/home');
+      break;
   }
 }
