@@ -5,17 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
+import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/services/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ForgotPasswordScreen extends ConsumerStatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class ResetPasswordScreen extends ConsumerStatefulWidget {
+  const ResetPasswordScreen({super.key, required this.email, required this.otp});
+
+  final String email;
+
+  final String otp;
 
   @override
-  ForgotPasswordScreenState createState() => ForgotPasswordScreenState();
+  ResetPasswordScreenState createState() => ResetPasswordScreenState();
 }
 
-class ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
+class ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   bool isLoading = false;
 
@@ -40,7 +45,7 @@ class ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   Future<void> _sendResetLink() async {
     if (_emailController.text.isEmpty) {
-      showToast(context, "Veuillez entrer votre e-mail/numéro de téléphone.");
+      showToast(context, "Veuillez entrer votre e-mail.");
       return;
     }
 
@@ -56,7 +61,7 @@ class ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     });
 
     if (result['success']) {
-      context.push('/confirm-otp', extra: result['data']['data']['to']);
+      context.go('/login');
     } else {
       showToast(context, result['message']);
     }
@@ -76,7 +81,7 @@ class ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 80),
+              padding: const EdgeInsets.only(top: 60),
               children: [
                 const AppLogo(),
                 const SizedBox(height: 10),
@@ -88,7 +93,6 @@ class ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       fontWeight: FontWeight.bold,
                       color: AppTheme.primaryColor,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -130,11 +134,16 @@ class ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   textInputAction: TextInputAction.next,
                   onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
-                const SizedBox(
-                  height: 30,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text('Mot de passe oublié?'),
+                  ),
                 ),
+                const AuthScreenBottomCgu(),
                 CustomElevatedButton(
-                  label: 'Envoyer le code',
+                  label: 'Envoyer le code de réinitialisation',
                   onPressed: isLoading ? null : _sendResetLink,
                   textColor: AppTheme.backgroundColor,
                   isLoading: isLoading,

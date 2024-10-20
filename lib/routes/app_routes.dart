@@ -3,6 +3,9 @@ import 'package:afrik_flow/screens/all_service_screen.dart';
 import 'package:afrik_flow/screens/assistance_screen.dart';
 import 'package:afrik_flow/screens/auth/email_verification_screen.dart';
 import 'package:afrik_flow/screens/auth/login_screen.dart';
+import 'package:afrik_flow/screens/auth/password/confirm_otp_screen.dart';
+import 'package:afrik_flow/screens/auth/password/forgot_password_screen.dart';
+import 'package:afrik_flow/screens/auth/password/reset_password_screen.dart';
 import 'package:afrik_flow/screens/auth/register_screen.dart';
 import 'package:afrik_flow/screens/auth/two_factor_screen.dart';
 import 'package:afrik_flow/screens/help/about_screen.dart';
@@ -161,6 +164,35 @@ class AppRoutes {
           email: state.extra as String,
         ),
       ),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) => const AuthBaseScreen(
+        child: ForgotPasswordScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/confirm-otp',
+      builder: (context, state) => AuthBaseScreen(
+        child: ConfirmOtpScreen(
+          email: state.extra as String,
+        ),
+      ),
+    ),
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) {
+        final extraData = state.extra as Map<String, dynamic>;
+        final email = extraData['email'] as String;
+        final password = extraData['otp'] as String;
+
+        return AuthBaseScreen(
+          child: ResetPasswordScreen(
+            email: email,
+            otp: password,
+          ),
+        );
+      },
     ),
     GoRoute(
       path: '/two-factor-verification',

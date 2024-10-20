@@ -10,27 +10,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AuthService {
   final FirebaseService _firebaseService = FirebaseService();
 
+  String? getLoginField(String identifier) {
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final phoneRegex = RegExp(
+      r'^(?:\+?[0-9]{10,15}|[0-9]{8,10})$',
+    );
+
+    if (emailRegex.hasMatch(identifier)) {
+      return 'email';
+    } else if (phoneRegex.hasMatch(identifier)) {
+      return 'phone_num';
+    }
+    return null;
+  }
+
   Future<Map<String, dynamic>> login(
     String identifier,
     String password,
     String? otpCode,
   ) async {
     final url = Uri.parse('$apiBaseUrl/auth/login');
-
-    String? getLoginField(String identifier) {
-      final emailRegex =
-          RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-      final phoneRegex = RegExp(
-        r'^(?:\+?[0-9]{10,15}|[0-9]{8,10})$',
-      );
-
-      if (emailRegex.hasMatch(identifier)) {
-        return 'email';
-      } else if (phoneRegex.hasMatch(identifier)) {
-        return 'phone_num';
-      }
-      return null;
-    }
 
     final loginField = getLoginField(identifier);
 
@@ -129,6 +129,59 @@ class AuthService {
 
     final registerData = {
       'email': email,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(registerData),
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> sendPasswordResetEmail(String identifier) async {
+    final url = Uri.parse('$apiBaseUrl/password/forgot');
+
+    final loginField = getLoginField(identifier);
+
+    if (loginField == null) {
+      return {
+        'success': false,
+        'message': 'Email ou numero de telephone invalide.'
+      };
+    }
+
+    final loginData = {
+      loginField: identifier,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(loginData),
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyOtpCode(
+      String email, String otpCode) async {
+    final url = Uri.parse('$apiBaseUrl/password/verify-otp');
+
+    final registerData = {
+      'email': email,
+      'otp': otpCode,
     };
 
     final response = await http.post(
