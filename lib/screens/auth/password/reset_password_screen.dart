@@ -1,16 +1,17 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/app_logo.dart';
+import 'package:afrik_flow/widgets/input/password_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
-import 'package:afrik_flow/widgets/ui/auth_screen_bottom_cgu.dart';
 import 'package:afrik_flow/services/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
-  const ResetPasswordScreen({super.key, required this.email, required this.otp});
+  const ResetPasswordScreen(
+      {super.key, required this.email, required this.otp});
 
   final String email;
 
@@ -21,7 +22,9 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 }
 
 class ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool isLoading = false;
 
   final AuthService _authService = AuthService();
@@ -43,9 +46,15 @@ class ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     }
   }
 
-  Future<void> _sendResetLink() async {
-    if (_emailController.text.isEmpty) {
-      showToast(context, "Veuillez entrer votre e-mail.");
+  Future<void> _resetPassword() async {
+    if (_passwordController.text.isEmpty &&
+        _confirmPasswordController.text.isEmpty) {
+      showToast(context, "Veuillez entrer un nouveau mot de passe.");
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      showToast(context, "Les mots de passe ne correspondent pas.");
       return;
     }
 
@@ -53,24 +62,19 @@ class ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       isLoading = true;
     });
 
-    final result =
-        await _authService.sendPasswordResetEmail(_emailController.text);
+    final result = await _authService.resetPassword(widget.email, widget.otp,
+        _passwordController.text, _confirmPasswordController.text);
 
     setState(() {
       isLoading = false;
     });
 
     if (result['success']) {
+      showSucessToast(context, result['data']['data']);
       context.go('/login');
     } else {
-      showToast(context, result['message']);
+      showToast(context, result['message'], isList: true);
     }
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
   }
 
   @override
@@ -81,70 +85,40 @@ class ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.only(top: 60),
+              padding: const EdgeInsets.only(top: 80),
               children: [
                 const AppLogo(),
                 const SizedBox(height: 10),
                 const Center(
                   child: Text(
-                    'Réinitialiser votre mot de passe!',
+                    'Nouveau mot de passe !',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.primaryColor,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(height: 10),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Vous n\'avez pas de compte?',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppTheme.whiteColor,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      GestureDetector(
-                        onTap: () {
-                          context.push('/register');
-                        },
-                        child: const Text(
-                          'Inscrivez-vous',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppTheme.whiteColor,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
+                const Center(
+                  child: Text(
+                    'Veuillez entrer un nouveau mot de passe pour terminer le processus',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14),
                   ),
                 ),
-                const SizedBox(height: 30),
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'E-mail/ Numéro de téléphone',
-                    border: OutlineInputBorder(),
-                  ),
-                  textInputAction: TextInputAction.next,
-                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                const SizedBox(height: 25),
+                PasswordInputField(passwordController: _passwordController),
+                const SizedBox(height: 15),
+                PasswordInputField(
+                  passwordController: _confirmPasswordController,
+                  label: "Confirmer mot de passe",
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text('Mot de passe oublié?'),
-                  ),
-                ),
-                const AuthScreenBottomCgu(),
+                const SizedBox(height: 25),
                 CustomElevatedButton(
-                  label: 'Envoyer le code de réinitialisation',
-                  onPressed: isLoading ? null : _sendResetLink,
+                  label: 'Réinitialiser',
+                  onPressed: isLoading ? null : _resetPassword,
                   textColor: AppTheme.backgroundColor,
                   isLoading: isLoading,
                 )

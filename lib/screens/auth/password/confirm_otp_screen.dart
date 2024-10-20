@@ -48,8 +48,8 @@ class ConfirmOtpScreenState extends ConsumerState<ConfirmOtpScreen> {
 
     if (result['success']) {
       context.push('/reset-password', extra: {
-        'email': widget.email,
-        'otp': result['data']['data']['otp'],
+        'email': widget.email.toString(),
+        'otp': "${result['data']['data']['otp']}",
       });
     } else {
       showToast(context, result['message']);

@@ -198,6 +198,31 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> resetPassword(String email, String otpCode,
+      String password, String confirmPassword) async {
+    final url = Uri.parse('$apiBaseUrl/password/reset');
+
+    final registerData = {
+      'email': email,
+      'otp': otpCode,
+      'password': password,
+      'confirm_password': confirmPassword,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(registerData),
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      final errorMessage = jsonDecode(response.body)['data'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
   Future<Map<String, dynamic>> getSelfData(WidgetRef ref) async {
     final apiClient = ref.read(apiClientProvider);
     final url = Uri.parse('$apiBaseUrl/user/me');

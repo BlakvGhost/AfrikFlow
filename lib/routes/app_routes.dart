@@ -184,12 +184,12 @@ class AppRoutes {
       builder: (context, state) {
         final extraData = state.extra as Map<String, dynamic>;
         final email = extraData['email'] as String;
-        final password = extraData['otp'] as String;
+        final otpCode = extraData['otp'] as String;
 
         return AuthBaseScreen(
           child: ResetPasswordScreen(
             email: email,
-            otp: password,
+            otp: otpCode,
           ),
         );
       },

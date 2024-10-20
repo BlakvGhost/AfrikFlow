@@ -170,7 +170,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                   textInputAction: TextInputAction.next,
                   onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 PasswordInputField(passwordController: _passwordController),
                 Align(
                   alignment: Alignment.centerRight,
