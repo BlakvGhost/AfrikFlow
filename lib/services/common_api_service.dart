@@ -128,6 +128,7 @@ class ApiService {
       String? firstName, String? lastName, String? phoneNumber,
       {bool? isTwoFactorEnabled,
       bool? isAcceptedNotifications,
+      bool? isAcceptedEmailUpdates,
       File? avatar,
       required WidgetRef ref}) async {
     final user = ref.read(userProvider);
@@ -155,6 +156,11 @@ class ApiService {
     if (isAcceptedNotifications != null) {
       request.fields['isAcceptedNotifications'] =
           isAcceptedNotifications.toString();
+    }
+
+    if (isAcceptedEmailUpdates != null) {
+      request.fields['isAcceptedEmailUpdates'] =
+          isAcceptedEmailUpdates.toString();
     }
 
     if (avatar != null) {

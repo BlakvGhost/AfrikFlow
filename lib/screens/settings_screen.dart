@@ -1,4 +1,6 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
+import 'package:afrik_flow/services/common_api_service.dart';
+import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/btn/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,14 +18,43 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _notificationsEnabled = true;
   bool _twoFactorEnabled = false;
   bool _emailUpdatesEnabled = true;
+  bool _isLoading = false;
 
   @override
-  Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
+  void initState() {
+    super.initState();
+    final user = ref.read(userProvider);
 
     _notificationsEnabled = user?.isAcceptedNotifications ?? false;
     _twoFactorEnabled = user?.isTwoFactorEnabled ?? false;
+    _emailUpdatesEnabled = user?.isAcceptedEmailUpdates ?? false;
+  }
 
+  void _updateSettings() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final response = await ApiService().updateUserProfile(
+      null,
+      null,
+      null,
+      isTwoFactorEnabled: _twoFactorEnabled,
+      isAcceptedNotifications: _notificationsEnabled,
+      isAcceptedEmailUpdates: _emailUpdatesEnabled,
+      ref: ref,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response['success'] && mounted) {
+      showSucessToast(context, 'Paramètres mis à jour avec succès.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -81,12 +112,9 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               CustomElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Paramètres mis à jour.')),
-                  );
-                },
-                label: "Enregistrer",
+                onPressed: _updateSettings,
+                label: "Mise à jour",
+                isLoading: _isLoading,
               ),
               const SizedBox(height: 20),
               _buildUtilityButton(
