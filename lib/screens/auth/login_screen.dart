@@ -1,3 +1,4 @@
+import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/utils/helpers.dart';
 import 'package:afrik_flow/widgets/app_logo.dart';
@@ -63,10 +64,18 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (result['success']) {
       if (!mounted) return;
-      context.push('/two-factor-verification', extra: {
-        'email': _emailController.text,
-        'password': _passwordController.text
-      });
+
+      if (result['data']['data'] is Map &&
+          result['data']?['data']?['token'] != null) {
+        final user = User.fromJson(result['data']['data']);
+        ref.read(userProvider.notifier).setUser(user);
+        context.go('/home');
+      } else {
+        context.push('/two-factor-verification', extra: {
+          'email': _emailController.text,
+          'password': _passwordController.text
+        });
+      }
     } else {
       if (mounted) {
         showToast(context, result['message']);
