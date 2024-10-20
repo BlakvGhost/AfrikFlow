@@ -26,9 +26,10 @@ class PushNotificationService {
       initializationSettings,
       onDidReceiveNotificationResponse:
           (NotificationResponse notificationResponse) async {
-        _handleNotificationClick(notificationResponse.payload!, ref, context);
+        await _handleNotificationClick(
+            notificationResponse.payload!, ref, context);
       },
-      onDidReceiveBackgroundNotificationResponse: backgroundHandler,
+      // onDidReceiveBackgroundNotificationResponse: backgroundHandler,
     );
 
     await _firebaseMessaging.requestPermission(
@@ -46,6 +47,7 @@ class PushNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
+      print("Received");
 
       if (notification != null && android != null) {
         flutterLocalNotificationsPlugin.show(
@@ -65,7 +67,14 @@ class PushNotificationService {
         await ref.read(userProvider.notifier).refreshUserData(ref);
       }
     });
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("App opened from notification");
+      if (message.data.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleNotificationClick(jsonEncode(message.data), ref, context);
+        });
+      }
+    });
   }
 
   Future<void> sendTokenToServer(String token, WidgetRef ref) async {
@@ -77,50 +86,51 @@ class PushNotificationService {
       body: jsonEncode({'device_id': token}),
     );
   }
+
+  Future<void> _handleNotificationClick(
+      String data, WidgetRef ref, BuildContext context) async {
+    try {
+      final decodedData = jsonDecode(data);
+      final data0 = jsonDecode(decodedData['content']);
+
+      String? type = data0['notificationType'];
+
+      if (type != null) {
+        if (data0['data']['id'] != null) {
+          int notificationId = data0['data']['id'];
+          ApiService().markNotificationAsRead(notificationId, ref);
+        }
+        redirectToScreen(type, data0['data'], ref, context);
+      }
+    } catch (e) {
+      //
+    }
+  }
+
+  void redirectToScreen(
+      String type, dynamic data, WidgetRef ref, BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      switch (type) {
+        case 'Transaction':
+          context.push('/transaction-details', extra: data['transaction']);
+          break;
+        case 'WelcomeMessage':
+          context.push('/send');
+          break;
+        case 'KYC':
+          context.push('/kyc');
+          break;
+        case 'auth':
+          context.push('/profile');
+          break;
+        default:
+          context.go('/home');
+          break;
+      }
+    });
+  }
 }
 
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(
     NotificationResponse notificationResponse) async {}
-
-@pragma('vm:entry-point')
-void _handleNotificationClick(
-    String data, WidgetRef ref, BuildContext context) {
-  try {
-    final decodedData = jsonDecode(data);
-    final data0 = jsonDecode(decodedData['content']);
-
-    String? type = data0['notificationType'];
-
-    if (type != null) {
-      if (data0['data']['id'] != null) {
-        int notificationId = data0['data']['id'];
-        ApiService().markNotificationAsRead(notificationId, ref);
-      }
-      redirectToScreen(type, data0['data'], ref, context);
-    }
-  } catch (e) {
-    //
-  }
-}
-
-void redirectToScreen(
-    String type, dynamic data, WidgetRef ref, BuildContext context) {
-  switch (type) {
-    case 'Transaction':
-      context.push('/transaction-details', extra: data['transaction']);
-      break;
-    case 'WelcomeMessage':
-      context.push('/send');
-      break;
-    case 'KYC':
-      context.push('/kyc');
-      break;
-    case 'auth':
-      context.push('/profile');
-      break;
-    default:
-      context.go('/home');
-      break;
-  }
-}

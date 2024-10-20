@@ -1,3 +1,4 @@
+import 'package:afrik_flow/services/push_notification_service.dart';
 import 'package:afrik_flow/widgets/kyc_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,6 +45,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     final transactions = user?.transactions.take(5).toList();
+    PushNotificationService().init(ref, context);
 
     return RefreshIndicator(
       onRefresh: _refresh,

@@ -1,6 +1,5 @@
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/routes/app_routes.dart';
-import 'package:afrik_flow/services/push_notification_service.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,9 +37,9 @@ class MyApp extends ConsumerWidget {
         }
 
         if (snapshot.data == '/home') {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            PushNotificationService().init(ref, context);
-          });
+          // WidgetsBinding.instance.addPostFrameCallback((_) {
+          //   PushNotificationService().init(ref, context);
+          // });
         }
 
         return MaterialApp.router(
