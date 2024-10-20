@@ -78,25 +78,32 @@ class HelpScreen extends StatelessWidget {
   }
 
   Widget _buildFAQItem(String question, String answer) {
-    return ExpansionTile(
-      title: Text(
-        question,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
+    return Theme(
+      data: ThemeData().copyWith(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
-      iconColor: Colors.tealAccent,
-      collapsedIconColor: Colors.grey,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
-          child: Text(
-            answer,
-            style: const TextStyle(color: Colors.grey),
+      child: ExpansionTile(
+        title: Text(
+          question,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ],
+        iconColor: Colors.tealAccent,
+        collapsedIconColor: Colors.grey,
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
+            child: Text(
+              answer,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
