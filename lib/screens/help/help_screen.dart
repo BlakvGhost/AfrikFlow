@@ -46,8 +46,15 @@ class HelpScreen extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(
-              height: 20,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Bienvenue dans la section d\'aide. Voici les réponses aux questions les plus fréquentes. Cliquez sur une question pour voir la réponse.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
             ),
             const Divider(
                 color: Colors.grey, thickness: 0.5, indent: 16, endIndent: 16),
