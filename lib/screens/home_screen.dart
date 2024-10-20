@@ -58,6 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   KycBanner(user: user!),
                   const CarouselWithDots(),
+                  const SizedBox(height: 5,),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -68,13 +69,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             label: "Envoyer",
                             index: 1),
                         CircleButton(
-                            icon: PhosphorIconsDuotone.fileText,
-                            label: "Facture",
-                            index: 2),
-                        CircleButton(
                             icon: PhosphorIconsDuotone.clockCounterClockwise,
                             label: "Historiques",
                             index: 3),
+                        CircleButton(
+                            icon: PhosphorIconsDuotone.gearSix,
+                            label: "Paramètre",
+                            index: 4),
                         CircleButton(
                             icon: PhosphorIconsDuotone.dotsNine,
                             label: "Tous",

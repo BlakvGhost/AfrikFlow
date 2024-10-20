@@ -3,6 +3,7 @@ import 'package:afrik_flow/providers/banner_notifier.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CarouselWithDots extends ConsumerStatefulWidget {
   const CarouselWithDots({super.key});
@@ -37,29 +38,13 @@ class CarouselWithDotsState extends ConsumerState<CarouselWithDots> {
                         items: banners.map((banner) {
                           return ClipRRect(
                             borderRadius: BorderRadius.circular(18.0),
-                            child: Image.network(
-                              banner.cover,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            (loadingProgress
-                                                    .expectedTotalBytes ??
-                                                1)
-                                        : null,
-                                  ),
-                                );
-                              },
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                return const Text('Failed to load image');
-                              },
+                            child: CachedNetworkImage(
+                              imageUrl: banner.cover,
+                              placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: 200,
