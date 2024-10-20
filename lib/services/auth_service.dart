@@ -20,7 +20,9 @@ class AuthService {
     String? getLoginField(String identifier) {
       final emailRegex =
           RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-      final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+      final phoneRegex = RegExp(
+        r'^(?:\+?[0-9]{10,15}|[0-9]{8,10})$',
+      );
 
       if (emailRegex.hasMatch(identifier)) {
         return 'email';
