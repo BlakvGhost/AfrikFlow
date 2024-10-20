@@ -1,48 +1,37 @@
-import 'package:afrik_flow/services/common_api_service.dart';
-import 'package:afrik_flow/themes/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:afrik_flow/providers/banner_notifier.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:afrik_flow/models/banner.dart' as home_banner;
+import 'package:afrik_flow/themes/app_theme.dart';
 
-class CarouselWithDots extends StatefulWidget {
+class CarouselWithDots extends ConsumerStatefulWidget {
   const CarouselWithDots({super.key});
 
   @override
   CarouselWithDotsState createState() => CarouselWithDotsState();
 }
 
-class CarouselWithDotsState extends State<CarouselWithDots> {
+class CarouselWithDotsState extends ConsumerState<CarouselWithDots> {
   int _currentIndex = 0;
-  late Future<List<home_banner.Banner>> _banners;
 
   @override
   void initState() {
     super.initState();
-    _banners = ApiService().fetchBanners();
+    ref.read(bannerProvider.notifier).fetchBanners();
   }
 
   @override
   Widget build(BuildContext context) {
+    final banners = ref.watch(bannerProvider);
+
     return Column(
       children: [
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12, top: 10),
-            child: FutureBuilder<List<home_banner.Banner>>(
-              future: _banners,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Container(
-                    height: 200,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    child: const CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Erreur: ${snapshot.error}');
-                } else if (snapshot.hasData) {
-                  final banners = snapshot.data!;
-                  return Column(
+            child: banners.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
                     children: [
                       CarouselSlider(
                         items: banners.map((banner) {
@@ -109,12 +98,7 @@ class CarouselWithDotsState extends State<CarouselWithDots> {
                         }),
                       ),
                     ],
-                  );
-                } else {
-                  return const Text('Aucune bannière disponible');
-                }
-              },
-            ),
+                  ),
           ),
         ),
       ],
