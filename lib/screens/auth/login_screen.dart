@@ -72,7 +72,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
         context.go('/home');
       } else {
         context.push('/two-factor-verification', extra: {
-          'email': _emailController.text,
+          'email': result['data']['data']['to'],
           'password': _passwordController.text
         });
       }
