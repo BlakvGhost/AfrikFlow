@@ -19,6 +19,7 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _twoFactorEnabled = false;
   bool _emailUpdatesEnabled = true;
   bool _isLoading = false;
+  bool _isGL = false;
 
   @override
   void initState() {
@@ -28,6 +29,7 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
     _notificationsEnabled = user?.isAcceptedNotifications ?? false;
     _twoFactorEnabled = user?.isTwoFactorEnabled ?? false;
     _emailUpdatesEnabled = user?.isAcceptedEmailUpdates ?? false;
+    _isGL = user?.isGoogleLogin ?? false;
   }
 
   void _updateSettings() async {
@@ -85,16 +87,18 @@ class SettingsScreenState extends ConsumerState<SettingsScreen> {
             });
           },
         ),
-        _buildSwitchTile(
-          'Activer l\'authentification 2FA',
-          'Ajouter une couche supplémentaire de sécurité à votre compte.',
-          _twoFactorEnabled,
-          (value) {
-            setState(() {
-              _twoFactorEnabled = value;
-            });
-          },
-        ),
+        if (!_isGL) ...[
+          _buildSwitchTile(
+            'Activer l\'authentification 2FA',
+            'Ajouter une couche supplémentaire de sécurité à votre compte.',
+            _twoFactorEnabled,
+            (value) {
+              setState(() {
+                _twoFactorEnabled = value;
+              });
+            },
+          )
+        ],
         _buildSwitchTile(
           'Mises à jour par e-mail',
           'Recevoir des mises à jour importantes et des offres spéciales.',
