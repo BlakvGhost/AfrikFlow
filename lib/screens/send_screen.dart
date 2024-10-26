@@ -458,10 +458,36 @@ class SendScreenState extends ConsumerState<SendScreen>
 
   Widget _buildCountryOperatorDropdown(
       List<WProvider> walletProviders, bool isPayin) {
+    final Map<String, List<WProvider>> providersByCountry = {};
+    for (var provider in walletProviders) {
+      providersByCountry
+          .putIfAbsent(provider.country.slug, () => [])
+          .add(provider);
+    }
+
+    final selectedProvider = walletProviders
+        .where((provider) =>
+            provider.id.toString() ==
+            (isPayin ? selectedPayinOperator : selectedPayoutOperator))
+        .firstOrNull;
+
     return DropdownButtonFormField<String>(
       isExpanded: true,
       value: isPayin ? selectedPayinOperator : selectedPayoutOperator,
-      hint: const Text('Choisir un opérateur'),
+      hint: selectedProvider != null
+          ? Row(
+              children: [
+                Image.network(
+                  selectedProvider.country.flag,
+                  width: 24,
+                  height: 24,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                    '${selectedProvider.country.code} - ${selectedProvider.name}'),
+              ],
+            )
+          : const Text('Choisir un opérateur'),
       onChanged: (value) {
         if (value != null) {
           setState(() {
@@ -474,26 +500,54 @@ class SendScreenState extends ConsumerState<SendScreen>
           _calculateFees();
         }
       },
-      items: walletProviders.map((provider) {
-        return DropdownMenuItem<String>(
-          value: "${provider.id}",
-          child: Row(
-            children: [
-              Image.network(
-                provider.logo,
-                width: 24,
-                height: 24,
+      items: providersByCountry.entries.expand((entry) {
+        final countryName = entry.key;
+        final providers = entry.value;
+
+        return [
+          DropdownMenuItem<String>(
+            value: null,
+            enabled: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                countryName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  provider.name,
-                  overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          ...providers.map((provider) {
+            final isSelected = provider.id.toString() ==
+                (isPayin ? selectedPayinOperator : selectedPayoutOperator);
+
+            return DropdownMenuItem<String>(
+              value: "${provider.id}",
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Row(
+                  children: [
+                    Image.network(
+                      provider.logo,
+                      width: 24,
+                      height: 24,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        provider.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (isSelected) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.check, color: Colors.green),
+                    ],
+                  ],
                 ),
               ),
-            ],
-          ),
-        );
+            );
+          }),
+        ];
       }).toList(),
       decoration: InputDecoration(
         labelText: 'Pays et opérateur',
