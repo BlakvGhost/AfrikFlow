@@ -4,6 +4,7 @@ class Country {
   final String slug;
   final String flag;
   final String countryCode;
+  final String currency;
 
   Country({
     required this.code,
@@ -11,6 +12,7 @@ class Country {
     required this.slug,
     required this.flag,
     required this.countryCode,
+    required this.currency,
   });
 
   factory Country.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Country {
       slug: json['slug'] as String,
       flag: json['flag'] as String,
       countryCode: json['country_code'] as String,
+      currency: json['currency'] as String,
     );
   }
 
@@ -30,6 +33,7 @@ class Country {
       'flag': flag,
       'country_code': countryCode,
       'id': id,
+      'currency': currency,
     };
   }
 }

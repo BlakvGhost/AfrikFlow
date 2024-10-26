@@ -243,7 +243,7 @@ class SendScreenState extends ConsumerState<SendScreen>
             ? [const Center(child: CircularProgressIndicator())]
             : [
                 _buildLocalTransferContent(user!),
-                _buildCreditCardTransferContent(),
+                _buildCreditCardTransferContent(user),
               ],
       ),
     );
@@ -332,7 +332,7 @@ class SendScreenState extends ConsumerState<SendScreen>
                   const SizedBox(height: 16),
                   _buildPhoneNumberField(_payinPhoneNumberController),
                   const SizedBox(height: 16),
-                  _buildAmountField(),
+                  _buildAmountField(user),
                   const SizedBox(height: 16),
                   _buildAgreeSupportFeesSwitch(),
                   const SizedBox(height: 10),
@@ -351,7 +351,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildCreditCardTransferContent() {
+  Widget _buildCreditCardTransferContent(User user) {
     if (walletProviders == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -365,7 +365,7 @@ class SendScreenState extends ConsumerState<SendScreen>
             const SizedBox(height: 24),
             _buildReasonDropdown(),
             const SizedBox(height: 16),
-            _buildAmountField(),
+            _buildAmountField(user),
             const SizedBox(height: 16),
             _buildCardTypeSelection(),
             const SizedBox(height: 16),
@@ -558,7 +558,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildAmountField() {
+  Widget _buildAmountField(User user) {
     return TextFormField(
       controller: _amountController,
       keyboardType: TextInputType.number,
