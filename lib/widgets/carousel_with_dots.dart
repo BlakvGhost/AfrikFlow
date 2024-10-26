@@ -31,23 +31,35 @@ class CarouselWithDotsState extends ConsumerState<CarouselWithDots> {
           child: Padding(
             padding: const EdgeInsets.only(left: 12, right: 12, top: 10),
             child: banners.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(
+                    child: SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  )
                 : Column(
                     children: [
                       CarouselSlider(
                         items: banners.map((banner) {
                           return ClipRRect(
                             borderRadius: BorderRadius.circular(18.0),
-                            child: CachedNetworkImage(
-                              imageUrl: banner.cover,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                              fit: BoxFit.cover,
+                            child: Container(
                               width: double.infinity,
                               height: 200,
+                              color: Colors.black,
+                              child: CachedNetworkImage(
+                                imageUrl: banner.cover,
+                                placeholder: (context, url) => const Center(
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error, size: 50),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           );
                         }).toList(),
