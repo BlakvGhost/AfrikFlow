@@ -7,7 +7,7 @@ class WProvider {
   final String sendingMode;
   final String logo;
   final String fpayName;
-  final Country country;
+  final Country? country;
 
   WProvider({
     required this.id,
@@ -27,7 +27,7 @@ class WProvider {
       sendingMode: json['sending_mode'] ?? '',
       logo: json['logo'] ?? '',
       fpayName: json['fpay_name'] ?? '',
-      country: Country.fromJson(json['country'] ?? {}),
+      country: json['country'] != null ? Country.fromJson(json['country']) : null,
     );
   }
 
@@ -39,7 +39,7 @@ class WProvider {
       'sending_mode': sendingMode,
       'logo': logo,
       'fpay_name': fpayName,
-      'country': country.toJson(),
+      'country': country?.toJson(),
     };
   }
 }

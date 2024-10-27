@@ -2,6 +2,7 @@ import 'package:afrik_flow/models/user.dart';
 import 'package:afrik_flow/models/w_provider.dart';
 import 'package:afrik_flow/providers/user_notifier.dart';
 import 'package:afrik_flow/utils/helpers.dart';
+import 'package:afrik_flow/widgets/web_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:afrik_flow/themes/app_theme.dart';
 import 'package:afrik_flow/services/transaction_service.dart';
@@ -24,6 +25,7 @@ class SendScreenState extends ConsumerState<SendScreen>
   String? selectedPayinOperator;
   String? selectedPayoutOperator;
   String? selectedCardType;
+  String? selectedReason;
   List<String> operators = [];
   List<WProvider>? walletProviders;
 
@@ -66,16 +68,16 @@ class SendScreenState extends ConsumerState<SendScreen>
     super.dispose();
   }
 
-  void _calculateFees() async {
-    if (selectedPayinOperator != null &&
+  void _calculateFees(bool isCard) async {
+    if ((selectedPayinOperator != null || isCard) &&
         selectedPayoutOperator != null &&
         totalAmount >= 500) {
       final response = await _transactionService.calculateFees(
-        payinWProviderId: selectedPayinOperator!,
-        payoutWProviderId: selectedPayoutOperator!,
-        amount: double.parse(_amountController.text),
-        senderSupportFee: supportFees,
-      );
+          payinWProviderId: selectedPayinOperator ?? '',
+          payoutWProviderId: selectedPayoutOperator!,
+          amount: double.parse(_amountController.text),
+          senderSupportFee: supportFees,
+          isCard: isCard);
 
       if (response['success']) {
         setState(() {
@@ -87,7 +89,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     }
   }
 
-  Future<void> _confirmAndSendTransaction() async {
+  Future<void> _confirmAndSendTransaction(bool isCard) async {
     final result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -107,7 +109,6 @@ class SendScreenState extends ConsumerState<SendScreen>
             ],
           ),
           content: SingleChildScrollView(
-            // Ajout d'un SingleChildScrollView
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +144,7 @@ class SendScreenState extends ConsumerState<SendScreen>
                 Wrap(
                   children: [
                     Text(
-                      'Voulez-vous envoyer de ${_payinPhoneNumberController.text} vers ${_payoutPhoneNumberController.text} ?',
+                      'Voulez-vous envoyer de ${isCard ? selectedCardType : _payinPhoneNumberController.text} vers ${_payoutPhoneNumberController.text} ?',
                       style: const TextStyle(
                         color: Colors.white70,
                       ),
@@ -198,32 +199,79 @@ class SendScreenState extends ConsumerState<SendScreen>
       },
     );
 
-    if (result == true && _canSlide()) {
+    if (result == true && _canSlide(isCard)) {
       setState(() {
         isProcessing = true;
       });
 
-      final sendResponse = await _transactionService.sendTransaction(
-        payinPhoneNumber: _payinPhoneNumberController.text,
-        payinWProviderId: selectedPayinOperator!,
-        payoutPhoneNumber: _payoutPhoneNumberController.text,
-        payoutWProviderId: selectedPayoutOperator!,
-        amount: double.parse(_amountController.text),
-        senderSupportFee: supportFees,
-      );
-      setState(() {
-        isProcessing = false;
-      });
+      if (!isCard) {
+        final sendResponse = await _transactionService.sendTransaction(
+          payinPhoneNumber: _payinPhoneNumberController.text,
+          payinWProviderId: selectedPayinOperator!,
+          payoutPhoneNumber: _payoutPhoneNumberController.text,
+          payoutWProviderId: selectedPayoutOperator!,
+          amount: double.parse(_amountController.text),
+          senderSupportFee: supportFees,
+        );
 
-      if (sendResponse['success']) {
-        context.push('/transactions');
+        setState(() {
+          isProcessing = false;
+        });
+
+        if (sendResponse['success']) {
+          context.push('/transactions');
+        } else {
+          showToast(context, sendResponse['message']);
+        }
       } else {
-        showToast(context, sendResponse['message']);
+        final sendResponse = await _transactionService.sendTransactionByCard(
+          selectedCardType: selectedCardType!,
+          selectedReason: selectedReason!,
+          payoutPhoneNumber: _payoutPhoneNumberController.text,
+          payoutWProviderId: selectedPayoutOperator!,
+          amount: double.parse(_amountController.text),
+          senderSupportFee: supportFees,
+        );
+
+        setState(() {
+          isProcessing = false;
+        });
+
+        if (sendResponse['success'] && mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: Dialog(
+                  insetPadding: const EdgeInsets.all(10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: CustomWebViewWidget(
+                    url: sendResponse['data']['url'],
+                  ),
+                ),
+              );
+            },
+          );
+        } else {
+          showToast(context, sendResponse['message']);
+        }
       }
     }
   }
 
-  bool _canSlide() {
+  bool _canSlide(bool isCard) {
+    if (isCard) {
+      return selectedCardType != null &&
+          selectedPayoutOperator != null &&
+          selectedReason != null &&
+          _payoutPhoneNumberController.text.isNotEmpty &&
+          _amountController.text.isNotEmpty;
+    }
+
     return selectedPayinOperator != null &&
         selectedPayoutOperator != null &&
         _payinPhoneNumberController.text.isNotEmpty &&
@@ -233,7 +281,7 @@ class SendScreenState extends ConsumerState<SendScreen>
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
+    final user = ref.read(userProvider);
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -365,25 +413,27 @@ class SendScreenState extends ConsumerState<SendScreen>
             const SizedBox(height: 24),
             _buildReasonDropdown(),
             const SizedBox(height: 16),
-            _buildAmountField(user),
+            _buildAmountField(user, isCard: true),
             const SizedBox(height: 16),
             _buildCardTypeSelection(),
             const SizedBox(height: 16),
-            _buildAgreeSupportFeesSwitch(),
+            _buildAgreeSupportFeesSwitch(isCard: true),
             const SizedBox(height: 24),
             _buildSectionTitle("Vers :"),
             const SizedBox(height: 16),
-            _buildCountryOperatorDropdown(walletProviders!, false),
+            _buildCountryOperatorDropdown(walletProviders!, false,
+                isCard: true),
             const SizedBox(height: 16),
             _buildPhoneNumberField(_payoutPhoneNumberController),
             const SizedBox(height: 32),
+            _buildSlideButton(user, isCard: true),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSlideButton(User user) {
+  Widget _buildSlideButton(User user, {bool isCard = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 30),
       child: SlideAction(
@@ -425,12 +475,12 @@ class SendScreenState extends ConsumerState<SendScreen>
             showToast(context,
                 "Votre compte n'est pas encore vérifié. Veuillez compléter la vérification pour accéder à ce service.");
           } else {
-            if (_canSlide()) {
+            if (_canSlide(isCard)) {
               if (double.parse(_amountController.text) < 500) {
                 showToast(
                     context, "Le montant minimun d'envoi est de 500 FCFA");
               } else {
-                _confirmAndSendTransaction();
+                _confirmAndSendTransaction(isCard);
               }
             } else {
               showToast(
@@ -457,11 +507,12 @@ class SendScreenState extends ConsumerState<SendScreen>
   }
 
   Widget _buildCountryOperatorDropdown(
-      List<WProvider> walletProviders, bool isPayin) {
+      List<WProvider> walletProviders, bool isPayin,
+      {bool isCard = false}) {
     final Map<String, List<WProvider>> providersByCountry = {};
     for (var provider in walletProviders) {
       providersByCountry
-          .putIfAbsent(provider.country.slug, () => [])
+          .putIfAbsent(provider.country!.slug, () => [])
           .add(provider);
     }
 
@@ -478,13 +529,13 @@ class SendScreenState extends ConsumerState<SendScreen>
           ? Row(
               children: [
                 Image.network(
-                  selectedProvider.country.flag,
+                  selectedProvider.country!.flag,
                   width: 24,
                   height: 24,
                 ),
                 const SizedBox(width: 8),
                 Text(
-                    '${selectedProvider.country.code} - ${selectedProvider.name}'),
+                    '${selectedProvider.country!.code} - ${selectedProvider.name}'),
               ],
             )
           : const Text('Choisir un opérateur'),
@@ -497,7 +548,7 @@ class SendScreenState extends ConsumerState<SendScreen>
               selectedPayoutOperator = value;
             }
           });
-          _calculateFees();
+          _calculateFees(isCard);
         }
       },
       items: providersByCountry.entries.expand((entry) {
@@ -558,7 +609,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildAmountField(User user) {
+  Widget _buildAmountField(User user, {bool isCard = false}) {
     return TextFormField(
       controller: _amountController,
       keyboardType: TextInputType.number,
@@ -571,7 +622,7 @@ class SendScreenState extends ConsumerState<SendScreen>
       ),
       onChanged: (value) {
         totalAmount = double.parse(value);
-        _calculateFees();
+        _calculateFees(isCard);
       },
       textInputAction: TextInputAction.next,
     );
@@ -591,7 +642,7 @@ class SendScreenState extends ConsumerState<SendScreen>
     );
   }
 
-  Widget _buildAgreeSupportFeesSwitch() {
+  Widget _buildAgreeSupportFeesSwitch({bool isCard = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -609,7 +660,7 @@ class SendScreenState extends ConsumerState<SendScreen>
             setState(() {
               supportFees = value;
             });
-            _calculateFees();
+            _calculateFees(isCard);
           },
           activeColor: AppTheme.primaryColor,
         ),
@@ -618,16 +669,24 @@ class SendScreenState extends ConsumerState<SendScreen>
   }
 
   Widget _buildReasonDropdown() {
-    final reasons = ['Frais de scolarité', 'Facture', 'Autre'];
+    final reasons = {
+      'school_help': 'Frais de scolarité',
+      'family_help': 'Aide familiale',
+      'rent': 'Loyer',
+      'others': 'Autre'
+    };
+
     return DropdownButtonFormField<String>(
       hint: const Text("Raison de l'envoi"),
       onChanged: (value) {
-        setState(() {});
+        setState(() {
+          selectedReason = value;
+        });
       },
-      items: reasons.map((reason) {
+      items: reasons.entries.map((entry) {
         return DropdownMenuItem<String>(
-          value: reason,
-          child: Text(reason),
+          value: entry.key,
+          child: Text(entry.value),
         );
       }).toList(),
       decoration: InputDecoration(
@@ -640,7 +699,11 @@ class SendScreenState extends ConsumerState<SendScreen>
   }
 
   Widget _buildCardTypeSelection() {
-    final cardTypes = ['Visa', 'MasterCard'];
+    final cardTypes = {
+      'VISA': 'VISA',
+      'MASTERCARD': 'MASTERCARD',
+    };
+
     return DropdownButtonFormField<String>(
       hint: const Text("Type de carte"),
       onChanged: (value) {
@@ -648,10 +711,10 @@ class SendScreenState extends ConsumerState<SendScreen>
           selectedCardType = value;
         });
       },
-      items: cardTypes.map((type) {
+      items: cardTypes.entries.map((entry) {
         return DropdownMenuItem<String>(
-          value: type,
-          child: Text(type),
+          value: entry.key,
+          child: Text(entry.value),
         );
       }).toList(),
       decoration: InputDecoration(

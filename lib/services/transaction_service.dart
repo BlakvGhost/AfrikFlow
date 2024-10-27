@@ -47,6 +47,38 @@ class TransactionService {
     }
   }
 
+  Future<Map<String, dynamic>> sendTransactionByCard({
+    required String selectedCardType,
+    required String selectedReason,
+    required String payoutPhoneNumber,
+    required String payoutWProviderId,
+    required double amount,
+    required bool senderSupportFee,
+  }) async {
+    final url = Uri.parse('$apiBaseUrl/transactions/card');
+
+    final response = await apiClient.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'payout_phone_number': payoutPhoneNumber,
+        'payout_wprovider_id': payoutWProviderId,
+        'amount': amount,
+        'sender_support_fee': senderSupportFee,
+        'typeCard': selectedCardType,
+        'reason': selectedReason,
+        'isMobilePayment': false,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)['data']};
+    } else {
+      final errorMessage = jsonDecode(response.body)['message'];
+      return {'success': false, 'message': errorMessage};
+    }
+  }
+
   Future<List<Transaction>> listTransactions() async {
     final url = Uri.parse('$apiBaseUrl/transactions');
 
@@ -79,7 +111,6 @@ class TransactionService {
     final response = await apiClient.get(url);
 
     if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
       return {'success': true, 'data': jsonDecode(response.body)['data']};
     } else {
       final errorMessage = jsonDecode(response.body)['message'];
@@ -92,6 +123,7 @@ class TransactionService {
     required String payoutWProviderId,
     required double amount,
     required bool senderSupportFee,
+    required bool isCard,
   }) async {
     final url = Uri.parse('$apiBaseUrl/calculate-transaction-fees');
 
@@ -102,7 +134,8 @@ class TransactionService {
         'payin_wprovider_id': payinWProviderId,
         'payout_wprovider_id': payoutWProviderId,
         'amount': amount,
-        'sender_support_fee': senderSupportFee
+        'sender_support_fee': senderSupportFee,
+        'isMobilePayment': !isCard,
       }),
     );
 

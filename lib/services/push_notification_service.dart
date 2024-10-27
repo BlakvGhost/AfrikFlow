@@ -47,7 +47,6 @@ class PushNotificationService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-      print("Received");
 
       if (notification != null && android != null) {
         flutterLocalNotificationsPlugin.show(
@@ -68,7 +67,6 @@ class PushNotificationService {
       }
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("App opened from notification");
       if (message.data.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _handleNotificationClick(jsonEncode(message.data), ref, context);
