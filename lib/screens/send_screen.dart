@@ -241,14 +241,14 @@ class SendScreenState extends ConsumerState<SendScreen>
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.8,
-                child: Dialog(
-                  insetPadding: const EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
+              return Dialog(
+                insetPadding: const EdgeInsets.all(0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
                   child: CustomWebViewWidget(
                     url: sendResponse['data']['url'],
                   ),
@@ -264,6 +264,25 @@ class SendScreenState extends ConsumerState<SendScreen>
   }
 
   bool _canSlide(bool isCard) {
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return Dialog(
+    //       insetPadding: const EdgeInsets.all(0),
+    //       shape: RoundedRectangleBorder(
+    //         borderRadius: BorderRadius.circular(0),
+    //       ),
+    //       child: SizedBox(
+    //         width: MediaQuery.of(context).size.width,
+    //         height: MediaQuery.of(context).size.height,
+    //         child: const CustomWebViewWidget(
+    //           url:
+    //               "https://visamc.bizao.com/visa-mc/239a53f8-e1cb-472b-8efe-85453a85e62c",
+    //         ),
+    //       ),
+    //     );
+    //   },
+    // );
     if (isCard) {
       return selectedCardType != null &&
           selectedPayoutOperator != null &&
